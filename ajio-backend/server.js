@@ -147,10 +147,13 @@ app.delete("/product/:id", async (req, res) => {
     const imagePath = "uploads/" + product.image;
   
 
-    if (fs.existsSync(imagePath)) {
-      fs.unlinkSync(imagePath);
-    }
+   if (product.image) {
+      const imagePath = "uploads/" + product.image;
 
+      if (fs.existsSync(imagePath)) {
+        fs.unlinkSync(imagePath);
+      }
+    }
     await Product.findByIdAndDelete(req.params.id);
 
     res.json({ message: "Product deleted " });
@@ -177,7 +180,7 @@ app.put("/updateitem/:id", upload.single("image"), async (req, res) => {
 
     const product = await Product.findByIdAndUpdate(req.params.id, data, { new: true });
 
-    res.json(product);
+    res.json({ success: true, product });
   } catch (error) {
     res.status(500).send("Error updating product");
   }

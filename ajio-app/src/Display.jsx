@@ -19,40 +19,36 @@ function Products() {
       .catch((err) => console.log("Error:", err));
   }, []);
 
-  const settings = {
-    dots: true,
-    infinite: true,
-    speed: 500,
-    autoplay: true,
-    autoplaySpeed: 2000,
-    slidesToShow: 4,
-    slidesToScroll: 1,
-  };
-
+const slider = {
+  dots: false,         
+  speed: 5000,           
+  slidesToShow: 4,       
+  slidesToScroll: 1,     
+  autoplay: true,       
+  autoplaySpeed: 1,      
+  cssEase: "linear",     
+ 
+};
   return (
     <div className="products">
     
 
-      <Slider {...settings}>
-
-        {product.map((item) => (
-          <div className="card" key={item.id}>
-
-            <img
-              src={`http://localhost:5000/uploads/${item.image}`}
-              width={200}
-              alt={item.name}
-            />
-
-            <p>{item.name}</p>
-
-          </div>
-        ))}
-
-      </Slider>
-
+    <Slider {...slider}>
+  {product.map((item) => (
+    <div className="card" key={item._id}> 
+      <img
+        src={`http://localhost:5000/uploads/${item.image}`}
+        width={200}
+        alt={item.itemName}
+      />
+      <p>{item.itemName}</p>
+      <p>Quantity: {item.itemQuantity}</p>
+      <p>Price: ₹{item.itemPrice}</p>
+    </div>
+  ))}
+</Slider>
     </div>
   );
 }
 
-export default Products;
+export default Products;  

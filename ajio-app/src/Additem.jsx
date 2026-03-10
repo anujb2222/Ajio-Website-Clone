@@ -1,67 +1,118 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import "./Additem.css";
 
-function Additem() {
+function ProductForm() {
+
+  const navigate = useNavigate();
+  const { id } = useParams();
+
   const [itemName, setItemName] = useState("");
   const [itemQuantity, setItemQuantity] = useState("");
   const [itemPrice, setItemPrice] = useState("");
   const [image, setImage] = useState(null);
-  const navigate = useNavigate();
 
+  useEffect(() => {
 
-
-  const handleAddItem = async () => {
-    if (!itemName || !itemQuantity || !itemPrice) {
-      alert("All fields are required");
-      return;
+    if (id) {
+      axios.get(`http://localhost:5000/product/${id}`)
+      .then(res => {
+        setItemName(res.data.itemName);
+        setItemQuantity(res.data.itemQuantity);
+        setItemPrice(res.data.itemPrice);
+      });
     }
 
+  }, [id]);
+
+
+
+  const handleSubmit = async () => {
 
     const data = new FormData();
+
     data.append("itemName", itemName);
     data.append("itemQuantity", itemQuantity);
     data.append("itemPrice", itemPrice);
-    if (image) data.append("image", image);
+
+    if (image) {
+      data.append("image", image);
+    }
 
     try {
-      const res = await axios.post("http://localhost:5000/additem", data, {
-        headers: { "Content-Type": "multipart/form-data" }
-      });
 
-      if (res.data.success) {
-        alert("Item added successfully");
-        setItemName("");
-        setItemQuantity("");
-        setItemPrice("");
-        setImage(null);
+      if (id) {
+
+        await axios.put(
+          `http://localhost:5000/updateitem/${id}`,
+          data
+        );
+
+        alert("Item Updated");
+
       } else {
-        alert(res.data.message);
+
+        await axios.post(
+          "http://localhost:5000/additem",
+          data
+        );
+
+        alert("Item Added");
+
       }
-    } catch (err) {
-      console.log(err);
+
+      navigate("/admin");
+
+    } catch (error) {
+
+      console.log(error);
+
     }
+
   };
 
-  return (
-    <div className="additem-box">
-      <span 
-        style={{ float: "right", cursor: "pointer", fontWeight: "bold", fontSize: "20px" }} 
-        onClick={() => navigate("/admin")}>X</span>
 
-      <h2>Add Item</h2>
 
-      <input type="text" placeholder="Item Name" value={itemName} onChange={e => setItemName(e.target.value)} />
-      <input type="number" placeholder="Quantity" value={itemQuantity} onChange={e => setItemQuantity(e.target.value)} />
-      <input type="number" placeholder="Price" value={itemPrice} onChange={e => setItemPrice(e.target.value)} />
+return (
+  <div className="additem-box">
 
-      <input type="file" onChange={e => setImage(e.target.files[0])} />
+        <span className="x-mark" onClick={() => navigate("/admin")}>X</span>
 
-      <button onClick={handleAddItem}>Add Item</button>
-      
-    </div>
-  );
+    <h2>{id ? "Update Item" : "Add Item"}</h2>
+
+    <input
+      type="text"
+      placeholder="Item Name"
+      value={itemName}
+      onChange={(e) => setItemName(e.target.value)}
+    />
+
+    <input
+      type="number"
+      placeholder="Quantity"
+      value={itemQuantity}
+      onChange={(e) => setItemQuantity(e.target.value)}
+    />
+
+    <input
+      type="number"
+      placeholder="Price"
+      value={itemPrice}
+      onChange={(e) => setItemPrice(e.target.value)}
+    />
+
+    <input
+      type="file"
+      onChange={(e) => setImage(e.target.files[0])}
+    />
+
+    <button onClick={handleSubmit}>
+      {id ? "Update Item" : "Add Item"}
+    </button>
+
+  </div>
+);
 }
 
-export default Additem;
+export default ProductForm;
