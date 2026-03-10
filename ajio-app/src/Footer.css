@@ -1,0 +1,158 @@
+.site-footer {
+  background-color: rgb(44,65,82);
+  color: #ffffff;
+  padding: 35px 40px; 
+  font-family: SourceSansPro;
+  min-height: 520px;
+  box-sizing: border-box; 
+}
+
+.footer-container {
+  display: flex;
+  justify-content: space-between;
+  background-color: rgb(44,65,82);
+  color: white;
+  flex-wrap: wrap;
+}
+
+.footer-column {
+  width: 22%;
+  min-width: 200px;
+  padding: 0px 40px;
+  background-color: rgb(44,65,82);
+  color: white;
+}
+
+.footer-column h4 {
+  font-size: 16px;
+  margin-bottom: 15px;
+  font-family: SourceSanPro;
+  background-color: rgb(44,65,82);
+  font-weight: 600;
+}
+
+.footer-column {
+  background-color: rgb(44,65,82);
+  font-family: SourceSansPro;
+  font-size: 12px;
+}
+.footer-column a {
+  display: block;
+  color: #e0e0e0;
+  text-decoration: none;
+  margin-bottom: 10px;
+}
+
+.footer-column a:hover {
+  text-decoration: underline;
+}
+
+
+.footer-popular {
+  background-color: rgb(44,65,82);
+  color: #ffffff;
+  padding: 0 40px 30px 40px;
+  font-family: Arial, sans-serif;
+}
+
+.popular-block {
+  margin-bottom: 25px;
+  background-color: rgb(44,65,82);
+}
+
+.popular-block h4 {
+  font-size: 14px;
+  margin-bottom: 12px;
+  font-family: lora;
+  font-weight: 600;
+  background-color: rgb(44,65,82);
+}
+
+.popular-block p {
+  font-family: SourceSansPro;
+  font-size: 14px;
+  font-weight: 400;
+  color: white;
+  line-height: 1.8;
+  padding: 15px 20px 15px 0px;
+  margin: 0;
+  background-color: rgb(44,65,82);
+}
+
+
+
+.popular-heading {
+  display: flex;
+  align-items: center;
+  background-color: rgb(44,65,82);
+  gap: 12px;
+}
+
+.popular-heading h4 {
+  font-size: 16px;
+  font-family: SourceSansPro;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: rgb(204, 204, 204);
+  margin: 0;
+  white-space: nowrap;
+}
+
+.line {
+  flex-grow: 1;
+  height: 1px;
+  border: none;
+  background-color: #ffffff;
+  opacity: 0.6;
+}
+
+
+
+.footer-middle-content {
+  background-color: rgb(44,65,82);
+  color: #e0e0e0;
+  padding: 20px 40px;
+  font-family: SourceSansPro;
+  font-size: 12px;
+  line-height: 1.7;
+  max-width: 100%;
+  margin-bottom: 0;
+}
+
+.footer-middle-content h4 {
+  font-family: lora;
+  font-size: 14px;
+  font-weight: 600;
+  color: #ffffff;
+  margin: 0px 0 8px 0;
+  background-color: rgb(44,65,82);
+}
+
+.footer-middle-content p {
+  margin-bottom: 14px;
+  font-family: SourceSansPro;
+  font-weight: 400;
+  font-size: 14px;
+  background-color: rgb(44,65,82);
+}
+
+
+.footer-bottom {
+
+  background-color: rgb(44,65,82);
+  margin-top: 50px;
+  width: 100%; 
+  margin-right: 10px;
+}
+
+.footer-container {
+  margin-top: 50px;
+}
+
+.footer-screenshot {
+  width: 100%; 
+  height: auto;
+  display: block;
+  margin: 0 auto;
+  background-color: rgb(44,65,82);
+}

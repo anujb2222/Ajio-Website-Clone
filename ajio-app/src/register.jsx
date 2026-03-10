@@ -1,0 +1,77 @@
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import "./Signin.css";
+
+function Register() {
+  const [phone, setPhone] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const navigate = useNavigate();
+
+  const handleRegister = async () => {
+    if (!phone || !password || !confirmPassword) {
+      alert("All fields are required");
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      alert("Passwords do not match");
+      return;
+    }
+
+    try {
+      const res = await axios.post("http://localhost:5000/register", {
+        phone,
+        password,
+      });
+
+      if (res.data.success) {
+        alert("Registration successful");
+        navigate("/"); 
+      } else {
+        alert(res.data.message); 
+      }
+    } catch {
+      alert("Server error");
+    }
+  };
+
+  return (
+    <div className="overlay">
+      <div className="login-box">
+        <span className="close-btn" onClick={() => navigate("/")}>X</span>
+        <h2>Create Account</h2>
+
+        <input
+          type="text"
+          placeholder="Enter phone number"
+          value={phone}
+          onChange={(e) => setPhone(e.target.value)}
+        />
+
+        <input
+          type="password"
+          placeholder="Enter password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+        />
+
+        <input
+          type="password"
+          placeholder="Confirm password"
+          value={confirmPassword}
+          onChange={(e) => setConfirmPassword(e.target.value)}
+        />
+
+        <button onClick={handleRegister}>REGISTER</button>
+
+        <button onClick={() => navigate("/signin")} style={{ marginTop: "10px" }}>
+          LOGIN
+        </button>
+      </div>
+    </div>
+  );
+}
+
+export default Register;

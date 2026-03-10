@@ -1,0 +1,89 @@
+
+.dashboard {
+  display: flex;
+  min-height: 100vh;
+  font-family: Arial, sans-serif;
+  background:white;
+}
+
+.sidebar  {
+  width: 220px;
+  background:white;
+  padding: 20px;
+}
+
+.sidebar h2 {
+  text-align: center;
+ 
+}
+
+.sidebar ul {
+  list-style: none;
+}
+
+.sidebar ul li {
+  padding: 10px;
+  margin-bottom: 8px;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+
+.main-content {
+  flex: 1;
+}
+
+.navbar {
+  height: 60px;
+  background: #fff;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  padding: 0 20px;
+}
+
+.admin-profile {
+  font-weight: bold;
+}
+
+.x-mark {
+  float: right;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 24px;
+  margin: 10px;
+}
+.product-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #fff;
+}
+
+.product-table th, .product-table td {
+  padding: 12px;
+  text-align: center;
+  border: 1px solid #e5e7eb;
+}
+
+.product-table th {
+  background: darkblue;
+  color: #fff;
+}
+
+.click-button {
+  padding: 6px 12px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.delete-button {
+  padding: 6px 12px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+.update-button{
+   padding: 6px 12px;
+  border-radius: 5px;
+  cursor: pointer;
+
+}

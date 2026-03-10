@@ -1,0 +1,49 @@
+.home {
+  width: 100%;
+  margin-top: 90px;
+}
+
+.home .carousel {
+  margin-top: 0; 
+}
+
+.dots{
+  border-color: black;
+}
+
+.home .carousel img {
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+}
+
+.carousel .slide {
+  background: none;
+}
+
+.carousel .thumbs-wrapper {
+  display: none;
+}
+
+.carousel .control-dots .dot {
+  background: white;
+  width: 12px;;
+  border-radius: 20px;
+  box-shadow: none;
+}  
+.top-trends{
+  display: flex;
+
+}
+
+.group{
+  display: flex;
+  width:319px;
+  height:395px;
+}
+.cards img {
+  height: 395px;
+  width: 319px;
+ object-fit: cover;
+  
+}

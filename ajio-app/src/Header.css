@@ -1,0 +1,181 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.header {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: 1000;
+  background: #fff;
+}
+
+
+.container {
+  max-width: 1280px;
+  margin: 0 auto;
+  height: 90px;
+  display: flex;
+  align-items: center;   
+}
+
+
+.logo img {
+  width: 130px;
+  margin-left: 40px;
+  cursor: pointer;
+}
+
+
+.nav {
+  display: flex;
+  align-items: center;
+  margin-left: 80px;
+
+  position: relative;
+  top: 22px; 
+}
+
+
+.item {
+  display: flex;
+  align-items: center;
+  gap: 1px;
+  margin-right: 34px;
+  font-size: 14px;
+  font-weight: 400;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: #2c4152;
+    margin-right: 20px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.item .arrow {
+  margin-left: 6px;
+  width: 8px;
+  height: 8px;
+  opacity: 0.7;
+  margin-top: 2px;
+}
+
+
+.right {
+  margin-left: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+}
+
+
+.links {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  font-size: 12px;
+  letter-spacing: 1.2px;
+  color: #2c4152;
+  margin-top: 6px;
+}
+
+.signin {
+  cursor: pointer;
+  
+}
+.links {
+  display: flex;            
+  align-items: center;      
+  gap: 12px;               
+  flex-wrap: nowrap;        
+}
+.signin a,
+.links span {
+  display: inline-block;    
+  white-space: nowrap; 
+  text-decoration: none;
+  color: black;
+}
+.Signin a {
+  text-decoration: none;
+  color: black;
+}
+     
+
+.links button {
+  display: inline-flex;     
+  align-items: center;
+  padding: 6px 12px;
+  font-size: 11px;
+  line-height: 1.2;
+  border-radius: 4px;
+  cursor: pointer;
+  background: #000;
+  color: #fff;
+  border: none;
+}
+
+.links button {
+  background: #000;
+  color: #fff;
+  border: none;
+  padding: 6px 12px;
+  font-size: 11px;
+  cursor: pointer;
+  line-height: 1.2;
+  border-radius: 4px;
+}
+
+.search {
+  display: flex;
+  height: 30px;
+  align-items: center;
+  gap: 14px;
+}
+.search img,
+.shopping-cart {
+  align-self: center;
+  height: 32px;
+  margin-top:-36px; 
+}
+
+
+.search input {
+  width: 280px;
+  padding: 9px 14px;
+  border-radius: 20px;
+  border: 1px solid #2c4152;
+  font-size: 14px;
+  outline: none;
+  background: #fffded
+    url("https://cdn-icons-png.flaticon.com/512/622/622669.png")
+    no-repeat right 12px center;
+  background-size: 16px;
+}
+
+.search img {
+  width: 32px;
+  height: 34px;
+  cursor: pointer;
+}
+
+.shopping-cart {
+  font-size: 28px;
+  cursor: pointer;
+}
+.Admin {
+  display: inline-flex;     
+  padding: 6px 12px;            
+  font-size: 11px;
+  border-radius: 7px;            
+  background: #000;             
+  color: #fff;      
+  position: relative;
+  top: -5px;                           
+  cursor: pointer;
+  text-decoration: none;        
+}
