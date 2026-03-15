@@ -60,7 +60,7 @@ function SignIn({ setIsLoggedIn }) {
         />
 
         <button onClick={handleLogin}>LOGIN</button>
-
+      
         <button onClick={() => navigate("/register")} style={{ marginTop: "10px" }}>
           REGISTER
         </button>
@@ -70,7 +70,10 @@ function SignIn({ setIsLoggedIn }) {
         <p className="terms">
           By Signing In, I agree to <a href="#">Terms & Conditions</a> and <a href="#">Privacy Policy</a>
         </p>
-      </div>
+
+<p className="terms">
+  Click here to login <a href="/otp-login">using OTP</a>
+</p> </div>
     </div>
   );
 }

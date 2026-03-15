@@ -5,6 +5,7 @@ import Admin from "./Admin";
 import App from "./App";
 import Additem from "./Additem";
 import ViewItems from "./ViewItems";
+import Productdetails  from "./Productdetails";
 
 
 ReactDOM.createRoot(document.getElementById("root")).render(
@@ -16,6 +17,9 @@ ReactDOM.createRoot(document.getElementById("root")).render(
      <Route path="/updateitem/:id" element={<Additem/>} />
            <Route path="/*" element={<App />}/>
             <Route path="/viewitems/:id" element={<ViewItems />} />
+            <Route path ="/Productdetails/:id" element={<Productdetails/>}/>
+         
+            
 
      
 

@@ -7,9 +7,7 @@ import SignIn from "./Signin";
 import Register from "./register";
 import AdminLogin from "./adminLogin";
 import Display from "./Display";
-// import Admin from "./Admin";
-// import Additem from "./Additem";
-// import ViewItems from "./ViewItems";
+import OtpLogin from "./OtpLogin";
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -23,15 +21,16 @@ function App() {
         <Route path="/signin" element={<SignIn setIsLoggedIn={setIsLoggedIn} />} />
         <Route path="/register" element={<Register />} />
         <Route path="/admin-login" element={<AdminLogin />} />
+        <Route path="/otp-login" element={<OtpLogin setIsLoggedIn={setIsLoggedIn} />} />
         {/* <Route path="/admin" element={<Admin />} /> */}
         {/* <Route path="/additem" element={<Additem />} /> */}
         {/* <Route path="/viewitems/:id" element={<ViewItems />} /> */}
       </Routes>
-      <Display/>
-      <Footer />
 
+      <Display />
+      <Footer />
     </>
   );
-}
+}  
 
 export default App;

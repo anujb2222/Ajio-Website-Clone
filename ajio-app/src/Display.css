@@ -3,10 +3,12 @@
   width: 90%;
   margin: auto;
   padding-top: 40px;
+  text-decoration: none;
 }
 
 .card{
   text-align: center;
+  text-decoration: none;
 }
 
 .card img{
@@ -19,4 +21,11 @@
   font-size: 18px;
   margin-top: 10px;
   font-weight: bold;
+}
+.content{
+  color:black;
+  text-decoration: none;
+}
+content p{
+  text-decoration: none;
 }

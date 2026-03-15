@@ -1,0 +1,22 @@
+
+
+.product-details{
+    background-color:white;
+}
+.product-image{
+    position: relative;
+}
+.detail-name{
+    position:absolute;
+    left :1000px;
+    bottom:600px;
+    font-size:80px;
+    color:green;
+
+}
+.buttons{
+   width:600px;
+   margin-left:100px;
+   height:200px;
+}
+
