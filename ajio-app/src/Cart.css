@@ -1,0 +1,161 @@
+.cart-container {
+  display: flex;
+  gap: 40px;
+  width: 90%;
+  max-width: 1200px;
+  margin: 40px auto;
+  font-family: Arial, sans-serif;
+  color: #222;
+  background: #fff;
+}
+
+.cart-left {
+  flex: 2;
+}
+
+.cart-item {
+  display: flex;
+  gap: 25px;
+  padding: 20px 0;
+  border-bottom: 1px solid #ddd;
+  align-items: center;
+}
+
+.cart-image {
+  width: 200px;
+  height: 200px;
+  object-fit: contain;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  background: #f9f9f9;
+}
+
+.cart-details {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.cart-details h4 {
+  font-size: 24px;
+  font-weight: 600;
+  margin-bottom: 10px;
+  color: #111;
+}
+
+.cart-details p {
+  margin-bottom: 14px;
+  font-size: 18px;
+  color: #444;
+}
+
+.quantity-control {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.qty-btn {
+  width: 36px;
+  height: 36px;
+  border: 1px solid #ccc;
+  background-color: #f0f0f0;
+  color: #000;
+  font-size: 20px;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.qty-btn:hover {
+  background-color: #e0e0e0;
+}
+
+.remove-btn {
+  background-color: #ff3b30;
+  color: white;
+  font-size: 16px;
+  cursor: pointer;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 6px;
+  margin-top: 8px;
+}
+
+.remove-btn:hover {
+  background-color: #cc2a24;
+}
+
+.cart-right {
+  flex: 1;
+  border: 1px solid #ddd;
+  padding: 25px;
+  border-radius: 6px;
+  font-size: 18px;
+  background: #f7f7f7;
+}
+
+.cart-right h3 {
+  font-weight: 700;
+  font-size: 24px;
+  margin-bottom: 25px;
+  color: #111;
+}
+
+.summary p {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 18px;
+  font-weight: 600;
+  font-size: 20px;
+  color: #222;
+}
+
+.Order-btn {
+  width: 100%;
+  padding: 16px;
+  background-color: #ff3b30;
+  color: white;
+  font-weight: 700;
+  font-size: 18px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.Order-btn:hover {
+  background-color: #cc2a24;
+}
+
+.cart-container-empty {
+  width: 90%;
+  max-width: 650px;
+  margin: 80px auto;
+  text-align: center;
+  font-family: Arial, sans-serif;
+  color: #444;
+  background: #fff;
+  padding: 40px 25px;
+  border-radius: 6px;
+  border: 1px solid #ddd;
+}
+
+.cart-container-empty h2 {
+  font-size: 30px;
+  margin-bottom: 25px;
+  font-weight: 700;
+  color: #111;
+}
+
+.cart-container-empty p {
+  font-size: 18px;
+  margin-bottom: 15px;
+  color: #666;
+}
+
+.cart-container-empty a {
+  color: #0073e6;
+  font-size: 16px;
+  text-decoration: underline;
+}
+

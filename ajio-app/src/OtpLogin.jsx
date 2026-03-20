@@ -31,7 +31,6 @@ function OtpLogin({ setIsLoggedIn }) {
     }
 
     try {
-   
       const res = await axios.post("http://localhost:5000/verify-otp", { 
         email: email.trim(), 
         otp: otp.trim() 

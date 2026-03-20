@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import "./Productdetails.css";
 
 function Productdetails() {
   const [product, setProduct] = useState(null);
   const { id } = useParams();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -16,34 +17,75 @@ function Productdetails() {
         console.log(err);
       }
     };
-
     fetchData();
   }, [id]);
 
   if (!product) {
-    return <h1>No product details...</h1>;
+    return <h1>Loading product...</h1>;
   }
 
+ 
+const addToCart = (product) => {
+  const cart = JSON.parse(localStorage.getItem("cart")) || [];
+
+  const existing = cart.find((item) => item._id === product._id);
+
+  if (existing) {
+    existing.itemQuantity+= 1;
+  } else {
+   
+    cart.push({ ...product,itemQuantity: 1 });
+  }
+
+  localStorage.setItem("cart", JSON.stringify(cart));
+  alert("Product added to Cart!");
+};
+
   return (
-    <div className="product-details">
-      <div className="Product-image">
-      <img
-        src={`http://localhost:5000/uploads/${product.image}`}
-           width={600}
-           height={600}
-        alt={product.name}/>
-        </div>
-       <div className="detail-name">
-        <p>{product.itemName}</p>
-        <p>{product.itemQuantity}</p>
-        <p>{product.itemPrice}</p>
+    <div className="product-page">
+      <button className="close-btn" onClick={() => navigate("/home")}>
+        ✖
+      </button>
+
+      <div className="product-container">
+        <div className="product-left">
+          <img
+            src={`http://localhost:5000/uploads/${product.image}`}
+            alt={product.itemName}
+          />
         </div>
 
-        <div className="buttons">
-         <button> ORDER NOW</button>
-         <button>  ADD TO CART </button>
-         </div>
+    <div className="product-right">
+   <h2 className="title">{product.itemName}</h2>
+
+  <div className="rating">
+  ⭐⭐⭐⭐☆ <span>(120 Reviews)</span>
+   </div>
+
+   <p className="price">₹ {product.itemPrice}</p>
+
+
+   <div className="offers">
+     <h4>Available Offers</h4>
+     <ul>
+    <li>✔ 10% Instant Discount on Credit Cards</li>
+      <li>✔ Free Delivery within 3 days</li>
+      <li>✔ 7 Days Replacement Policy</li>
+     </ul>
+   </div>
+
+  <div className="description">
+     <h4>Description</h4>
+   <p>"High-quality product with durability and performance."</p>
+  </div>
+
+  <div className="buttons">
+   <button className="cart-btn" onClick={() => addToCart(product)} >ADD TO CART </button>
+   <button className="buy-btn">ORDER NOW</button>
+          </div>
+        </div>
       </div>
+    </div>
   );
 }
 

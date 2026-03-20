@@ -51,7 +51,9 @@ function Header({ isLoggedIn, setIsLoggedIn }) {
           <div className="search">
             <input type="text" placeholder="Search AJIO" />
             <img src="https://assets-jiocdn.ajio.com/static/img/wishlistIcon.svg" alt="Wishlist" />
-            <FaShoppingBag className="shopping-cart" />
+          <Link to="/Cart" className="cart-link">
+  <FaShoppingBag className="shopping-cart" />
+</Link>
           </div>
         </div>
       </div>

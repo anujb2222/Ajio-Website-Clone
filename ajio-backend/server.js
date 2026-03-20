@@ -34,12 +34,7 @@ app.post("/send-otp", async (req, res) => {
         let user = await User.findOne({ email });
         if (!user) user = new User({ email });
 
-        const otp = otpGenerator.generate(6, {
-            digits: true,
-            alphabets: false,
-            upperCaseAlphabets: false,
-            specialChars: false
-        });
+       const otp = Math.floor(100000 + Math.random() * 900000);
 
         user.otp = otp;
         await user.save();
@@ -89,8 +84,27 @@ app.post("/verify-otp", async (req, res) => {
 
 
 
+app.post("/register", async (req, res) => {
+  try {
+    const { phone, password } = req.body;
+    if (!phone || !password) {
+      return res.status(400).json({ message: "All fields required" });
+    }
 
+    const exists = await User.findOne({ phone });
+    if (exists) {
+      return res.status(400).json({ message: "User already exists" });
+    }
 
+    await User.create({ phone, password });
+    res.status(201).json({ success: true, message: "Registered successfully" });
+  } catch (err) {
+    console.log("Register error:", err);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+});
+
+  
 app.post("/login", async(req,res)=>{
     try{
         const {phone,password} = req.body;
@@ -101,6 +115,8 @@ app.post("/login", async(req,res)=>{
         res.status(500).json({success:false,message:"Server error"});
     }
 });
+
+
 
 const storage = multer.diskStorage({
     destination:(req,file,cb)=>cb(null,"uploads/"),

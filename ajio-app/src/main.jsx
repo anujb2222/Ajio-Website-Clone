@@ -6,7 +6,8 @@ import App from "./App";
 import Additem from "./Additem";
 import ViewItems from "./ViewItems";
 import Productdetails  from "./Productdetails";
-
+import Cart from "./Cart"; 
+// import Order from "./Order";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <BrowserRouter>
@@ -17,13 +18,12 @@ ReactDOM.createRoot(document.getElementById("root")).render(
      <Route path="/updateitem/:id" element={<Additem/>} />
            <Route path="/*" element={<App />}/>
             <Route path="/viewitems/:id" element={<ViewItems />} />
-            <Route path ="/Productdetails/:id" element={<Productdetails/>}/>
+            <Route path ="/Productdetails/:id" element={<Productdetails/>}/> 
+           <Route path="/cart" element={<Cart/>}/>
+            {/* <Route path="/Order" element={<ORDER NOW/>}/> */}
+          
          
-            
-
-     
-
-
+    
     </Routes>
 
   </BrowserRouter>
