@@ -1,16 +1,21 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react"; 
 import { Routes, Route } from "react-router-dom";
 import Home from "./Home";
 import Header from "./Header";
 import Footer from "./Footer";
 import SignIn from "./Signin";
 import Register from "./register";
-import AdminLogin from "./adminLogin";
+import AdminLogin from "./AdminLogin";
 import Display from "./Display";
 import OtpLogin from "./OtpLogin";
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  useEffect(() => {
+    const userId = localStorage.getItem("userId");
+    if (userId) setIsLoggedIn(true);
+  }, []);
 
   return (
     <>
@@ -31,6 +36,6 @@ function App() {
       <Footer />
     </>
   );
-}  
+}
 
 export default App;
