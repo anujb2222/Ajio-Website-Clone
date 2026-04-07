@@ -6,8 +6,9 @@ import "./Header.css";
 function Header({ isLoggedIn, setIsLoggedIn }) {
 
   const handleLogout = () => {
-    setIsLoggedIn(false);
-  };
+  localStorage.removeItem("userId");
+  setIsLoggedIn(false);              
+};
 
   return (
     <div className="header">

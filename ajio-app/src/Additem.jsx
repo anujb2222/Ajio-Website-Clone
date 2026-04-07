@@ -11,22 +11,20 @@ function ProductForm() {
   const [itemName, setItemName] = useState("");
   const [itemQuantity, setItemQuantity] = useState("");
   const [itemPrice, setItemPrice] = useState("");
+  const [category, setCategory] = useState(""); 
   const [image, setImage] = useState(null);
 
   useEffect(() => {
-
     if (id) {
       axios.get(`http://localhost:5000/product/${id}`)
-      .then(res => {
-        setItemName(res.data.itemName);
-        setItemQuantity(res.data.itemQuantity);
-        setItemPrice(res.data.itemPrice);
-      });
+        .then(res => {
+          setItemName(res.data.itemName);
+          setItemQuantity(res.data.itemQuantity);
+          setItemPrice(res.data.itemPrice);
+          setCategory(res.data.category); 
+        });
     }
-
   }, [id]);
-
-
 
   const handleSubmit = async () => {
 
@@ -35,6 +33,7 @@ function ProductForm() {
     data.append("itemName", itemName);
     data.append("itemQuantity", itemQuantity);
     data.append("itemPrice", itemPrice);
+    data.append("category", category); 
 
     if (image) {
       data.append("image", image);
@@ -43,76 +42,76 @@ function ProductForm() {
     try {
 
       if (id) {
-
         await axios.put(
           `http://localhost:5000/updateitem/${id}`,
           data
         );
-
         alert("Item Updated");
-
       } else {
-
         await axios.post(
           "http://localhost:5000/additem",
           data
         );
-
         alert("Item Added");
-
       }
 
       navigate("/admin");
 
     } catch (error) {
-
       console.log(error);
-
     }
-
   };
 
+  return (
+    <div className="additem-box">
 
+      <span className="x-mark" onClick={() => navigate("/admin")}>X</span>
 
-return (
-  <div className="additem-box">
+      <h2>{id ? "Update Item" : "Add Item"}</h2>
 
-        <span className="x-mark" onClick={() => navigate("/admin")}>X</span>
+      <input
+        type="text"
+        placeholder="Item Name"
+        value={itemName}
+        onChange={(e) => setItemName(e.target.value)}
+      />
 
-    <h2>{id ? "Update Item" : "Add Item"}</h2>
+      <input
+        type="number"
+        placeholder="Quantity"
+        value={itemQuantity}
+        onChange={(e) => setItemQuantity(e.target.value)}
+      />
 
-    <input
-      type="text"
-      placeholder="Item Name"
-      value={itemName}
-      onChange={(e) => setItemName(e.target.value)}
-    />
+      <input
+        type="number"
+        placeholder="Price"
+        value={itemPrice}
+        onChange={(e) => setItemPrice(e.target.value)}
+      />
+      
+      <select
+        value={category}
+        onChange={(e) => setCategory(e.target.value)}
+      >
+        <option value="">Select Category</option>
+        <option value="Electronics">Electronics</option>
+        <option value="Clothing">Clothing</option>
+        <option value="Food">Food</option>
+        <option value="Other">Other</option>
+      </select>
 
-    <input
-      type="number"
-      placeholder="Quantity"
-      value={itemQuantity}
-      onChange={(e) => setItemQuantity(e.target.value)}
-    />
+      <input
+        type="file"
+        onChange={(e) => setImage(e.target.files[0])}
+      />
 
-    <input
-      type="number"
-      placeholder="Price"
-      value={itemPrice}
-      onChange={(e) => setItemPrice(e.target.value)}
-    />
+      <button onClick={handleSubmit}>
+        {id ? "Update Item" : "Add Item"}
+      </button>
 
-    <input
-      type="file"
-      onChange={(e) => setImage(e.target.files[0])}
-    />
-
-    <button onClick={handleSubmit}>
-      {id ? "Update Item" : "Add Item"}
-    </button>
-
-  </div>
-);
+    </div>
+  );
 }
 
 export default ProductForm;

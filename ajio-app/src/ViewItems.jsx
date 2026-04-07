@@ -14,52 +14,71 @@ function ViewItems() {
       .catch(err => console.log(err));
   }, [id]);
 
-  if (!product) return <p>NO PRODUCT</p>;
+  if (!product) {
+    return (
+      <p style={{ textAlign: "center", marginTop: "120px", fontSize: "22px" }}>
+        No Product Found
+      </p>
+    );
+  }
 
   return (
-    <div 
+    <div
       style={{
         display: "flex",
-        marginTop: "80px",
         justifyContent: "center",
         alignItems: "center",
+        minHeight: "100vh",
+        backgroundColor: "#f4f6f8"
       }}
     >
-      <div 
+      <div
         style={{
           position: "relative",
-          textAlign: "center",
-          padding: "90px",
-          border: "1px solid black",
-          borderRadius: "10px",
+          width: "500px",
+          padding: "40px",
+          borderRadius: "16px",
+          backgroundColor: "#fff",
+          textAlign: "center"
         }}
       >
-      
-        <span 
-          onClick={() => navigate("/Admin")} 
-          style={{ 
-            position: "absolute", 
-            top: "10px", 
-            right: "10px", 
-            cursor: "pointer", 
-            fontWeight: "bold",
-            fontSize: "20px"
-          }}
-        >
-          X
+        <span
+          onClick={() => navigate("/Admin")}
+          style={{
+            position: "absolute",
+            top: "15px",
+            fontSize: "45px",
+            right: "20px",
+            cursor: "pointer",
+            color: "black"
+          }}>
+          ×
         </span>
 
-       <h2 style={{ fontWeight: "bold" }}>{product.itemName}</h2>
-        <p>Quantity: {product.itemQuantity}</p>
-        <p>Price: ₹{product.itemPrice}</p>
+        <h2 style={{ marginBottom: "20px", fontSize: "35px" }}>
+          {product.itemName}
+        </h2>
         {product.image && (
-          <img 
-            src={`http://localhost:5000/uploads/${product.image}`} 
-            alt={product.itemName} 
-            width={200} 
-            style={{ marginTop: "10px", borderRadius: "8px" }}
+          <img
+            src={`http://localhost:5000/uploads/${product.image}`}
+            alt={product.itemName}
+            style={{
+              width: "100%",
+              maxHeight: "350px",
+              objectFit: "contain",  
+              borderRadius: "12px",
+              marginBottom: "20px",
+            
+            }}
           />
         )}
+        <p style={{ margin: "12px ", fontSize: "24px" }}>
+          <strong>Quantity:</strong> {product.itemQuantity}
+        </p>
+
+        <p style={{ margin: "12px ", fontSize: "24px" }}>
+          <strong>Price:</strong> ₹{product.itemPrice}
+        </p>
       </div>
     </div>
   );

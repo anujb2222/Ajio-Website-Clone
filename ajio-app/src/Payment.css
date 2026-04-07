@@ -1,0 +1,72 @@
+.payment-container {
+  width: 80%;
+  margin: 20px auto;
+  font-family: Arial, sans-serif;
+}
+
+.payment-box {
+  display: flex;
+  border: 1px solid white;
+  background: #f9f9f9;
+}
+.payment-container h2{
+  font-size: 40px;
+  background-color:antiquewhite;
+
+
+}
+
+.payment-left {
+  width: 25%;
+  border-right: 1px solid #ddd;
+}
+
+.payment-left div {
+  padding: 15px;
+  cursor: pointer;
+}
+
+.payment-left div:hover {
+  background: #eee;
+}
+
+.payment-left .active {
+  background: #e6e6e6;
+  font-weight: bold;
+}
+
+
+.payment-right {
+  width: 75%;
+  padding: 40px;
+}
+
+.payment-right input,
+.payment-right select {
+  width: 100%;
+  padding: 8px;
+  margin: 8px 15px;
+  border: 1px solid  grey;
+}
+
+.row {
+display:flex;
+  gap: 10px;
+}
+
+.row div {
+  flex: 1;
+}
+
+.pay-btn {
+  background: #b08b4f;
+  color:black;
+  border: none;
+  padding: 12px;
+  width: 250px;
+  cursor: pointer;
+  margin-top: 10px;
+}
+.payment-container h2{
+font-family: fantasy;
+}

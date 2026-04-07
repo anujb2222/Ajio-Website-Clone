@@ -4,10 +4,9 @@ import axios from "axios";
 import "./Signin.css";
 
 function OtpLogin({ setIsLoggedIn }) {
-  const [email, setEmail] = useState("");  
-  const [otp, setOtp] = useState("");      
+  const [email, setEmail] = useState("");
+  const [otp, setOtp] = useState("");
   const navigate = useNavigate();
-
 
   const sendOtp = async () => {
     if (!email) {
@@ -17,10 +16,9 @@ function OtpLogin({ setIsLoggedIn }) {
 
     try {
       const res = await axios.post("http://localhost:5000/send-otp", { email: email.trim() });
-      alert(res.data.message); 
+      alert(res.data.message);
     } catch (err) {
       alert("Error sending OTP");
-      console.error("Send OTP error:", err);
     }
   };
 
@@ -31,21 +29,17 @@ function OtpLogin({ setIsLoggedIn }) {
     }
 
     try {
-      const res = await axios.post("http://localhost:5000/verify-otp", { 
-        email: email.trim(), 
-        otp: otp.trim() 
-      });
-
+      const res = await axios.post("http://localhost:5000/verify-otp", { email: email.trim(), otp: otp.trim() });
       if (res.data.success) {
-        setIsLoggedIn(true);      
+        localStorage.setItem("userId", res.data.userId); 
+        setIsLoggedIn(true);
         alert("Login successful");
-        navigate("/");             
+        navigate("/");
       } else {
-        alert(res.data.message);   
+        alert(res.data.message);
       }
     } catch (err) {
       alert("Invalid OTP");
-      console.error("Verify OTP error:", err);
     }
   };
 

@@ -19,21 +19,17 @@ function SignIn({ setIsLoggedIn }) {
     }
 
     try {
-      const response = await axios.post("http://localhost:5000/login", {
-        phone,
-        password,
-      });
-
+      const response = await axios.post("http://localhost:5000/login", { phone, password });
       if (response.data.success) {
-        setIsLoggedIn(true); 
+        localStorage.setItem("userId", response.data.userId); 
+        setIsLoggedIn(true);
         alert("Login successful");
-        navigate("/"); 
-        
+        navigate("/");
       } else {
-        alert(response.data.message); 
+        alert(response.data.message);
       }
     } catch (error) {
-      alert("invalid phone number and password");
+      alert("Invalid phone number or password");
     }
   };
 
@@ -60,20 +56,16 @@ function SignIn({ setIsLoggedIn }) {
         />
 
         <button onClick={handleLogin}>LOGIN</button>
-      
-        <button onClick={() => navigate("/register")} style={{ marginTop: "10px" }}>
-          REGISTER
-        </button>
-
-
+        <button onClick={() => navigate("/register")} style={{ marginTop: "10px" }}>REGISTER</button>
 
         <p className="terms">
           By Signing In, I agree to <a href="#">Terms & Conditions</a> and <a href="#">Privacy Policy</a>
         </p>
 
-<p className="terms">
-  Click here to login <a href="/otp-login">using OTP</a>
-</p> </div>
+        <p className="terms">
+          Click here to login <a href="/otp-login">using OTP</a>
+        </p>
+      </div>
     </div>
   );
 }

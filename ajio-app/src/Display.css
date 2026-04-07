@@ -1,13 +1,22 @@
-.products {
+.scroll-container {
   width: 95%;
-  margin:5px;
+  margin: 5px;
+  overflow: hidden;
+  position: relative;
+}
+
+.products-grid {
+  display: flex;
+  gap: 20px;
+  width: max-content;
+  animation: scroll-left 20s linear infinite;
 }
 
 .card {
+  flex: 0 0 250px;
   background: #fff;
   border-radius: 12px;
   padding: 20px;
-  margin: 10px;
   text-align: center;
 }
 
@@ -15,27 +24,32 @@
   width: 100%;
   height: 220px;
   border-radius: 10px;
-  background: #f5f5f5;
-}
-
-.content {
-  margin-top: 12px;
 }
 
 .content p {
-  margin: 6px 0;
+  margin: 6px;
   font-size: 16px;
   color: #333;
 }
 
 .card:hover {
   transform: translateY(-8px);
+  transition: 0.3s;
+}
+
+.products-grid:hover {
+  animation-play-state: paused;
 }
 
 a {
   text-decoration: none;
 }
 
-.slick-slide {
-  padding:8px;
+@keyframes scroll-left {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
 }
