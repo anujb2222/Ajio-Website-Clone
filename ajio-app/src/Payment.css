@@ -26,12 +26,8 @@
   cursor: pointer;
 }
 
-.payment-left div:hover {
-  background: #eee;
-}
-
 .payment-left .active {
-  background: #e6e6e6;
+  background:palegreen;
   font-weight: bold;
 }
 
@@ -63,10 +59,21 @@ display:flex;
   color:black;
   border: none;
   padding: 12px;
-  width: 250px;
+  width: 300px;
   cursor: pointer;
   margin-top: 10px;
 }
 .payment-container h2{
 font-family: fantasy;
+}
+.footer-bottom-payment{
+  width: 850px;
+}
+.active{
+  font-family:  Verdana;
+  font-size: 20px;
+}
+.pay-btn:hover {
+  transform: translateY(-4px);
+  background-color:red;
 }

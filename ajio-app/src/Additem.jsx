@@ -97,7 +97,7 @@ function ProductForm() {
         <option value="">Select Category</option>
         <option value="Electronics">Electronics</option>
         <option value="Clothing">Clothing</option>
-        <option value="Food">Food</option>
+        <option value="home and kitchen">home and kitchen</option>
         <option value="Other">Other</option>
       </select>
 

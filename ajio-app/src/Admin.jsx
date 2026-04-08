@@ -49,15 +49,15 @@ function Admin() {
             <option value="">All Categories</option>
             <option value="Electronics">Electronics</option>
             <option value="Clothing">Clothing</option>
-            <option value="Food">Food</option>
-            <option value="Other">Other</option>
+            <option value="home and kitchen">home and kitchen</option>
+            <option value="Other">Other</option> 
           </select>
         </div>
 
         <table className="product-table">
           <thead>
             <tr>
-              <th>Name</th>
+              <th>Name</th> 
               <th>Category</th>
               <th>View</th>
               <th>Delete</th>

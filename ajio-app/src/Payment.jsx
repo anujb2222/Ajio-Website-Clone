@@ -95,8 +95,8 @@ function Payment() {
       amount: order.amount,
       currency: "INR",
       order_id: order.id,
-      name: "AJIO",
-      theme: { color: "blue" },
+      name: "AJIO ",
+  color: '#F37254',
 
    
       handler: async function (response) {
@@ -140,17 +140,28 @@ function Payment() {
           >
             Credit / Debit Card
           </div>
-          <div onClick={() => setMethod("cod")}>Cash on Delivery</div>
+
+          <div  
+            className={method === "cod" ? "active" : ""}
+          onClick={() => setMethod("cod")}>Cash on Delivery</div>
         </div>
 
         <div className="payment-right">
           <button className="pay-btn" onClick={handlePayment}>
-            {method === "card" ? "Pay" : "Place Order"} ₹{total}
+            {method === "card" ? "PAY-ONLINE" : "PAY-COD"} ₹{total}
           </button>
+          
+     <div className="footer-bottom-payment">
+  <img
+    src="images/footer-screenshot.png"
+    alt="footer-screenshot"
+    className="footer-screenshot"
+  />
+</div>
         </div>
       </div>
     </div>
   );
 }
 
-export default Payment;
+export default Payment; 
