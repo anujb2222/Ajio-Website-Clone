@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
 import "./AdminLogin.css";
 
 function AdminLogin() {
@@ -8,24 +7,13 @@ function AdminLogin() {
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
 
-  const API_URL = "https://ajio-website-clone-1.onrender.com"; // Live backend URL
 
-  const handleLogin = async () => {
-    try {
-      const response = await axios.post(`${API_URL}/login`, {
-        phone,
-        password,
-      });
-
-      if (response.data.success) {
-        alert("Login Successful");
-        navigate("/admin");  // Navigate to Admin panel
-      } else {
-        alert("Invalid Phone or Password");
-      }
-    } catch (error) {
-      console.log(error);
-      alert("Something went wrong. Please try again.");
+  const handleLogin = () => {
+    if (phone === "1234567890" && password === "1234") {
+      alert("Login Successful");
+      navigate("/admin");
+    } else {
+      alert("Invalid Phone or Password");
     }
   };
 
