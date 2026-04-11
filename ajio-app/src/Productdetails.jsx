@@ -8,12 +8,12 @@ function Productdetails() {
   const { id } = useParams();
   const navigate = useNavigate();
 
+  const API_URL = "https://ajio-website-clone-1.onrender.com"; // Live backend URL
+
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await axios.get(
-          `http://localhost:5000/product/${id}`
-        );
+        const res = await axios.get(`${API_URL}/product/${id}`);  // Updated to live URL
         setProduct(res.data);
       } catch (err) {
         console.log(err);
@@ -49,13 +49,11 @@ function Productdetails() {
 
   return (
     <div className="product-page">
-
       <div className="product-container">
-
         {/* LEFT IMAGE */}
         <div className="product-left">
           <img
-            src={`http://localhost:5000/uploads/${product.image}`}
+            src={`${API_URL}/uploads/${product.image}`}  // Updated to live URL
             alt={product.itemName}
           />
         </div>
@@ -94,10 +92,13 @@ function Productdetails() {
               ADD TO CART
             </button>
 
-            <button className="buy-btn">ORDER NOW</button>
-<button className="go-home-btn" onClick={() => navigate("/home")}>
-  ← Home
-</button>
+            <button className="buy-btn">
+              ORDER NOW
+            </button>
+
+            <button className="go-home-btn" onClick={() => navigate("/home")}>
+              ← Home
+            </button>
           </div>
         </div>
       </div>

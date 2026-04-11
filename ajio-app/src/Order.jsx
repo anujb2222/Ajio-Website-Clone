@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";  // Use axios for API calls
 import "./Order.css";
 
 function Order() {
@@ -12,18 +13,30 @@ function Order() {
   });
 
   const navigate = useNavigate();
+  const API_URL = "https://ajio-website-clone-1.onrender.com";  // Live backend URL
 
   const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!form.firstName || !form.lastName || !form.address1 || !form.state) {
       alert("Please fill all required fields");
       return;
     }
 
-   
+    // Optional: Send shipping details to backend (if you want to store them)
+    try {
+      await axios.post(`${API_URL}/save-shipping-details`, form);  // API call to save shipping details
+    } catch (err) {
+      console.error("Error saving shipping details:", err);
+      alert("Error while saving shipping details. Please try again.");
+      return;
+    }
+
+    // Save details in localStorage if not stored in DB
     localStorage.setItem("shippingDetails", JSON.stringify(form));
+
+    // Proceed to the Payment page
     navigate("/Payment");
   };
 

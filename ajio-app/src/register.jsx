@@ -9,6 +9,8 @@ function Register() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const navigate = useNavigate();
 
+  const API_URL = "https://ajio-website-clone-1.onrender.com"; // Live backend URL
+
   const handleRegister = async () => {
     if (!phone || !password || !confirmPassword) {
       alert("All fields are required");
@@ -21,7 +23,7 @@ function Register() {
     }
 
     try {
-      const res = await axios.post("http://localhost:5000/register", {
+      const res = await axios.post(`${API_URL}/register`, {  // Updated to live URL
         phone,
         password,
       });

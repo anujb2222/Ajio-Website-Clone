@@ -8,6 +8,8 @@ function SignIn({ setIsLoggedIn }) {
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
 
+  const API_URL = "https://ajio-website-clone-1.onrender.com";  // Live backend URL
+
   const handleLogin = async () => {
     if (!phone) {
       alert("Enter phone number");
@@ -19,7 +21,7 @@ function SignIn({ setIsLoggedIn }) {
     }
 
     try {
-      const response = await axios.post("http://localhost:5000/login", { phone, password });
+      const response = await axios.post(`${API_URL}/login`, { phone, password });  // Updated to live URL
       if (response.data.success) {
         localStorage.setItem("userId", response.data.userId); 
         setIsLoggedIn(true);

@@ -7,9 +7,11 @@ function ViewItems() {
   const navigate = useNavigate();
   const [product, setProduct] = useState(null);
 
+  const API_URL = "https://ajio-website-clone-1.onrender.com"; // Live backend URL
+
   useEffect(() => {
     axios
-      .get(`http://localhost:5000/product/${id}`)
+      .get(`${API_URL}/product/${id}`)  // Updated to live URL
       .then(res => setProduct(res.data))
       .catch(err => console.log(err));
   }, [id]);
@@ -60,7 +62,7 @@ function ViewItems() {
         </h2>
         {product.image && (
           <img
-            src={`http://localhost:5000/uploads/${product.image}`}
+            src={`${API_URL}/uploads/${product.image}`}  // Updated to live URL
             alt={product.itemName}
             style={{
               width: "100%",

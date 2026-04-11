@@ -12,14 +12,15 @@ function Cart() {
 
   const userId = localStorage.getItem("userId");
 
+  const API_URL = "https://ajio-website-clone-1.onrender.com";  // Live backend URL
+
   useEffect(() => {
     setCartItems(getCart());
   }, []);
 
-
   const getDeliveryDate = () => {
     const date = new Date();
-    date.setDate(date.getDate() + 5); 
+    date.setDate(date.getDate() + 5);
     return date.toDateString();
   };
 
@@ -29,9 +30,7 @@ function Cart() {
       return;
     }
     try {
-      const res = await fetch(
-        `http://localhost:5000/user-orders/${userId}`
-      );
+      const res = await fetch(`${API_URL}/user-orders/${userId}`);
       const data = await res.json();
       setOrders(data);
     } catch (err) {
@@ -102,7 +101,7 @@ function Cart() {
                   {cartItems.map((item) => (
                     <div key={item._id} className="cart-item">
                       <img
-                        src={`http://localhost:5000/uploads/${item.image}`}
+                        src={`${API_URL}/uploads/${item.image}`}  // Updated to live backend URL
                         alt={item.itemName}
                         className="cart-image"
                       />
@@ -189,63 +188,59 @@ function Cart() {
           </>
         )}
 
- {view === "orders" && (
-  <div className="orders-table-container">
-    <h2>My Orders</h2>
+        {view === "orders" && (
+          <div className="orders-table-container">
+            <h2>My Orders</h2>
 
-    {orders.length === 0 ? (
-      <p>You have no orders yet.</p>
-    ) : (
-      orders.map((order) => (
-        <div key={order._id} className="order-card">
-          
-          <div className="order-header">
-            <p>ITEM</p>
-            <span>Total: ₹{order.totalPrice}</span>
-          </div>
+            {orders.length === 0 ? (
+              <p>You have no orders yet.</p>
+            ) : (
+              orders.map((order) => (
+                <div key={order._id} className="order-card">
+                  <div className="order-header">
+                    <p>ITEM</p>
+                    <span>Total: ₹{order.totalPrice}</span>
+                  </div>
 
-          <div className="order-items">
-            {order.items.map((item, index) => (
-              <div key={index} className="order-item">
+                  <div className="order-items">
+                    {order.items.map((item, index) => (
+                      <div key={index} className="order-item">
+                        <img
+                          src={`${API_URL}/uploads/${item.productId.image}`}  // Updated to live backend URL
+                          alt={item.productId.itemName}
+                          className="order-item-img"
+                        />
 
-                <img
-                  src={`http://localhost:5000/uploads/${item.productId.image}`}
-                  alt={item.productId.itemName}
-                  className="order-item-img"
-                />
+                        <div className="order-item-info">
+                          <span className="order-item-name">
+                            Item-ordered: {item.productId.itemName}
+                          </span>
 
-                <div className="order-item-info">
-                  <span className="order-item-name">
-                    Item-ordered: {item.productId.itemName}
-                  </span>
+                          <span className="order-item-price">
+                            ₹{item.productId.itemPrice}
+                          </span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
 
-                  <span className="order-item-price">
-                    ₹{item.productId.itemPrice}
-                  </span>
+                  <div className="payment-method">
+                    Payment-mode: {order.paymentMethod}
+                  </div>
+
+                  <div className="order-status">
+                    Order-status: {order.status}
+                  </div>
+
+                  <div className="order-date">
+                    Order Date:{" "}
+                    {new Date(order.createdAt).toLocaleDateString()}
+                  </div>
                 </div>
-
-              </div>
-            ))}
+              ))
+            )}
           </div>
-
-          <div className="payment-method">
-            Payment-mode: {order.paymentMethod}
-          </div>
-
-          <div className="order-status">
-            Order-status: {order.status}
-          </div>
-
-          <div className="order-date">
-            Order Date:{" "}
-            {new Date(order.createdAt).toLocaleDateString()}
-          </div>
-
-        </div>
-      ))
-    )}
-  </div>
-)}
+        )}
       </div>
     </div>
   );

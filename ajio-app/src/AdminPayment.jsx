@@ -5,10 +5,13 @@ import axios from "axios";
 function Payments() {
   const [orders, setOrders] = useState([]);
 
+  const API_URL = "https://ajio-website-clone-1.onrender.com"; // Live backend URL
+
   useEffect(() => {
-    axios.get("http://localhost:5000/orders")
-      .then(res => setOrders(res.data))
-      .catch(err => console.log(err));
+    axios
+      .get(`${API_URL}/orders`)  // Updated with live backend URL
+      .then((res) => setOrders(res.data))
+      .catch((err) => console.log(err));
   }, []);
 
   return (
@@ -29,8 +32,8 @@ function Payments() {
 
         <tbody>
           {orders
-            .filter(order => order.paymentMethod === "online")
-            .map(order => (
+            .filter((order) => order.paymentMethod === "online")
+            .map((order) => (
               <tr key={order._id}>
                 <td>{order.razorpayPaymentId || "N/A"}</td>
                 <td>{order.razorpayOrderId}</td>
@@ -41,9 +44,7 @@ function Payments() {
                   {order.paymentStatus === "paid" ? "🟢 Paid" : "🟡 Pending"}
                 </td>
 
-                <td>
-                  {new Date(order.createdAt).toLocaleDateString()}
-                </td>
+                <td>{new Date(order.createdAt).toLocaleDateString()}</td>
               </tr>
             ))}
         </tbody>

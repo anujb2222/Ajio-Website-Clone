@@ -8,6 +8,8 @@ function OtpLogin({ setIsLoggedIn }) {
   const [otp, setOtp] = useState("");
   const navigate = useNavigate();
 
+  const API_URL = "https://ajio-website-clone-1.onrender.com"; // Live backend URL
+
   const sendOtp = async () => {
     if (!email) {
       alert("Please enter your email");
@@ -15,7 +17,7 @@ function OtpLogin({ setIsLoggedIn }) {
     }
 
     try {
-      const res = await axios.post("http://localhost:5000/send-otp", { email: email.trim() });
+      const res = await axios.post(`${API_URL}/send-otp`, { email: email.trim() });  // Updated to live URL
       alert(res.data.message);
     } catch (err) {
       alert("Error sending OTP");
@@ -29,10 +31,10 @@ function OtpLogin({ setIsLoggedIn }) {
     }
 
     try {
-      const res = await axios.post("http://localhost:5000/verify-otp", { email: email.trim(), otp: otp.trim() });
+      const res = await axios.post(`${API_URL}/verify-otp`, { email: email.trim(), otp: otp.trim() });  // Updated to live URL
       if (res.data.success) {
-        localStorage.setItem("userId", res.data.userId); 
-        localStorage.setItem("email",email)
+        localStorage.setItem("userId", res.data.userId);
+        localStorage.setItem("email", email);
         setIsLoggedIn(true);
         alert("Login successful");
         navigate("/");

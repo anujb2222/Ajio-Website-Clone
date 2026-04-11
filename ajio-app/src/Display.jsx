@@ -6,11 +6,13 @@ import "./Display.css";
 function Display() {
   const [productsList, setProductsList] = useState([]);
 
+  const API_URL = "https://ajio-website-clone-1.onrender.com"; // Live backend URL
+
   useEffect(() => {
     axios
-      .get("http://localhost:5000/products")
-      .then(res => setProductsList(res.data))
-      .catch(err => console.log("Error:", err));
+      .get(`${API_URL}/products`)  // Updated to use live backend URL
+      .then((res) => setProductsList(res.data))
+      .catch((err) => console.log("Error:", err));
   }, []);
 
   return (
@@ -23,7 +25,7 @@ function Display() {
             className="card"
           >
             <img
-              src={`http://localhost:5000/uploads/${item.image}`}
+              src={`${API_URL}/uploads/${item.image}`}  // Updated to live backend URL
               alt={item.itemName}
             />
             <div className="content">

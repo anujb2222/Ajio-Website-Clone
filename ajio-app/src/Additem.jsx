@@ -14,9 +14,11 @@ function ProductForm() {
   const [category, setCategory] = useState(""); 
   const [image, setImage] = useState(null);
 
+  const API_URL = "https://ajio-website-clone-1.onrender.com";  
+
   useEffect(() => {
     if (id) {
-      axios.get(`http://localhost:5000/product/${id}`)
+      axios.get(`${API_URL}/product/${id}`)  
         .then(res => {
           setItemName(res.data.itemName);
           setItemQuantity(res.data.itemQuantity);
@@ -43,13 +45,13 @@ function ProductForm() {
 
       if (id) {
         await axios.put(
-          `http://localhost:5000/updateitem/${id}`,
+          `${API_URL}/updateitem/${id}`,  
           data
         );
         alert("Item Updated");
       } else {
         await axios.post(
-          "http://localhost:5000/additem",
+          `${API_URL}/additem`, 
           data
         );
         alert("Item Added");
@@ -97,7 +99,7 @@ function ProductForm() {
         <option value="">Select Category</option>
         <option value="Electronics">Electronics</option>
         <option value="Clothing">Clothing</option>
-        <option value="home and kitchen">home and kitchen</option>
+        <option value="home and kitchen">Home and Kitchen</option>
         <option value="Other">Other</option>
       </select>
 

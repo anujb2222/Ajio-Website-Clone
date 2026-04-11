@@ -4,10 +4,11 @@ import "./AdminOrders.css";
 function AdminOrders() {
   const [orders, setOrders] = useState([]);
 
- 
+  const API_URL = "https://ajio-website-clone-1.onrender.com";  // Live backend URL
+
   const fetchOrders = async () => {
     try {
-      const res = await fetch("http://localhost:5000/orders");
+      const res = await fetch(`${API_URL}/orders`);  // Use live URL
       const data = await res.json();
       setOrders(data);
     } catch (err) {
@@ -19,11 +20,10 @@ function AdminOrders() {
     fetchOrders();
   }, []);
 
-
   const updateStatus = async (orderId, status) => {
     try {
       const res = await fetch(
-        `http://localhost:5000/update-order-status/${orderId}`,
+        `${API_URL}/update-order-status/${orderId}`,  // Use live URL
         {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
@@ -57,38 +57,42 @@ function AdminOrders() {
           </thead>
           <tbody>
             {orders.map((order) => (
-     <tr key={order._id}>
-       <td>{order._id}</td>
-       <td> {order.shipping?.name}</td>
-      <td>{order.shipping?.address},{order.shipping?.state}</td>
-      <td>₹{order.totalPrice}</td>
-       <td>{order.paymentMethod}</td>
-       <td>
-     {order.items.map((item, index) => (
-      <div key={index} className="product-item">
-     {item.productId ? (
-      <>
-      <img src={`http://localhost:5000/uploads/${item.productId.image}`}
-              alt={item.productId.itemName}
-               width="50"
-               />
-      <div>
-     <p>{item.productId.itemName}</p>
-     <p>Qty: {item.quantity}</p>
-       </div>
-       </>
-     ) : (
-      <div>
- <p>{item.itemName || "Product removed"}</p>
-     <p>Qty: {item.quantity}</p>
-    </div> )}
-    </div>
-  ))}
-   </td>
-    <td>
-     <select
-       value={order.status}
-      onChange={(e) => updateStatus(order._id, e.target.value)}
+              <tr key={order._id}>
+                <td>{order._id}</td>
+                <td>{order.shipping?.name}</td>
+                <td>
+                  {order.shipping?.address}, {order.shipping?.state}
+                </td>
+                <td>₹{order.totalPrice}</td>
+                <td>{order.paymentMethod}</td>
+                <td>
+                  {order.items.map((item, index) => (
+                    <div key={index} className="product-item">
+                      {item.productId ? (
+                        <>
+                          <img
+                            src={`${API_URL}/uploads/${item.productId.image}`}  // Live image URL
+                            alt={item.productId.itemName}
+                            width="50"
+                          />
+                          <div>
+                            <p>{item.productId.itemName}</p>
+                            <p>Qty: {item.quantity}</p>
+                          </div>
+                        </>
+                      ) : (
+                        <div>
+                          <p>{item.itemName || "Product removed"}</p>
+                          <p>Qty: {item.quantity}</p>
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </td>
+                <td>
+                  <select
+                    value={order.status}
+                    onChange={(e) => updateStatus(order._id, e.target.value)}
                   >
                     <option value="Pending">Pending</option>
                     <option value="Processing">Processing</option>

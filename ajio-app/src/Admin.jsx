@@ -8,9 +8,11 @@ function Admin() {
   const [products, setProducts] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState(""); 
 
+  const API_URL = "https://ajio-website-clone-1.onrender.com"; // Live backend URL
+
   useEffect(() => {
     axios
-      .get("http://localhost:5000/products")
+      .get(`${API_URL}/products`) // Update with live backend URL
       .then((res) => setProducts(res.data))
       .catch((err) => console.log(err));
   }, []);
@@ -18,7 +20,7 @@ function Admin() {
   const deleteProduct = (id) => {
     if (!window.confirm("Delete the product")) return;
     axios
-      .delete(`http://localhost:5000/product/${id}`)
+      .delete(`${API_URL}/product/${id}`) // Update with live backend URL
       .then(() => setProducts(products.filter((p) => p._id !== id)))
       .catch((err) => console.log(err));
   };
@@ -30,17 +32,16 @@ function Admin() {
         <ul>
           <li>Products</li>
           <li onClick={() => navigate("/additem")}>Add Item</li>
-            <li onClick={() => navigate("/admin/orders")}>Orders</li>
-            <li onClick={() => navigate("/admin/users")}>Users</li>
+          <li onClick={() => navigate("/admin/orders")}>Orders</li>
+          <li onClick={() => navigate("/admin/users")}>Users</li>
           <li onClick={() => navigate("/admin/payments")}>Payments</li>
-            <li onClick={() => navigate("/Home")}>Go TO home</li>
+          <li onClick={() => navigate("/Home")}>Go TO home</li>
         </ul>
       </div>
 
       <div className="main-content">
         <div className="navbar"></div>
 
-     
         <div style={{ marginBottom: "15px" }}>
           <select
             value={selectedCategory}
@@ -49,15 +50,15 @@ function Admin() {
             <option value="">All Categories</option>
             <option value="Electronics">Electronics</option>
             <option value="Clothing">Clothing</option>
-            <option value="home and kitchen">home and kitchen</option>
-            <option value="Other">Other</option> 
+            <option value="home and kitchen">Home and Kitchen</option>
+            <option value="Other">Other</option>
           </select>
         </div>
 
         <table className="product-table">
           <thead>
             <tr>
-              <th>Name</th> 
+              <th>Name</th>
               <th>Category</th>
               <th>View</th>
               <th>Delete</th>
@@ -73,9 +74,7 @@ function Admin() {
             ) : (
               products
                 .filter((item) =>
-                  selectedCategory
-                    ? item.category === selectedCategory
-                    : true
+                  selectedCategory ? item.category === selectedCategory : true
                 )
                 .map((item) => (
                   <tr key={item._id}>
@@ -85,9 +84,7 @@ function Admin() {
                     <td>
                       <button
                         className="click-button"
-                        onClick={() =>
-                          navigate(`/viewitems/${item._id}`)
-                        }
+                        onClick={() => navigate(`/viewitems/${item._id}`)}
                       >
                         View
                       </button>
@@ -105,9 +102,7 @@ function Admin() {
                     <td>
                       <button
                         className="update-button"
-                        onClick={() =>
-                          navigate(`/updateitem/${item._id}`)
-                        }
+                        onClick={() => navigate(`/updateitem/${item._id}`)}
                       >
                         Update
                       </button>
