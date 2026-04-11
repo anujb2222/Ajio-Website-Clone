@@ -1,13 +1,9 @@
-require("dotenv").config();
+
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const nodemailer = require("nodemailer");
 const multer = require("multer");
-const path = require("path");
-const crypto = require("crypto");
-
-const Razorpay = require("razorpay");
 const cloudinary = require("cloudinary").v2;
 const { CloudinaryStorage } = require("multer-storage-cloudinary");
 
@@ -15,35 +11,32 @@ const app = express();
 
 app.use(cors());
 app.use(express.json());
+app.use(express.urlencoded({ extended: true })); // IMPORTANT FIX
 
+// ================== DB ==================
 mongoose.connect(process.env.MONGO_URL)
   .then(() => console.log("MongoDB Connected"))
   .catch(err => console.log(err));
 
-
+// ================== CLOUDINARY CONFIG ==================
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
   api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET,
+  api_secret: process.env.CLOUDINARY_API_SECRET
 });
 
-
+// ================== MULTER CLOUDINARY STORAGE ==================
 const storage = new CloudinaryStorage({
   cloudinary,
   params: {
     folder: "products",
-    allowed_formats: ["jpg", "jpeg", "png", "webp"],
-  },
+    allowed_formats: ["jpg", "jpeg", "png", "webp"]
+  }
 });
 
 const upload = multer({ storage });
 
-const razorpay = new Razorpay({
-  key_id: process.env.RAZORPAY_KEY_ID,
-  key_secret: process.env.RAZORPAY_KEY_SECRET,
-});
-
-
+// ================== USER MODEL ==================
 const userSchema = new mongoose.Schema({
   phone: { type: String, unique: true, sparse: true },
   password: String,
@@ -54,124 +47,7 @@ const userSchema = new mongoose.Schema({
 
 const User = mongoose.model("User", userSchema);
 
-
-app.post("/send-otp", async (req, res) => {
-  try {
-    const { email } = req.body;
-
-    if (!email) {
-      return res.status(400).json({ success: false, message: "Email required" });
-    }
-
-    const otp = Math.floor(100000 + Math.random() * 900000).toString();
-    const otpExpiry = Date.now() + 5 * 60 * 1000;
-
-    await User.findOneAndUpdate(
-      { email },
-      { otp, otpExpiry },
-      { upsert: true, new: true }
-    );
-
-    const transporter = nodemailer.createTransport({
-      service: "gmail",
-      auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS
-      }
-    });
-
-    await transporter.sendMail({
-      from: process.env.EMAIL_USER,
-      to: email,
-      subject: "Your OTP Login",
-      text: `Your OTP is: ${otp}`
-    });
-
-    res.json({ success: true, message: "OTP sent successfully" });
-
-  } catch (err) {
-    console.log(err);
-    res.status(500).json({ success: false });
-  }
-});
-
-
-app.post("/verify-otp", async (req, res) => {
-  try {
-    const { email, otp } = req.body;
-
-    const user = await User.findOne({ email });
-
-    if (!user) return res.status(400).json({ message: "User not found" });
-    if (user.otp !== otp) return res.status(400).json({ message: "Invalid OTP" });
-    if (user.otpExpiry < Date.now()) return res.status(400).json({ message: "OTP expired" });
-
-    user.otp = null;
-    user.otpExpiry = null;
-    await user.save();
-
-    res.json({
-      success: true,
-      message: "Login successful",
-      userId: user._id
-    });
-
-  } catch (err) {
-    console.log(err);
-    res.status(500).json({ message: "Server error" });
-  }
-});
-
-
-app.post("/register", async (req, res) => {
-  try {
-    const { phone, password } = req.body;
-
-    if (!phone || !password) {
-      return res.status(400).json({ message: "All fields required" });
-    }
-
-    const exists = await User.findOne({ phone });
-    if (exists) {
-      return res.status(400).json({ message: "User already exists" });
-    }
-
-    await User.create({ phone, password });
-
-    res.json({
-      success: true,
-      message: "Registered successfully"
-    });
-
-  } catch (err) {
-    console.log(err);
-    res.status(500).json({ message: "Server error" });
-  }
-});
-
-
-app.post("/login", async (req, res) => {
-  try {
-    const { phone, password } = req.body;
-
-    const user = await User.findOne({ phone });
-
-    if (!user || user.password !== password) {
-      return res.json({ success: false, message: "Invalid credentials" });
-    }
-
-    res.json({
-      success: true,
-      message: "Login successful",
-      userId: user._id
-    });
-
-  } catch (err) {
-    console.log(err);
-    res.status(500).json({ message: "Server error" });
-  }
-});
-
+// ================== PRODUCT MODEL ==================
 const productSchema = new mongoose.Schema({
   itemName: String,
   itemQuantity: Number,
@@ -182,65 +58,96 @@ const productSchema = new mongoose.Schema({
 
 const Product = mongoose.model("Product", productSchema);
 
-
+// ================== ADD ITEM (CLOUDINARY) ==================
 app.post("/additem", upload.single("image"), async (req, res) => {
   try {
+
+    console.log("BODY:", req.body);
+    console.log("FILE:", req.file);
+
+    if (!req.file) {
+      return res.status(400).json({
+        success: false,
+        message: "Image upload failed"
+      });
+    }
+
     const newProduct = new Product({
       itemName: req.body.itemName,
-      itemQuantity: req.body.itemQuantity,
-      itemPrice: req.body.itemPrice,
+      itemQuantity: Number(req.body.itemQuantity),
+      itemPrice: Number(req.body.itemPrice),
       category: req.body.category,
-      image: req.file ? req.file.path : null
+      image: req.file.path // Cloudinary URL
     });
 
     await newProduct.save();
 
-    res.json({ success: true, message: "Product added" });
+    res.json({
+      success: true,
+      message: "Product added successfully"
+    });
 
   } catch (err) {
-    console.log(err);
-    res.status(500).json({ message: "Server error" });
+    console.log("ADD ITEM ERROR:", err);
+    res.status(500).json({ message: err.message });
   }
 });
 
-
+// ================== GET PRODUCTS ==================
 app.get("/products", async (req, res) => {
   const products = await Product.find();
   res.json(products);
 });
 
+// ================== GET SINGLE PRODUCT ==================
 app.get("/product/:id", async (req, res) => {
   const product = await Product.findById(req.params.id);
   res.json(product);
 });
 
+// ================== UPDATE ITEM ==================
 app.put("/updateitem/:id", upload.single("image"), async (req, res) => {
   try {
+
     let data = {
       itemName: req.body.itemName,
       itemQuantity: Number(req.body.itemQuantity),
       itemPrice: Number(req.body.itemPrice),
       category: req.body.category
     };
-    if (req.file) data.image = req.file.filename;
-    const product = await Product.findByIdAndUpdate(req.params.id, data, { new: true });
-    res.json({ success: true, product });
+
+    if (req.file) {
+      data.image = req.file.path; // Cloudinary URL
+    }
+
+    const product = await Product.findByIdAndUpdate(req.params.id, data, {
+      new: true
+    });
+
+    res.json({
+      success: true,
+      product
+    });
+
   } catch (err) {
-    res.status(500).send("Error updating product");
+    console.log(err);
+    res.status(500).json({
+      message: "Error updating product"
+    });
   }
 });
 
+// ================== DELETE ITEM ==================
 app.delete("/product/:id", async (req, res) => {
-  const product = await Product.findById(req.params.id);
-  if (product.image) {
-    const imagePath = "uploads/" + product.image;
-    if (fs.existsSync(imagePath)) fs.unlinkSync(imagePath);
+  try {
+    await Product.findByIdAndDelete(req.params.id);
+    res.json({ message: "Product deleted" });
+  } catch (err) {
+    res.status(500).json({ message: "Error deleting product" });
   }
-  await Product.findByIdAndDelete(req.params.id);
-  res.json({ message: "Product deleted" });
 });
 
-
+// ================== SERVER ==================
 
 
 const OrderSchema = new mongoose.Schema({

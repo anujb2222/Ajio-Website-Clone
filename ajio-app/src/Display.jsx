@@ -6,11 +6,11 @@ import "./Display.css";
 function Display() {
   const [productsList, setProductsList] = useState([]);
 
-  const API_URL = "https://ajio-website-clone-1.onrender.com"; // Live backend URL
+  const API_URL = "https://ajio-website-clone-1.onrender.com";
 
   useEffect(() => {
     axios
-      .get(`${API_URL}/products`)  // Updated to use live backend URL
+      .get(`${API_URL}/products`)
       .then((res) => setProductsList(res.data))
       .catch((err) => console.log("Error:", err));
   }, []);
@@ -18,22 +18,28 @@ function Display() {
   return (
     <div className="scroll-container">
       <div className="products-grid">
+
         {productsList.concat(productsList).map((item, index) => (
           <Link
             to={`/Productdetails/${item._id}`}
             key={item._id + "-" + index}
             className="card"
           >
+
+            {/* ✅ FIXED IMAGE */}
             <img
-              src={`${API_URL}/uploads/${item.image}`}  // Updated to live backend URL
+              src={item.image}
               alt={item.itemName}
             />
+
             <div className="content">
               <p>{item.itemName}</p>
               <p>₹{item.itemPrice}</p>
             </div>
+
           </Link>
         ))}
+
       </div>
     </div>
   );

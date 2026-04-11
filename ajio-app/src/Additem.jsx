@@ -11,20 +11,21 @@ function ProductForm() {
   const [itemName, setItemName] = useState("");
   const [itemQuantity, setItemQuantity] = useState("");
   const [itemPrice, setItemPrice] = useState("");
-  const [category, setCategory] = useState(""); 
+  const [category, setCategory] = useState("");
   const [image, setImage] = useState(null);
 
-  const API_URL = "https://ajio-website-clone-1.onrender.com";  
+  const API_URL = "https://ajio-website-clone-1.onrender.com";
 
   useEffect(() => {
     if (id) {
-      axios.get(`${API_URL}/product/${id}`)  
+      axios.get(`${API_URL}/product/${id}`)
         .then(res => {
           setItemName(res.data.itemName);
           setItemQuantity(res.data.itemQuantity);
           setItemPrice(res.data.itemPrice);
-          setCategory(res.data.category); 
-        });
+          setCategory(res.data.category);
+        })
+        .catch(err => console.log("GET PRODUCT ERROR:", err));
     }
   }, [id]);
 
@@ -35,7 +36,7 @@ function ProductForm() {
     data.append("itemName", itemName);
     data.append("itemQuantity", itemQuantity);
     data.append("itemPrice", itemPrice);
-    data.append("category", category); 
+    data.append("category", category);
 
     if (image) {
       data.append("image", image);
@@ -45,14 +46,24 @@ function ProductForm() {
 
       if (id) {
         await axios.put(
-          `${API_URL}/updateitem/${id}`,  
-          data
+          `${API_URL}/updateitem/${id}`,
+          data,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data"
+            }
+          }
         );
         alert("Item Updated");
       } else {
         await axios.post(
-          `${API_URL}/additem`, 
-          data
+          `${API_URL}/additem`,
+          data,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data"
+            }
+          }
         );
         alert("Item Added");
       }
@@ -60,7 +71,7 @@ function ProductForm() {
       navigate("/admin");
 
     } catch (error) {
-      console.log(error);
+      console.log("ERROR:", error.response?.data || error.message);
     }
   };
 
@@ -91,7 +102,7 @@ function ProductForm() {
         value={itemPrice}
         onChange={(e) => setItemPrice(e.target.value)}
       />
-      
+
       <select
         value={category}
         onChange={(e) => setCategory(e.target.value)}
@@ -99,7 +110,7 @@ function ProductForm() {
         <option value="">Select Category</option>
         <option value="Electronics">Electronics</option>
         <option value="Clothing">Clothing</option>
-        <option value="home and kitchen">Home and Kitchen</option>
+        <option value="Home and Kitchen">Home and Kitchen</option>
         <option value="Other">Other</option>
       </select>
 
