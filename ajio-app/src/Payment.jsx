@@ -8,17 +8,17 @@ function Payment() {
   const [total, setTotal] = useState(0);
   const navigate = useNavigate();
 
-
   useEffect(() => {
     const cartItems = JSON.parse(localStorage.getItem("cart")) || [];
     setCart(cartItems);
+
     const sum = cartItems.reduce(
       (acc, item) => acc + item.itemPrice * item.itemQuantity,
       0
     );
+
     setTotal(sum);
   }, []);
-
 
   const loadRazorpayScript = () =>
     new Promise((resolve) => {
@@ -32,6 +32,7 @@ function Payment() {
   const handlePayment = async () => {
     const shipping = JSON.parse(localStorage.getItem("shippingDetails"));
     const userId = localStorage.getItem("userId");
+    const email = localStorage.getItem("email");
 
     if (!userId) return alert("Please login first");
     if (!cart.length || !shipping) return alert("Missing cart or shipping info");
@@ -43,74 +44,84 @@ function Payment() {
         address: shipping.address1 + " " + (shipping.address2 || ""),
         state: shipping.state,
       },
-      items: cart.map((i) => ({ productId: i._id, quantity: i.itemQuantity })),
+      items: cart.map((i) => ({
+        productId: i._id,
+        quantity: i.itemQuantity,
+      })),
       totalPrice: total,
       paymentMethod: method,
     };
 
+   
     if (method === "cod") {
       try {
         const res = await fetch("http://localhost:5000/orders", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(orderData),
+          body: JSON.stringify({
+            ...orderData,
+            email, 
+          }),
         });
+
         const data = await res.json();
+
         if (data.success) {
           alert("Order placed successfully!");
           localStorage.removeItem("cart");
           localStorage.removeItem("shippingDetails");
           navigate("/cart");
-        } else alert(data.message || "Failed to place order");
+        } else {
+          alert(data.message || "Failed to place order");
+        }
       } catch {
         alert("Error placing order");
       }
       return;
     }
 
-
+  
     const scriptLoaded = await loadRazorpayScript();
-    if (!scriptLoaded) {
-      alert("Razorpay SDK failed to load.");
-      return;
-    }
-
+    if (!scriptLoaded) return alert("Razorpay SDK failed to load.");
 
     let order;
+
     try {
       const orderRes = await fetch("http://localhost:5000/create-order", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ amount: total }),
       });
+
       order = await orderRes.json();
     } catch {
-      alert("Error creating order");
-      return;
+      return alert("Error creating order");
     }
 
-  
     const options = {
-     key: "rzp_test_SaD5l5rtQUtFMj",
+      key: "rzp_test_SaD5l5rtQUtFMj",
       amount: order.amount,
       currency: "INR",
       order_id: order.id,
-      name: "AJIO ",
-  color: '#F37254',
+      name: "AJIO",
 
-   
       handler: async function (response) {
         try {
-          const verifyRes = await fetch("http://localhost:5000/verify-payment", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              ...response,
-              orderData,
-            }),
-          });
+          const verifyRes = await fetch(
+            "http://localhost:5000/verify-payment",
+            {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                ...response,
+                orderData,
+                email, 
+              }),
+            }
+          );
 
           const data = await verifyRes.json();
+
           if (data.success) {
             alert("Payment successful!");
             localStorage.removeItem("cart");
@@ -132,6 +143,7 @@ function Payment() {
   return (
     <div className="payment-container">
       <h2>Select Payment Mode</h2>
+
       <div className="payment-box">
         <div className="payment-left">
           <div
@@ -141,27 +153,22 @@ function Payment() {
             Credit / Debit Card
           </div>
 
-          <div  
+          <div
             className={method === "cod" ? "active" : ""}
-          onClick={() => setMethod("cod")}>Cash on Delivery</div>
+            onClick={() => setMethod("cod")}
+          >
+            Cash on Delivery
+          </div>
         </div>
 
         <div className="payment-right">
           <button className="pay-btn" onClick={handlePayment}>
             {method === "card" ? "PAY-ONLINE" : "PAY-COD"} ₹{total}
           </button>
-          
-     <div className="footer-bottom-payment">
-  <img
-    src="images/footer-screenshot.png"
-    alt="footer-screenshot"
-    className="footer-screenshot"
-  />
-</div>
         </div>
       </div>
     </div>
   );
 }
 
-export default Payment; 
+export default Payment;

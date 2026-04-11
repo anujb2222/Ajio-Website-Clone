@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import "./Cart.css";
 
 const getCart = () => JSON.parse(localStorage.getItem("cart")) || [];
@@ -8,11 +8,20 @@ function Cart() {
   const [cartItems, setCartItems] = useState([]);
   const [orders, setOrders] = useState([]);
   const [view, setView] = useState("cart");
+  const navigate = useNavigate();
+
   const userId = localStorage.getItem("userId");
 
   useEffect(() => {
     setCartItems(getCart());
   }, []);
+
+
+  const getDeliveryDate = () => {
+    const date = new Date();
+    date.setDate(date.getDate() + 5); 
+    return date.toDateString();
+  };
 
   const fetchOrders = async () => {
     if (!userId) {
@@ -20,7 +29,9 @@ function Cart() {
       return;
     }
     try {
-      const res = await fetch(`http://localhost:5000/user-orders/${userId}`);
+      const res = await fetch(
+        `http://localhost:5000/user-orders/${userId}`
+      );
       const data = await res.json();
       setOrders(data);
     } catch (err) {
@@ -45,7 +56,8 @@ function Cart() {
 
   const decreaseQty = (id) => {
     const updated = cartItems.map((item) => {
-      if (item._id === id && item.itemQuantity > 1) item.itemQuantity -= 1;
+      if (item._id === id && item.itemQuantity > 1)
+        item.itemQuantity -= 1;
       return item;
     });
     setCartItems(updated);
@@ -71,6 +83,7 @@ function Cart() {
           >
             My Orders
           </li>
+          <li onClick={() => navigate("/Home")}>GO to home</li>
         </ul>
       </div>
 
@@ -93,9 +106,11 @@ function Cart() {
                         alt={item.itemName}
                         className="cart-image"
                       />
+
                       <div className="cart-details">
                         <h4>{item.itemName}</h4>
                         <p>Price: ₹{item.itemPrice}</p>
+
                         <div className="quantity-control">
                           <button
                             className="qty-btn"
@@ -111,6 +126,7 @@ function Cart() {
                             +
                           </button>
                         </div>
+
                         <button
                           className="remove-btn"
                           onClick={() => handleRemove(item._id)}
@@ -137,6 +153,11 @@ function Cart() {
                     </div>
 
                     <div className="summary-row">
+                      <span>Expected Delivery</span>
+                      <span>{getDeliveryDate()}</span>
+                    </div>
+
+                    <div className="summary-row">
                       <span>Discount</span>
                       <span className="discount">- ₹0</span>
                     </div>
@@ -154,54 +175,77 @@ function Cart() {
                       Proceed to Checkout
                     </button>
                   </Link>
+
+                  <div className="checkout-bottom">
+                    <img
+                      src="images/checkoutscreenshot.png"
+                      alt="footer-screenshot"
+                      className="footer-screenshot"
+                    />
+                  </div>
                 </div>
               </>
             )}
           </>
         )}
 
-        {view === "orders" && (
-          <div className="orders-table-container">
-            <h2>My Orders</h2>
-            {orders.length === 0 ? (
-              <p>You have no orders yet.</p>
-            ) : (
-              orders.map((order) => (
-                <div key={order._id} className="order-card">
-                  <div className="order-header">
-                    <p>ITEM </p>
-                    <span>Total: ₹{order.totalPrice}</span>
-                  </div>
+ {view === "orders" && (
+  <div className="orders-table-container">
+    <h2>My Orders</h2>
 
-                  <div className="order-items">
-                    {order.items.map((item, index) => (
-                      <div key={index} className="order-item">
-                        <span className="order-item-name">
-                          Item-ordered: {item.productId.itemName}
-                        </span>
-                        <span className="order-item-price">
-                          ₹{item.productId.itemPrice}
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-
-                  <div className="payment-method">
-                    Payment-mode: {order.paymentMethod}
-                  </div>
-
-                  <div className="order-status">
-                    Order-status : {order.status}
-                  </div>
-
-                  <div className="order-date">
-                    Order-date : {order.createdAt}
-                  </div>
-                </div>
-              ))
-            )}
+    {orders.length === 0 ? (
+      <p>You have no orders yet.</p>
+    ) : (
+      orders.map((order) => (
+        <div key={order._id} className="order-card">
+          
+          <div className="order-header">
+            <p>ITEM</p>
+            <span>Total: ₹{order.totalPrice}</span>
           </div>
-        )}
+
+          <div className="order-items">
+            {order.items.map((item, index) => (
+              <div key={index} className="order-item">
+
+                <img
+                  src={`http://localhost:5000/uploads/${item.productId.image}`}
+                  alt={item.productId.itemName}
+                  className="order-item-img"
+                />
+
+                <div className="order-item-info">
+                  <span className="order-item-name">
+                    Item-ordered: {item.productId.itemName}
+                  </span>
+
+                  <span className="order-item-price">
+                    ₹{item.productId.itemPrice}
+                  </span>
+                </div>
+
+              </div>
+            ))}
+          </div>
+
+          <div className="payment-method">
+            Payment-mode: {order.paymentMethod}
+          </div>
+
+          <div className="order-status">
+            Order-status: {order.status}
+          </div>
+
+          <div className="order-date">
+            Order Date:{" "}
+            {new Date(order.createdAt).toLocaleDateString()}
+          </div>
+
+        </div>
+      ))
+    )}
+  </div>
+)}
       </div>
     </div>
   );

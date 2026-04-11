@@ -11,6 +11,7 @@ import Order from "./Order";
 import Payment from "./Payment";
 import AdminOrders from "./AdminOrders";
 // import AdminUsers from "./AdminUsers";
+import AdminPayment from "./AdminPayment";
 
 
 
@@ -28,6 +29,7 @@ ReactDOM.createRoot(document.getElementById("root")).render(
             <Route path="/order" element={<Order />} />
            <Route path ="/Payment" element={<Payment/>}/> 
                <Route path="/admin/orders" element={<AdminOrders />} />
+             <Route path="/admin/payments" element={<AdminPayment />} />
                {/* <Route path="/admin/users" element={<AdminUsers />} /> */}
 
          

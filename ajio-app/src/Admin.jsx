@@ -32,13 +32,13 @@ function Admin() {
           <li onClick={() => navigate("/additem")}>Add Item</li>
             <li onClick={() => navigate("/admin/orders")}>Orders</li>
             <li onClick={() => navigate("/admin/users")}>Users</li>
+          <li onClick={() => navigate("/admin/payments")}>Payments</li>
+            <li onClick={() => navigate("/Home")}>Go TO home</li>
         </ul>
       </div>
 
       <div className="main-content">
         <div className="navbar"></div>
-
-        <span className="x-mark" onClick={() => navigate("/")}>X</span>
 
      
         <div style={{ marginBottom: "15px" }}>

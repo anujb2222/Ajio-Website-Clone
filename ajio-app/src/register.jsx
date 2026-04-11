@@ -26,14 +26,16 @@ function Register() {
         password,
       });
 
+      alert(res.data.message);
+
       if (res.data.success) {
-        alert("Registration successful");
-        navigate("/"); 
-      } else {
-        alert(res.data.message); 
+        navigate("/");
       }
-    } catch {
-      alert("Server error");
+
+    } catch (err) {
+      console.log(err.response?.data || err.message);
+
+      alert(err.response?.data?.message || "Server error");
     }
   };
 
@@ -64,9 +66,14 @@ function Register() {
           onChange={(e) => setConfirmPassword(e.target.value)}
         />
 
-        <button onClick={handleRegister}>REGISTER</button>
+        <button onClick={handleRegister}>
+          REGISTER
+        </button>
 
-        <button onClick={() => navigate("/signin")} style={{ marginTop: "10px" }}>
+        <button
+          onClick={() => navigate("/signin")}
+          style={{ marginTop: "10px" }}
+        >
           LOGIN
         </button>
       </div>

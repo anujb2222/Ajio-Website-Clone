@@ -8,14 +8,19 @@
 
 .sidebar  {
   width: 220px;
-  background:white;
-  padding: 20px;
+  background-color: rgb(44, 65, 82);
+  
+  padding: 20px; 
 }
 
 .sidebar h2 {
   text-align: center;
+  color:wheat;
+font-family: Verdana, Geneva, Tahoma, sans-serif;
+  font-size: 28px;
  
 }
+
 
 .sidebar ul {
   list-style: none;
@@ -25,9 +30,14 @@
   padding: 10px;
   margin-bottom: 8px;
   cursor: pointer;
+  font-size:20px;
+  color: white;
   border-radius: 5px;
 }
-
+.sidebar ul li:hover{
+  color: black;
+  background-color:wheat;
+}
 
 .main-content {
   flex: 1;
@@ -46,13 +56,6 @@
   font-weight: bold;
 }
 
-.x-mark {
-  float: right;
-  cursor: pointer;
-  font-weight: bold;
-  font-size: 24px;
-  margin: 10px;
-}
 .product-table {
   width: 100%;
   border-collapse: collapse;

@@ -32,6 +32,7 @@ function OtpLogin({ setIsLoggedIn }) {
       const res = await axios.post("http://localhost:5000/verify-otp", { email: email.trim(), otp: otp.trim() });
       if (res.data.success) {
         localStorage.setItem("userId", res.data.userId); 
+        localStorage.setItem("email",email)
         setIsLoggedIn(true);
         alert("Login successful");
         navigate("/");
