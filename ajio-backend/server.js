@@ -3,26 +3,45 @@ const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const nodemailer = require("nodemailer");
-const otpGenerator = require("otp-generator");
 const multer = require("multer");
-const fs = require("fs");
 const path = require("path");
-
+const crypto = require("crypto");
 
 const Razorpay = require("razorpay");
-const crypto = require("crypto");
+const cloudinary = require("cloudinary").v2;
+const { CloudinaryStorage } = require("multer-storage-cloudinary");
+
+const app = express();
+
+app.use(cors());
+app.use(express.json());
+
+mongoose.connect(process.env.MONGO_URL)
+  .then(() => console.log("MongoDB Connected"))
+  .catch(err => console.log(err));
+
+
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
+
+
+const storage = new CloudinaryStorage({
+  cloudinary,
+  params: {
+    folder: "products",
+    allowed_formats: ["jpg", "jpeg", "png", "webp"],
+  },
+});
+
+const upload = multer({ storage });
 
 const razorpay = new Razorpay({
   key_id: process.env.RAZORPAY_KEY_ID,
   key_secret: process.env.RAZORPAY_KEY_SECRET,
 });
-
-const app = express();
-app.use(cors());
-app.use(express.json());
-mongoose.connect(process.env.MONGO_URL)
-  .then(() => console.log("MongoDB Connected"))
-  .catch(err => console.log(err));
 
 
 const userSchema = new mongoose.Schema({
@@ -45,27 +64,21 @@ app.post("/send-otp", async (req, res) => {
     }
 
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
-    const otpExpiry = Date.now() + 5 * 60 * 1000; 
+    const otpExpiry = Date.now() + 5 * 60 * 1000;
 
     await User.findOneAndUpdate(
-  { email },
-  { otp, otpExpiry },
-  {
-    upsert: true,
-    returnDocument: "after"
-  }
-);
+      { email },
+      { otp, otpExpiry },
+      { upsert: true, new: true }
+    );
 
-   const transporter = nodemailer.createTransport({
-  service: "gmail",
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS
-  },
-  tls: {
-    rejectUnauthorized: false
-  }
-});
+    const transporter = nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS
+      }
+    });
 
     await transporter.sendMail({
       from: process.env.EMAIL_USER,
@@ -77,8 +90,8 @@ app.post("/send-otp", async (req, res) => {
     res.json({ success: true, message: "OTP sent successfully" });
 
   } catch (err) {
-    console.log("SEND OTP ERROR:", err);
-    res.status(500).json({ success: false, message: "Server error" });
+    console.log(err);
+    res.status(500).json({ success: false });
   }
 });
 
@@ -89,17 +102,9 @@ app.post("/verify-otp", async (req, res) => {
 
     const user = await User.findOne({ email });
 
-    if (!user) {
-      return res.status(400).json({ message: "User not found" });
-    }
-
-    if (!user.otp || user.otp !== otp) {
-      return res.status(400).json({ message: "Invalid OTP" });
-    }
-
-    if (!user.otpExpiry || user.otpExpiry < Date.now()) {
-      return res.status(400).json({ message: "OTP expired" });
-    }
+    if (!user) return res.status(400).json({ message: "User not found" });
+    if (user.otp !== otp) return res.status(400).json({ message: "Invalid OTP" });
+    if (user.otpExpiry < Date.now()) return res.status(400).json({ message: "OTP expired" });
 
     user.otp = null;
     user.otpExpiry = null;
@@ -112,25 +117,25 @@ app.post("/verify-otp", async (req, res) => {
     });
 
   } catch (err) {
-    console.log("VERIFY OTP ERROR:", err);
+    console.log(err);
     res.status(500).json({ message: "Server error" });
   }
 });
+
 
 app.post("/register", async (req, res) => {
   try {
     const { phone, password } = req.body;
 
-    console.log("BODY:", req.body);
-
     if (!phone || !password) {
       return res.status(400).json({ message: "All fields required" });
     }
-    const exists = await User.findOne({ phone });
 
+    const exists = await User.findOne({ phone });
     if (exists) {
       return res.status(400).json({ message: "User already exists" });
     }
+
     await User.create({ phone, password });
 
     res.json({
@@ -139,15 +144,11 @@ app.post("/register", async (req, res) => {
     });
 
   } catch (err) {
-  console.log("REGISTER ERROR:", err);
-
-  if (err.code === 11000) {
-    return res.status(400).json({ message: "User already exists" });
+    console.log(err);
+    res.status(500).json({ message: "Server error" });
   }
-
-  res.status(500).json({ message: "Server error" });
-}
 });
+
 
 app.post("/login", async (req, res) => {
   try {
@@ -166,26 +167,21 @@ app.post("/login", async (req, res) => {
     });
 
   } catch (err) {
-    console.log("LOGIN ERROR:", err);
+    console.log(err);
     res.status(500).json({ message: "Server error" });
   }
 });
 
-
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => cb(null, "uploads/"),
-  filename: (req, file, cb) => cb(null, Date.now() + path.extname(file.originalname))
-});
-const upload = multer({ storage });
-app.use("/uploads", express.static("uploads"));
 const productSchema = new mongoose.Schema({
   itemName: String,
   itemQuantity: Number,
   itemPrice: Number,
   category: String,
-  image: String
+  image: String // Cloudinary URL
 });
+
 const Product = mongoose.model("Product", productSchema);
+
 
 app.post("/additem", upload.single("image"), async (req, res) => {
   try {
@@ -194,11 +190,15 @@ app.post("/additem", upload.single("image"), async (req, res) => {
       itemQuantity: req.body.itemQuantity,
       itemPrice: req.body.itemPrice,
       category: req.body.category,
-      image: req.file ? req.file.filename : null
+      image: req.file ? req.file.path : null
     });
+
     await newProduct.save();
+
     res.json({ success: true, message: "Product added" });
+
   } catch (err) {
+    console.log(err);
     res.status(500).json({ message: "Server error" });
   }
 });
