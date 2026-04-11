@@ -13,19 +13,19 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true })); 
 
-// ================== DB ==================
+
 mongoose.connect(process.env.MONGO_URL)
   .then(() => console.log("MongoDB Connected"))
   .catch(err => console.log(err));
 
-// ================== CLOUDINARY CONFIG ==================
+
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
   api_key: process.env.CLOUDINARY_API_KEY,
   api_secret: process.env.CLOUDINARY_API_SECRET
 });
 
-// ================== MULTER CLOUDINARY STORAGE ==================
+
 const storage = new CloudinaryStorage({
   cloudinary,
   params: {
