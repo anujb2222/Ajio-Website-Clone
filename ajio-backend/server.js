@@ -31,7 +31,7 @@ const app = express();
 app.use(cors({
   origin: [
     "http://localhost:5173",
-    "ajio-website-clone-sexk.vercel.app"
+    "ajio-website-clone-sexk-anujb2222s-projects.vercel.app"
   ],
   methods: ["GET", "POST", "PUT", "DELETE"],
   credentials: true
@@ -135,6 +135,37 @@ app.post("/verify-otp", async (req, res) => {
   }
 });
 
+app.post("/register", async (req, res) => {
+  try {
+    const { phone, password } = req.body;
+
+    console.log("BODY:", req.body);
+
+    if (!phone || !password) {
+      return res.status(400).json({ message: "All fields required" });
+    }
+    const exists = await User.findOne({ phone });
+
+    if (exists) {
+      return res.status(400).json({ message: "User already exists" });
+    }
+    await User.create({ phone, password });
+
+    res.json({
+      success: true,
+      message: "Registered successfully"
+    });
+
+  } catch (err) {
+  console.log("REGISTER ERROR:", err);
+
+  if (err.code === 11000) {
+    return res.status(400).json({ message: "User already exists" });
+  }
+
+  res.status(500).json({ message: "Server error" });
+}
+});
 app.post("/login", async (req, res) => {
   try {
     const { phone, password } = req.body;
