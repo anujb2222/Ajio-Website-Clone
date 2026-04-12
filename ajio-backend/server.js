@@ -134,38 +134,7 @@ app.post("/verify-otp", async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 });
-app.post("/login", async (req, res) => {
-  try {
-    console.log("LOGIN BODY:", req.body);
 
-    let { phone, password } = req.body;
-
-    phone = String(phone || "").trim();
-    password = String(password || "").trim();
-
-    const user = await User.findOne({ phone });
-
-    console.log("USER FOUND:", user);
-
-    if (!user) {
-      return res.json({ success: false, message: "User not found" });
-    }
-
-    if (user.password !== password) {
-      return res.json({ success: false, message: "Wrong password" });
-    }
-
-    res.json({
-      success: true,
-      message: "Login successful",
-      userId: user._id
-    });
-
-  } catch (err) {
-    console.log(err);
-    res.status(500).json({ message: "Server error" });
-  }
-});
 app.post("/login", async (req, res) => {
   try {
     const { phone, password } = req.body;
