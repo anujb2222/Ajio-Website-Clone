@@ -168,22 +168,15 @@ app.post("/register", async (req, res) => {
 });
 app.post("/login", async (req, res) => {
   try {
-    console.log("LOGIN BODY:", req.body);
+    const { phone, password } = req.body;
 
-    let { phone, password } = req.body;
-
-    phone = String(phone || "").trim();
-    password = String(password || "").trim();
-
-    const user = await User.findOne({ phone: phone });
-
-    console.log("USER FOUND:", user);
+    const user = await User.findOne({ phone });
 
     if (!user) {
       return res.json({ success: false, message: "User not found" });
     }
 
-    if (String(user.password).trim() !== password) {
+    if (String(user.password) !== String(password)) {
       return res.json({ success: false, message: "Wrong password" });
     }
 
