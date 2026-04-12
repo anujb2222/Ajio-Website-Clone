@@ -168,25 +168,36 @@ app.post("/register", async (req, res) => {
 });
 app.post("/login", async (req, res) => {
   try {
-    const { phone, password } = req.body;
-    const user = await User.findOne({ phone });
+    console.log("LOGIN BODY:", req.body);
 
-    if (!user || user.password !== password) {
-      return res.json({ success: false, message: "Invalid credentials" });
+    let { phone, password } = req.body;
+
+    phone = String(phone || "").trim();
+    password = String(password || "").trim();
+
+    const user = await User.findOne({ phone: phone });
+
+    console.log("USER FOUND:", user);
+
+    if (!user) {
+      return res.json({ success: false, message: "User not found" });
     }
 
-    res.json({
+    if (String(user.password).trim() !== password) {
+      return res.json({ success: false, message: "Wrong password" });
+    }
+
+    return res.json({
       success: true,
       message: "Login successful",
       userId: user._id
     });
 
   } catch (err) {
-    console.log("LOGIN ERROR:", err);
+    console.log(err);
     res.status(500).json({ message: "Server error" });
   }
 });
-
 
 const { CloudinaryStorage } = require("multer-storage-cloudinary");
 
