@@ -134,37 +134,37 @@ app.post("/verify-otp", async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 });
-
-app.post("/register", async (req, res) => {
+app.post("/login", async (req, res) => {
   try {
-    const { phone, password } = req.body;
+    console.log("LOGIN BODY:", req.body);
 
-    console.log("BODY:", req.body);
+    let { phone, password } = req.body;
 
-    if (!phone || !password) {
-      return res.status(400).json({ message: "All fields required" });
+    phone = String(phone || "").trim();
+    password = String(password || "").trim();
+
+    const user = await User.findOne({ phone });
+
+    console.log("USER FOUND:", user);
+
+    if (!user) {
+      return res.json({ success: false, message: "User not found" });
     }
-    const exists = await User.findOne({ phone });
 
-    if (exists) {
-      return res.status(400).json({ message: "User already exists" });
+    if (user.password !== password) {
+      return res.json({ success: false, message: "Wrong password" });
     }
-    await User.create({ phone, password });
 
     res.json({
       success: true,
-      message: "Registered successfully"
+      message: "Login successful",
+      userId: user._id
     });
 
   } catch (err) {
-  console.log("REGISTER ERROR:", err);
-
-  if (err.code === 11000) {
-    return res.status(400).json({ message: "User already exists" });
+    console.log(err);
+    res.status(500).json({ message: "Server error" });
   }
-
-  res.status(500).json({ message: "Server error" });
-}
 });
 app.post("/login", async (req, res) => {
   try {
