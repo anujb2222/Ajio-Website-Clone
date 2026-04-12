@@ -1,4 +1,4 @@
-
+require("dotenv").config();
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
@@ -36,7 +36,7 @@ const storage = new CloudinaryStorage({
 
 const upload = multer({ storage });
 
-// ================== USER MODEL ==================
+
 const userSchema = new mongoose.Schema({
   phone: { type: String, unique: true, sparse: true },
   password: String,
@@ -47,7 +47,7 @@ const userSchema = new mongoose.Schema({
 
 const User = mongoose.model("User", userSchema);
 
-// ================== PRODUCT MODEL ==================
+
 const productSchema = new mongoose.Schema({
   itemName: String,
   itemQuantity: Number,
@@ -58,7 +58,6 @@ const productSchema = new mongoose.Schema({
 
 const Product = mongoose.model("Product", productSchema);
 
-// ================== ADD ITEM (CLOUDINARY) ==================
 app.post("/additem", upload.single("image"), async (req, res) => {
   try {
 
@@ -77,7 +76,7 @@ app.post("/additem", upload.single("image"), async (req, res) => {
       itemQuantity: Number(req.body.itemQuantity),
       itemPrice: Number(req.body.itemPrice),
       category: req.body.category,
-      image: req.file.path // Cloudinary URL
+      image: req.file.path 
     });
 
     await newProduct.save();
@@ -93,19 +92,19 @@ app.post("/additem", upload.single("image"), async (req, res) => {
   }
 });
 
-// ================== GET PRODUCTS ==================
+
 app.get("/products", async (req, res) => {
   const products = await Product.find();
   res.json(products);
 });
 
-// ================== GET SINGLE PRODUCT ==================
+
 app.get("/product/:id", async (req, res) => {
   const product = await Product.findById(req.params.id);
   res.json(product);
 });
 
-// ================== UPDATE ITEM ==================
+
 app.put("/updateitem/:id", upload.single("image"), async (req, res) => {
   try {
 
@@ -117,7 +116,7 @@ app.put("/updateitem/:id", upload.single("image"), async (req, res) => {
     };
 
     if (req.file) {
-      data.image = req.file.path; // Cloudinary URL
+      data.image = req.file.path; 
     }
 
     const product = await Product.findByIdAndUpdate(req.params.id, data, {
@@ -137,7 +136,7 @@ app.put("/updateitem/:id", upload.single("image"), async (req, res) => {
   }
 });
 
-// ================== DELETE ITEM ==================
+
 app.delete("/product/:id", async (req, res) => {
   try {
     await Product.findByIdAndDelete(req.params.id);
@@ -147,7 +146,6 @@ app.delete("/product/:id", async (req, res) => {
   }
 });
 
-// ================== SERVER ==================
 
 
 const OrderSchema = new mongoose.Schema({

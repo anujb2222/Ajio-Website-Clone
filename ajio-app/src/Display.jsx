@@ -3,33 +3,35 @@ import axios from "axios";
 import { Link } from "react-router-dom";
 import "./Display.css";
 
-function Display() {
-  const [productsList, setProductsList] = useState([]);
-
-  const API_URL = "https://ajio-website-clone-1.onrender.com";
+function Products() {
+  const [products, setProducts] = useState([]);
 
   useEffect(() => {
     axios
-      .get(`${API_URL}/products`)
-      .then((res) => setProductsList(res.data))
+      .get("https://ajio-website-clone-1.onrender.com/products")
+      .then((res) => setProducts(res.data))
       .catch((err) => console.log("Error:", err));
   }, []);
 
   return (
-    <div className="scroll-container">
+    <div className="products">
       <div className="products-grid">
 
-        {productsList.concat(productsList).map((item, index) => (
+        {products.map((item) => (
           <Link
             to={`/Productdetails/${item._id}`}
-            key={item._id + "-" + index}
+            key={item._id}
             className="card"
           >
 
-            {/* ✅ FIXED IMAGE */}
+          
             <img
               src={item.image}
               alt={item.itemName}
+
+              onError={(e) => {
+                e.target.src = "https://via.placeholder.com/150";
+              }}
             />
 
             <div className="content">
@@ -45,4 +47,4 @@ function Display() {
   );
 }
 
-export default Display;
+export default Products;
