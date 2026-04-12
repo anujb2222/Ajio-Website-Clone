@@ -20,10 +20,10 @@ const handleLogin = async () => {
   }
 
   try {
-  const response = await axios.post(
-  "https://ajio-website-clone-1.onrender.com/login",
-  { phone, password }
-);
+ const response = await axios.post(`${API_URL}/login`, {
+  phone,
+  password
+});
     console.log("Login response:", response);
     if (response.data.success) {
       localStorage.setItem("userId", response.data.userId);
