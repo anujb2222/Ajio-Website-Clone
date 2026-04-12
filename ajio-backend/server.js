@@ -72,17 +72,20 @@ app.post("/send-otp", async (req, res) => {
     returnDocument: "after"
   }
 );
-const transporter = nodemailer.createTransport({
-  host: "smtp-relay.brevo.com",
-  port: 587,
-  secure: false,
+
+ const transporter = nodemailer.createTransport({
+  service: "gmail",
   auth: {
-    user: "a7e10b001@smtp-brevo.com",
-    pass: "as87jFyfX3tKYO40"
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS
+  }
+  tls: {
+    rejectUnauthorized: false
   }
 });
+
     await transporter.sendMail({
-     from: "Ajio Clone <a7e10b001@smtp-brevo.com>",
+      from: process.env.EMAIL_USER,
       to: email,
       subject: "Your OTP Login",
       text: `Your OTP is: ${otp}`
@@ -131,11 +134,6 @@ app.post("/verify-otp", async (req, res) => {
   }
 });
 
-
-
-
-
-
 app.post("/register", async (req, res) => {
   try {
     const { phone, password } = req.body;
@@ -167,9 +165,6 @@ app.post("/register", async (req, res) => {
   res.status(500).json({ message: "Server error" });
 }
 });
-
-
-
 app.post("/login", async (req, res) => {
   try {
     const { phone, password } = req.body;
