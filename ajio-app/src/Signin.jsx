@@ -8,32 +8,36 @@ function SignIn({ setIsLoggedIn }) {
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
 
-  const API_URL = "https://ajio-website-clone-1.onrender.com";  // Live backend URL
+const API_URL = "https://ajio-website-clone-1.onrender.com";  // Live backend URL
+const handleLogin = async () => {
+  if (!phone) {
+    alert("Enter phone number");
+    return;
+  }
+  if (!password) {
+    alert("Enter password");
+    return;
+  }
 
-  const handleLogin = async () => {
-    if (!phone) {
-      alert("Enter phone number");
-      return;
+  try {
+  const response = await axios.post(
+  "https://ajio-website-clone-1.onrender.com/login",
+  { phone, password }
+);
+    console.log("Login response:", response);
+    if (response.data.success) {
+      localStorage.setItem("userId", response.data.userId);
+      setIsLoggedIn(true);
+      alert("Login successful");
+      navigate("/");
+    } else {
+      alert(response.data.message);
     }
-    if (!password) {
-      alert("Enter password");
-      return;
-    }
-
-    try {
-      const response = await axios.post(`${API_URL}/login`, { phone, password });  // Updated to live URL
-      if (response.data.success) {
-        localStorage.setItem("userId", response.data.userId); 
-        setIsLoggedIn(true);
-        alert("Login successful");
-        navigate("/");
-      } else {
-        alert(response.data.message);
-      }
-    } catch (error) {
-      alert("Invalid phone number or password");
-    }
-  };
+  } catch (error) {
+    console.error("Login error:", error);
+    alert("Invalid phone number or password");
+  }
+};
 
   return (
     <div className="overlay">

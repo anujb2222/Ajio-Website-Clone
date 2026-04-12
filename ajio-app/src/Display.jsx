@@ -25,14 +25,14 @@ function Products() {
           >
 
           
-            <img
+            {/* <img
               src={item.image}
               alt={item.itemName}
 
               onError={(e) => {
                 e.target.src = "https://via.placeholder.com/150";
               }}
-            />
+            /> */}
 
             <div className="content">
               <p>{item.itemName}</p>

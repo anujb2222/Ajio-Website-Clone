@@ -3,38 +3,35 @@ const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const nodemailer = require("nodemailer");
+const otpGenerator = require("otp-generator");
 const multer = require("multer");
+const fs = require("fs");
+const path = require("path");
+
+
+const Razorpay = require("razorpay");
+const crypto = require("crypto");
+
+const razorpay = new Razorpay({
+  key_id: process.env.RAZORPAY_KEY_ID,
+  key_secret: process.env.RAZORPAY_KEY_SECRET,
+});
+
+
 const cloudinary = require("cloudinary").v2;
-const { CloudinaryStorage } = require("multer-storage-cloudinary");
-
-const app = express();
-
-app.use(cors());
-app.use(express.json());
-app.use(express.urlencoded({ extended: true })); 
-
-
-mongoose.connect(process.env.MONGO_URL)
-  .then(() => console.log("MongoDB Connected"))
-  .catch(err => console.log(err));
-
 
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
   api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET
+  api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
-
-const storage = new CloudinaryStorage({
-  cloudinary,
-  params: {
-    folder: "products",
-    allowed_formats: ["jpg", "jpeg", "png", "webp"]
-  }
-});
-
-const upload = multer({ storage });
+const app = express();
+app.use(cors());
+app.use(express.json());
+mongoose.connect(process.env.MONGO_URL)
+  .then(() => console.log("MongoDB Connected"))
+  .catch(err => console.log(err));
 
 
 const userSchema = new mongoose.Schema({
@@ -48,47 +45,175 @@ const userSchema = new mongoose.Schema({
 const User = mongoose.model("User", userSchema);
 
 
+app.post("/send-otp", async (req, res) => {
+  try {
+    const { email } = req.body;
+
+    if (!email) {
+      return res.status(400).json({ success: false, message: "Email required" });
+    }
+
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    const otpExpiry = Date.now() + 5 * 60 * 1000; 
+
+    await User.findOneAndUpdate(
+  { email },
+  { otp, otpExpiry },
+  {
+    upsert: true,
+    returnDocument: "after"
+  }
+);
+
+   const transporter = nodemailer.createTransport({
+  service: "gmail",
+  auth: {
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS
+  },
+  tls: {
+    rejectUnauthorized: false
+  }
+});
+
+    await transporter.sendMail({
+      from: process.env.EMAIL_USER,
+      to: email,
+      subject: "Your OTP Login",
+      text: `Your OTP is: ${otp}`
+    });
+
+    res.json({ success: true, message: "OTP sent successfully" });
+
+  } catch (err) {
+    console.log("SEND OTP ERROR:", err);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+});
+
+
+app.post("/verify-otp", async (req, res) => {
+  try {
+    const { email, otp } = req.body;
+
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      return res.status(400).json({ message: "User not found" });
+    }
+
+    if (!user.otp || user.otp !== otp) {
+      return res.status(400).json({ message: "Invalid OTP" });
+    }
+
+    if (!user.otpExpiry || user.otpExpiry < Date.now()) {
+      return res.status(400).json({ message: "OTP expired" });
+    }
+
+    user.otp = null;
+    user.otpExpiry = null;
+    await user.save();
+
+    res.json({
+      success: true,
+      message: "Login successful",
+      userId: user._id
+    });
+
+  } catch (err) {
+    console.log("VERIFY OTP ERROR:", err);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+app.post("/register", async (req, res) => {
+  try {
+    const { phone, password } = req.body;
+
+    console.log("BODY:", req.body);
+
+    if (!phone || !password) {
+      return res.status(400).json({ message: "All fields required" });
+    }
+    const exists = await User.findOne({ phone });
+
+    if (exists) {
+      return res.status(400).json({ message: "User already exists" });
+    }
+    await User.create({ phone, password });
+
+    res.json({
+      success: true,
+      message: "Registered successfully"
+    });
+
+  } catch (err) {
+  console.log("REGISTER ERROR:", err);
+
+  if (err.code === 11000) {
+    return res.status(400).json({ message: "User already exists" });
+  }
+
+  res.status(500).json({ message: "Server error" });
+}
+});
+app.post("/login", async (req, res) => {
+  try {
+    const { phone, password } = req.body;
+    const user = await User.findOne({ phone });
+
+    if (!user || user.password !== password) {
+      return res.json({ success: false, message: "Invalid credentials" });
+    }
+
+    res.json({
+      success: true,
+      message: "Login successful",
+      userId: user._id
+    });
+
+  } catch (err) {
+    console.log("LOGIN ERROR:", err);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+
+const { CloudinaryStorage } = require("multer-storage-cloudinary");
+
+const storage = new CloudinaryStorage({
+  cloudinary: cloudinary,
+  params: {
+    folder: "products", // Folder name in Cloudinary
+    allowed_formats: ["jpg", "jpeg", "png", "webp"], // Allowed formats
+  },
+});
+
+const upload = multer({ storage });
+app.use("/uploads", express.static("uploads"));
 const productSchema = new mongoose.Schema({
   itemName: String,
   itemQuantity: Number,
   itemPrice: Number,
   category: String,
-  image: String // Cloudinary URL
+  image: String
 });
-
 const Product = mongoose.model("Product", productSchema);
-
 app.post("/additem", upload.single("image"), async (req, res) => {
   try {
-
-    console.log("BODY:", req.body);
-    console.log("FILE:", req.file);
-
-    if (!req.file) {
-      return res.status(400).json({
-        success: false,
-        message: "Image upload failed"
-      });
-    }
-
     const newProduct = new Product({
       itemName: req.body.itemName,
-      itemQuantity: Number(req.body.itemQuantity),
-      itemPrice: Number(req.body.itemPrice),
+      itemQuantity: req.body.itemQuantity,
+      itemPrice: req.body.itemPrice,
       category: req.body.category,
-      image: req.file.path 
+      image: req.file.path,  // Cloudinary image URL
     });
 
     await newProduct.save();
-
-    res.json({
-      success: true,
-      message: "Product added successfully"
-    });
-
+    res.json({ success: true, message: "Product added" });
   } catch (err) {
-    console.log("ADD ITEM ERROR:", err);
-    res.status(500).json({ message: err.message });
+    console.error("Error adding product:", err);
+    res.status(500).json({ message: "Server error" });
   }
 });
 
@@ -98,53 +223,41 @@ app.get("/products", async (req, res) => {
   res.json(products);
 });
 
-
 app.get("/product/:id", async (req, res) => {
   const product = await Product.findById(req.params.id);
   res.json(product);
 });
 
-
-app.put("/updateitem/:id", upload.single("image"), async (req, res) => {
-  try {
-
-    let data = {
-      itemName: req.body.itemName,
-      itemQuantity: Number(req.body.itemQuantity),
-      itemPrice: Number(req.body.itemPrice),
-      category: req.body.category
-    };
-
-    if (req.file) {
-      data.image = req.file.path; 
-    }
-
-    const product = await Product.findByIdAndUpdate(req.params.id, data, {
-      new: true
-    });
-
-    res.json({
-      success: true,
-      product
-    });
-
-  } catch (err) {
-    console.log(err);
-    res.status(500).json({
-      message: "Error updating product"
-    });
-  }
-});
-
-
 app.delete("/product/:id", async (req, res) => {
   try {
+    const product = await Product.findById(req.params.id);
+
+    if (product && product.image) {
+      // Extract the public ID from the Cloudinary image URL
+      const publicId = product.image.split("/").pop().split(".")[0];
+
+      // Delete the image from Cloudinary
+      await cloudinary.uploader.destroy(publicId);
+    }
+
     await Product.findByIdAndDelete(req.params.id);
     res.json({ message: "Product deleted" });
   } catch (err) {
+    console.error("Error deleting product:", err);
     res.status(500).json({ message: "Error deleting product" });
   }
 });
+
+app.delete("/product/:id", async (req, res) => {
+  const product = await Product.findById(req.params.id);
+  if (product.image) {
+    const imagePath = "uploads/" + product.image;
+    if (fs.existsSync(imagePath)) fs.unlinkSync(imagePath);
+  }
+  await Product.findByIdAndDelete(req.params.id);
+  res.json({ message: "Product deleted" });
+});
+
 
 
 
