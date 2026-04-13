@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";  // Use axios for API calls
 import "./Order.css";
 
 function Order() {
@@ -9,39 +8,27 @@ function Order() {
     lastName: "",
     address1: "",
     address2: "",
-    state: "",
+    state: ""
   });
 
   const navigate = useNavigate();
-  const API_URL = "https://ajio-website-clone-1.onrender.com";  
 
   const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
     if (!form.firstName || !form.lastName || !form.address1 || !form.state) {
       alert("Please fill all required fields");
       return;
     }
 
- 
-    try {
-      await axios.post(`${API_URL}/save-shipping-details`, form);  
-    } catch (err) {
-      console.error("Error saving shipping details:", err);
-      alert("Error while saving shipping details. Please try again.");
-      return;
-    }
-
-
     localStorage.setItem("shippingDetails", JSON.stringify(form));
-
     navigate("/Payment");
   };
 
   return (
     <div className="order-container">
-      <h2 className="order-header">1. SHIPPING DETAILS</h2>
+      <h2 className="order-header">1. SHIPPING-DETAILS</h2>
       <form onSubmit={handleSubmit} className="order-form">
         <label>First Name *</label>
         <input name="firstName" onChange={handleChange} required />
@@ -61,23 +48,26 @@ function Order() {
           <option>Karnataka</option>
           <option>Kerala</option>
           <option>TamilNadu</option>
-          <option>Maharashtra</option>
+          <option> maharastra</option>
         </select>
+        
 
-        <button type="submit" className="submit-btn">
-          Proceed To Payment
-        </button>
+        <button type="submit" className="submit-btn">Proceed To Payment</button>
       </form>
-
+      
       <div className="payment-bottom">
-        <img
-          src="images/payment-screenshot.png"
-          alt="footer-screenshot"
-          className="footer-screenshot"
-        />
-      </div>
+  <img
+    src="images/payment-screenshot.png"
+    alt="footer-screenshot"
+    className="footer-screenshot"
+  />
+</div>
     </div>
+    
   );
+
+ 
+  
 }
 
 export default Order;
