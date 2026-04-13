@@ -8,11 +8,11 @@ function Admin() {
   const [products, setProducts] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState(""); 
 
-  const API_URL = "https://ajio-website-clone-1.onrender.com"; // Live backend URL
+  const API_URL = "https://ajio-website-clone-1.onrender.com"; 
 
   useEffect(() => {
     axios
-      .get(`${API_URL}/products`) // Update with live backend URL
+      .get(`${API_URL}/products`) 
       .then((res) => setProducts(res.data))
       .catch((err) => console.log(err));
   }, []);
@@ -20,9 +20,9 @@ function Admin() {
   const deleteProduct = (id) => {
     if (!window.confirm("Delete the product")) return;
     axios
-      .delete(`${API_URL}/product/${id}`) // Update with live backend URL
-      .then(() => setProducts(products.filter((p) => p._id !== id)))
-      .catch((err) => console.log(err));
+  .delete(`${API_URL}/products/${id}`) 
+  .then(() => setProducts(products.filter((p) => p._id !== id)))
+  .catch((err) => console.log("Delete error:", err.response || err));
   };
 
   return (

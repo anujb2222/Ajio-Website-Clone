@@ -12,7 +12,7 @@ function ViewItems() {
   useEffect(() => {
     const fetchProduct = async () => {
       try {
-        const res = await axios.get(`${API_URL}/product/${id}`); 
+  const res = await axios.get(`${API_URL}/products/${id}`);
         setProduct(res.data);
       } catch (err) {
         console.error("Error fetching product:", err);

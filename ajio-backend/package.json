@@ -23,7 +23,8 @@
     "multer-storage-cloudinary": "^4.0.0",
     "nodemailer": "^8.0.5",
     "otp-generator": "^4.0.1",
-    "razorpay": "^2.9.6"
+    "razorpay": "^2.9.6",
+    "streamifier": "^0.1.1"
   },
   "devDependencies": {
     "nodemon": "^3.1.11"

@@ -8,7 +8,6 @@ function OtpLogin({ setIsLoggedIn }) {
   const [otp, setOtp] = useState("");
   const navigate = useNavigate();
 
-
   const API_URL = "https://ajio-website-clone-1.onrender.com";
 
   const sendOtp = async () => {
@@ -26,7 +25,6 @@ function OtpLogin({ setIsLoggedIn }) {
     }
   };
 
- 
   const verifyOtp = async () => {
     if (!otp) {
       alert("Please enter the OTP");
@@ -40,10 +38,8 @@ function OtpLogin({ setIsLoggedIn }) {
       });
 
       if (res.data.success) {
-       
         localStorage.setItem("userId", res.data.userId);
         localStorage.setItem("email", email);
-
         setIsLoggedIn(true);
         alert("Login successful");
         navigate("/");
@@ -59,9 +55,7 @@ function OtpLogin({ setIsLoggedIn }) {
   return (
     <div className="overlay">
       <div className="login-box">
-        <span className="close-btn" onClick={() => navigate("/")}>
-          X
-        </span>
+        <span className="close-btn" onClick={() => navigate("/")}>X</span>
         <h2>Login using OTP</h2>
 
         <label>Email</label>

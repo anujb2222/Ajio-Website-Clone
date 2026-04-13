@@ -23,7 +23,7 @@ function AdminOrders() {
   const updateStatus = async (orderId, status) => {
     try {
       const res = await fetch(
-        `${API_URL}/update-order-status/${orderId}`,  // Use live URL
+        `${API_URL}/update-order-status/${orderId}`,  
         {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
@@ -71,7 +71,7 @@ function AdminOrders() {
                       {item.productId ? (
                         <>
                           <img
-                            src={`${API_URL}/uploads/${item.productId.image}`}  // Live image URL
+                            src={`${API_URL}/uploads/${item.productId.image}`}  
                             alt={item.productId.itemName}
                             width="50"
                           />

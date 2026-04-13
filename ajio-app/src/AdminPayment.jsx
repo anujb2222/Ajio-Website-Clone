@@ -5,7 +5,7 @@ import axios from "axios";
 function Payments() {
   const [orders, setOrders] = useState([]);
 
-  const API_URL = "https://ajio-website-clone-1.onrender.com"; // Live backend URL
+  const API_URL = "https://ajio-website-clone-1.onrender.com"; 
 
   useEffect(() => {
     axios

@@ -4,7 +4,6 @@ import axios from "axios";
 import "./Additem.css";
 
 function ProductForm() {
-
   const navigate = useNavigate();
   const { id } = useParams();
 
@@ -18,21 +17,20 @@ function ProductForm() {
 
   useEffect(() => {
     if (id) {
-      axios.get(`${API_URL}/product/${id}`)
-        .then(res => {
+      axios
+        .get(`${API_URL}/products/${id}`)
+        .then((res) => {
           setItemName(res.data.itemName);
           setItemQuantity(res.data.itemQuantity);
           setItemPrice(res.data.itemPrice);
           setCategory(res.data.category);
         })
-        .catch(err => console.log("GET PRODUCT ERROR:", err));
+        .catch((err) => console.log("GET PRODUCT ERROR:", err));
     }
   }, [id]);
 
   const handleSubmit = async () => {
-
     const data = new FormData();
-
     data.append("itemName", itemName);
     data.append("itemQuantity", itemQuantity);
     data.append("itemPrice", itemPrice);
@@ -43,42 +41,30 @@ function ProductForm() {
     }
 
     try {
-
       if (id) {
-        await axios.put(
-          `${API_URL}/updateitem/${id}`,
-          data,
-          {
-            headers: {
-              "Content-Type": "multipart/form-data"
-            }
-          }
-        );
+        await axios.put(`${API_URL}/products/updateitem/${id}`, data, {
+          headers: { "Content-Type": "multipart/form-data" },
+        });
         alert("Item Updated");
       } else {
-        await axios.post(
-          `${API_URL}/additem`,
-          data,
-          {
-            headers: {
-              "Content-Type": "multipart/form-data"
-            }
-          }
-        );
+        await axios.post(`${API_URL}/products/additem`, data, {
+          headers: { "Content-Type": "multipart/form-data" },
+        });
         alert("Item Added");
       }
 
       navigate("/admin");
-
     } catch (error) {
       console.log("ERROR:", error.response?.data || error.message);
+      alert(error.response?.data?.message || "Server error");
     }
   };
 
   return (
     <div className="additem-box">
-
-      <span className="x-mark" onClick={() => navigate("/admin")}>X</span>
+      <span className="x-mark" onClick={() => navigate("/admin")}>
+        X
+      </span>
 
       <h2>{id ? "Update Item" : "Add Item"}</h2>
 
@@ -103,10 +89,7 @@ function ProductForm() {
         onChange={(e) => setItemPrice(e.target.value)}
       />
 
-      <select
-        value={category}
-        onChange={(e) => setCategory(e.target.value)}
-      >
+      <select value={category} onChange={(e) => setCategory(e.target.value)}>
         <option value="">Select Category</option>
         <option value="Electronics">Electronics</option>
         <option value="Clothing">Clothing</option>
@@ -114,15 +97,11 @@ function ProductForm() {
         <option value="Other">Other</option>
       </select>
 
-      <input
-        type="file"
-        onChange={(e) => setImage(e.target.files[0])}
-      />
+      <input type="file" onChange={(e) => setImage(e.target.files[0])} />
 
       <button onClick={handleSubmit}>
         {id ? "Update Item" : "Add Item"}
       </button>
-
     </div>
   );
 }

@@ -5,7 +5,7 @@ const nodemailer = require("nodemailer");
 const transporter = nodemailer.createTransport({
   host: "smtp-relay.brevo.com",
   port: 587,
-  secure: false, 
+  secure: false,
   auth: {
     user: process.env.EMAIL_USER,
     pass: process.env.EMAIL_PASS
@@ -13,50 +13,57 @@ const transporter = nodemailer.createTransport({
   tls: { rejectUnauthorized: false }
 });
 
+// SEND OTP
 exports.sendOtp = async (req, res) => {
   try {
     const { email } = req.body;
     if (!email)
       return res.status(400).json({ success: false, message: "Email required" });
 
-   
+    // Generate OTP
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
-    const otpExpiry = Date.now() + 5 * 60 * 1000; // 5 min expiry
+    const otpExpiry = Date.now() + 5 * 60 * 1000; // 5 min
 
- 
+    // Save or update OTP in MongoDB
     await User.findOneAndUpdate(
       { email },
-      { otp, otpExpiry },
-      { upsert: true, returnDocument: "after" }
+      { $set: { email, otp, otpExpiry } },
+      { upsert: true, new: true }
     );
 
-    await transporter.sendMail({
-      from: process.env.EMAIL_FROM, 
-      to: email,
-      subject: "Your OTP Login",
-      text: `Your OTP is: ${otp}`
-    });
+    // Log OTP for testing (useful if SMTP fails)
+    console.log(`Generated OTP for ${email}: ${otp} (expires at ${new Date(otpExpiry)})`);
 
-    res.json({ success: true, message: "OTP sent successfully" });
+    // Try sending email (won’t break if fails)
+    try {
+      await transporter.sendMail({
+        from: process.env.EMAIL_FROM,
+        to: email,
+        subject: "Your OTP Login",
+        text: `Your OTP is: ${otp}`
+      });
+    } catch (mailErr) {
+      console.error("Failed to send OTP email:", mailErr);
+    }
+
+    res.json({ success: true, message: "OTP generated. Check console if email not received." });
   } catch (err) {
     console.error("SEND OTP ERROR:", err);
-    res.status(500).json({ success: false, message: "Failed to send OTP" });
+    res.status(500).json({ success: false, message: "Failed to generate OTP" });
   }
 };
 
-
+// VERIFY OTP
 exports.verifyOtp = async (req, res) => {
   try {
     const { email, otp } = req.body;
     const user = await User.findOne({ email });
 
     if (!user) return res.status(400).json({ message: "User not found" });
-    if (!user.otp || user.otp !== otp)
-      return res.status(400).json({ message: "Invalid OTP" });
-    if (!user.otpExpiry || user.otpExpiry < Date.now())
-      return res.status(400).json({ message: "OTP expired" });
+    if (!user.otp || user.otp !== otp) return res.status(400).json({ message: "Invalid OTP" });
+    if (!user.otpExpiry || user.otpExpiry < Date.now()) return res.status(400).json({ message: "OTP expired" });
 
-   
+    // Clear OTP after verification
     user.otp = null;
     user.otpExpiry = null;
     await user.save();
@@ -67,7 +74,6 @@ exports.verifyOtp = async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 };
-
 
 exports.register = async (req, res) => {
   try {
