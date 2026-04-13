@@ -1,15 +1,36 @@
 const Product = require("../models/Product");
+const cloudinary = require("cloudinary").v2;
 const fs = require("fs");
+require("dotenv").config();
+
+
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET
+});
 
 
 exports.addItem = async (req, res) => {
   try {
+    let imageUrl = null;
+
+   
+    if (req.file) {
+      const result = await cloudinary.uploader.upload(req.file.path, {
+        folder: "ajio_products"
+      });
+      imageUrl = result.secure_url;
+
+      fs.unlinkSync(req.file.path);
+    }
+
     const newProduct = new Product({
       itemName: req.body.itemName,
       itemQuantity: req.body.itemQuantity,
       itemPrice: req.body.itemPrice,
       category: req.body.category,
-      image: req.file ? req.file.filename : null
+      image: imageUrl
     });
 
     await newProduct.save();
@@ -42,6 +63,7 @@ exports.getProductById = async (req, res) => {
   }
 };
 
+
 exports.updateItem = async (req, res) => {
   try {
     let data = {
@@ -51,7 +73,13 @@ exports.updateItem = async (req, res) => {
       category: req.body.category
     };
 
-    if (req.file) data.image = req.file.filename;
+    if (req.file) {
+      const result = await cloudinary.uploader.upload(req.file.path, {
+        folder: "ajio_products"
+      });
+      data.image = result.secure_url;
+      fs.unlinkSync(req.file.path);
+    }
 
     const product = await Product.findByIdAndUpdate(req.params.id, data, { new: true });
     res.json({ success: true, product });
@@ -65,9 +93,11 @@ exports.updateItem = async (req, res) => {
 exports.deleteItem = async (req, res) => {
   try {
     const product = await Product.findById(req.params.id);
+
     if (product.image) {
-      const imagePath = "uploads/" + product.image;
-      if (fs.existsSync(imagePath)) fs.unlinkSync(imagePath);
+     
+      const publicId = product.image.split("/").pop().split(".")[0];
+      await cloudinary.uploader.destroy(`ajio_products/${publicId}`);
     }
 
     await Product.findByIdAndDelete(req.params.id);
