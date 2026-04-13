@@ -50,7 +50,7 @@ function Admin() {
             <option value="">All Categories</option>
             <option value="Electronics">Electronics</option>
             <option value="Clothing">Clothing</option>
-            <option value="home and kitchen">Home and Kitchen</option>
+           <option value="Home and Kitchen">Home and Kitchen</option>
             <option value="Other">Other</option>
           </select>
         </div>

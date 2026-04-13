@@ -8,7 +8,7 @@ function SignIn({ setIsLoggedIn }) {
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
 
-  const API_URL = "https://ajio-website-clone-1.onrender.com"; // Live backend
+  const API_URL = "https://ajio-website-clone-1.onrender.com"; 
 
   const handleLogin = async () => {
     if (!phone) return alert("Enter phone number");

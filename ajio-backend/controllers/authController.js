@@ -13,28 +13,26 @@ const transporter = nodemailer.createTransport({
   tls: { rejectUnauthorized: false }
 });
 
-// SEND OTP
+
 exports.sendOtp = async (req, res) => {
   try {
     const { email } = req.body;
     if (!email)
       return res.status(400).json({ success: false, message: "Email required" });
 
-    // Generate OTP
-    const otp = Math.floor(100000 + Math.random() * 900000).toString();
-    const otpExpiry = Date.now() + 5 * 60 * 1000; // 5 min
 
-    // Save or update OTP in MongoDB
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    const otpExpiry = Date.now() + 5 * 60 * 1000; 
+
     await User.findOneAndUpdate(
       { email },
       { $set: { email, otp, otpExpiry } },
       { upsert: true, new: true }
     );
 
-    // Log OTP for testing (useful if SMTP fails)
     console.log(`Generated OTP for ${email}: ${otp} (expires at ${new Date(otpExpiry)})`);
 
-    // Try sending email (won’t break if fails)
+
     try {
       await transporter.sendMail({
         from: process.env.EMAIL_FROM,
@@ -53,7 +51,7 @@ exports.sendOtp = async (req, res) => {
   }
 };
 
-// VERIFY OTP
+
 exports.verifyOtp = async (req, res) => {
   try {
     const { email, otp } = req.body;
@@ -63,7 +61,7 @@ exports.verifyOtp = async (req, res) => {
     if (!user.otp || user.otp !== otp) return res.status(400).json({ message: "Invalid OTP" });
     if (!user.otpExpiry || user.otpExpiry < Date.now()) return res.status(400).json({ message: "OTP expired" });
 
-    // Clear OTP after verification
+  
     user.otp = null;
     user.otpExpiry = null;
     await user.save();

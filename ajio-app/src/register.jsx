@@ -9,7 +9,7 @@ function Register() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const navigate = useNavigate();
 
-  const API_URL = "https://ajio-website-clone-1.onrender.com"; // Live backend URL
+  const API_URL = "https://ajio-website-clone-1.onrender.com";
 
   const handleRegister = async () => {
     if (!phone || !password || !confirmPassword) {
@@ -23,7 +23,7 @@ function Register() {
     }
 
     try {
-      const res = await axios.post(`${API_URL}/auth/register`, {  // ✅ add /auth
+      const res = await axios.post(`${API_URL}/auth/register`, {  
         phone,
         password,
       });
@@ -33,7 +33,7 @@ function Register() {
       alert(res.data.message);
 
       if (res.data.success) {
-        navigate("/signin"); // redirect to login page
+        navigate("/signin"); 
       }
 
     } catch (err) {

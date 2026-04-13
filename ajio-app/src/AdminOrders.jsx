@@ -4,11 +4,11 @@ import "./AdminOrders.css";
 function AdminOrders() {
   const [orders, setOrders] = useState([]);
 
-  const API_URL = "https://ajio-website-clone-1.onrender.com";  // Live backend URL
+  const API_URL = "https://ajio-website-clone-1.onrender.com";
 
   const fetchOrders = async () => {
     try {
-      const res = await fetch(`${API_URL}/orders`);  // Use live URL
+      const res = await fetch(`${API_URL}/orders`);
       const data = await res.json();
       setOrders(data);
     } catch (err) {
@@ -23,15 +23,19 @@ function AdminOrders() {
   const updateStatus = async (orderId, status) => {
     try {
       const res = await fetch(
-        `${API_URL}/update-order-status/${orderId}`,  
+        `${API_URL}/orders/update-order-status/${orderId}`,
         {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ status }),
         }
       );
+
       const data = await res.json();
-      if (data.success) fetchOrders();
+
+      if (data.success) {
+        fetchOrders();
+      }
     } catch (err) {
       console.error("Error updating status:", err);
     }
@@ -40,6 +44,7 @@ function AdminOrders() {
   return (
     <div className="admin-orders-table-container">
       <h2>All Orders</h2>
+
       {orders.length === 0 ? (
         <p>No orders yet</p>
       ) : (
@@ -55,23 +60,29 @@ function AdminOrders() {
               <th>Status</th>
             </tr>
           </thead>
+
           <tbody>
             {orders.map((order) => (
               <tr key={order._id}>
                 <td>{order._id}</td>
+
                 <td>{order.shipping?.name}</td>
+
                 <td>
                   {order.shipping?.address}, {order.shipping?.state}
                 </td>
+
                 <td>₹{order.totalPrice}</td>
+
                 <td>{order.paymentMethod}</td>
+
                 <td>
                   {order.items.map((item, index) => (
                     <div key={index} className="product-item">
                       {item.productId ? (
                         <>
                           <img
-                            src={`${API_URL}/uploads/${item.productId.image}`}  
+                            src={item.productId.image}
                             alt={item.productId.itemName}
                             width="50"
                           />
@@ -89,10 +100,13 @@ function AdminOrders() {
                     </div>
                   ))}
                 </td>
+
                 <td>
                   <select
                     value={order.status}
-                    onChange={(e) => updateStatus(order._id, e.target.value)}
+                    onChange={(e) =>
+                      updateStatus(order._id, e.target.value)
+                    }
                   >
                     <option value="Pending">Pending</option>
                     <option value="Processing">Processing</option>
