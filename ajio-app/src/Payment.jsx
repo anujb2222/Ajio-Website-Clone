@@ -8,7 +8,7 @@ function Payment() {
   const [total, setTotal] = useState(0);
   const navigate = useNavigate();
 
-  const API_URL = "https://ajio-website-clone-1.onrender.com"; // Live backend URL
+  const API_URL = "https://ajio-website-clone-1.onrender.com";
 
   useEffect(() => {
     const cartItems = JSON.parse(localStorage.getItem("cart")) || [];
@@ -54,7 +54,7 @@ function Payment() {
       paymentMethod: method,
     };
 
-    // Cash on Delivery
+    
     if (method === "cod") {
       try {
         const res = await fetch(`${API_URL}/orders`, {
@@ -76,32 +76,34 @@ function Payment() {
         } else {
           alert(data.message || "Failed to place order");
         }
-      } catch {
+      } catch (err) {
+        console.log(err);
         alert("Error placing order");
       }
       return;
     }
 
-    // Razorpay Payment
+   
     const scriptLoaded = await loadRazorpayScript();
     if (!scriptLoaded) return alert("Razorpay SDK failed to load.");
 
     let order;
 
     try {
-      const orderRes = await fetch(`${API_URL}/create-order`, {
+      const orderRes = await fetch(`${API_URL}/orders/create-order`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ amount: total }),
       });
 
       order = await orderRes.json();
-    } catch {
+    } catch (err) {
+      console.log(err);
       return alert("Error creating order");
     }
 
     const options = {
-      key: "rzp_test_SaD5l5rtQUtFMj",  // Replace with your Razorpay key
+      key: "rzp_test_SaD5l5rtQUtFMj",
       amount: order.amount,
       currency: "INR",
       order_id: order.id,
@@ -109,15 +111,18 @@ function Payment() {
 
       handler: async function (response) {
         try {
-          const verifyRes = await fetch(`${API_URL}/verify-payment`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              ...response,
-              orderData,
-              email,
-            }),
-          });
+          const verifyRes = await fetch(
+            `${API_URL}/orders/verify-payment`,
+            {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                ...response,
+                orderData,
+                email,
+              }),
+            }
+          );
 
           const data = await verifyRes.json();
 
@@ -129,7 +134,8 @@ function Payment() {
           } else {
             alert("Payment verification failed");
           }
-        } catch {
+        } catch (err) {
+          console.log(err);
           alert("Error verifying payment");
         }
       },
