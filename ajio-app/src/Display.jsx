@@ -16,32 +16,25 @@ function Products() {
   return (
     <div className="products">
       <div className="products-grid">
-
         {products.map((item) => (
           <Link
             to={`/Productdetails/${item._id}`}
             key={item._id}
             className="card"
           >
-
-          
-            {/* <img
-              src={item.image}
-              alt={item.itemName}
-
-              onError={(e) => {
-                e.target.src = "https://via.placeholder.com/150";
-              }}
-            /> */}
+            {item.image && (
+              <img
+                src={item.image}
+                alt={item.itemName}
+              />
+            )}
 
             <div className="content">
               <p>{item.itemName}</p>
               <p>₹{item.itemPrice}</p>
             </div>
-
           </Link>
         ))}
-
       </div>
     </div>
   );

@@ -7,13 +7,18 @@ function ViewItems() {
   const navigate = useNavigate();
   const [product, setProduct] = useState(null);
 
-  const API_URL = "https://ajio-website-clone-1.onrender.com"; // Live backend URL
+  const API_URL = "https://ajio-website-clone-1.onrender.com"; 
 
   useEffect(() => {
-    axios
-      .get(`${API_URL}/product/${id}`)  // Updated to live URL
-      .then(res => setProduct(res.data))
-      .catch(err => console.log(err));
+    const fetchProduct = async () => {
+      try {
+        const res = await axios.get(`${API_URL}/product/${id}`); 
+        setProduct(res.data);
+      } catch (err) {
+        console.error("Error fetching product:", err);
+      }
+    };
+    fetchProduct();
   }, [id]);
 
   if (!product) {
@@ -53,27 +58,29 @@ function ViewItems() {
             right: "20px",
             cursor: "pointer",
             color: "black"
-          }}>
+          }}
+        >
           ×
         </span>
 
         <h2 style={{ marginBottom: "20px", fontSize: "35px" }}>
           {product.itemName}
         </h2>
+
         {product.image && (
           <img
-            src={`${API_URL}/uploads/${product.image}`}  // Updated to live URL
+            src={product.image} 
             alt={product.itemName}
             style={{
               width: "100%",
               maxHeight: "350px",
-              objectFit: "contain",  
+              objectFit: "contain",
               borderRadius: "12px",
               marginBottom: "20px",
-            
             }}
           />
         )}
+
         <p style={{ margin: "12px ", fontSize: "24px" }}>
           <strong>Quantity:</strong> {product.itemQuantity}
         </p>

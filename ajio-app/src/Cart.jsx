@@ -11,8 +11,7 @@ function Cart() {
   const navigate = useNavigate();
 
   const userId = localStorage.getItem("userId");
-
-  const API_URL = "https://ajio-website-clone-1.onrender.com";  // Live backend URL
+  const API_URL = "https://ajio-website-clone-1.onrender.com"; 
 
   useEffect(() => {
     setCartItems(getCart());
@@ -55,8 +54,7 @@ function Cart() {
 
   const decreaseQty = (id) => {
     const updated = cartItems.map((item) => {
-      if (item._id === id && item.itemQuantity > 1)
-        item.itemQuantity -= 1;
+      if (item._id === id && item.itemQuantity > 1) item.itemQuantity -= 1;
       return item;
     });
     setCartItems(updated);
@@ -82,7 +80,7 @@ function Cart() {
           >
             My Orders
           </li>
-          <li onClick={() => navigate("/Home")}>GO to home</li>
+          <li onClick={() => navigate("/home")}>Go to Home</li>
         </ul>
       </div>
 
@@ -101,7 +99,7 @@ function Cart() {
                   {cartItems.map((item) => (
                     <div key={item._id} className="cart-item">
                       <img
-                        src={`${API_URL}/uploads/${item.image}`}  // Updated to live backend URL
+                        src={item.image || "https://via.placeholder.com/150"}
                         alt={item.itemName}
                         className="cart-image"
                       />
@@ -174,14 +172,6 @@ function Cart() {
                       Proceed to Checkout
                     </button>
                   </Link>
-
-                  <div className="checkout-bottom">
-                    <img
-                      src="images/checkoutscreenshot.png"
-                      alt="footer-screenshot"
-                      className="footer-screenshot"
-                    />
-                  </div>
                 </div>
               </>
             )}
@@ -206,7 +196,7 @@ function Cart() {
                     {order.items.map((item, index) => (
                       <div key={index} className="order-item">
                         <img
-                          src={`${API_URL}/uploads/${item.productId.image}`}  // Updated to live backend URL
+                          src={item.productId.image || "https://via.placeholder.com/150"}
                           alt={item.productId.itemName}
                           className="order-item-img"
                         />
@@ -233,8 +223,7 @@ function Cart() {
                   </div>
 
                   <div className="order-date">
-                    Order Date:{" "}
-                    {new Date(order.createdAt).toLocaleDateString()}
+                    Order Date: {new Date(order.createdAt).toLocaleDateString()}
                   </div>
                 </div>
               ))

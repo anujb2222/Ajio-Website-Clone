@@ -23,20 +23,21 @@ function Register() {
     }
 
     try {
-      const res = await axios.post(`${API_URL}/register`, {  // Updated to live URL
+      const res = await axios.post(`${API_URL}/auth/register`, {  // ✅ add /auth
         phone,
         password,
       });
 
+      console.log("Register response:", res.data);
+
       alert(res.data.message);
 
       if (res.data.success) {
-        navigate("/");
+        navigate("/signin"); // redirect to login page
       }
 
     } catch (err) {
-      console.log(err.response?.data || err.message);
-
+      console.error("Register error:", err.response?.data || err);
       alert(err.response?.data?.message || "Server error");
     }
   };
