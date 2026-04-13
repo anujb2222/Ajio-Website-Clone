@@ -1,5 +1,4 @@
 require("dotenv").config();
-require("dns").setDefaultResultOrder("ipv4first");
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
@@ -18,25 +17,8 @@ const razorpay = new Razorpay({
   key_secret: process.env.RAZORPAY_KEY_SECRET,
 });
 
-
-const cloudinary = require("cloudinary").v2;
-
-cloudinary.config({
-  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-  api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET,
-});
-
 const app = express();
-app.use(cors({
-  origin: [
-    "http://localhost:5173",
-    "ajio-website-clone-sexk-anujb2222s-projects.vercel.app"
-  ],
-  methods: ["GET", "POST", "PUT", "DELETE"],
-  credentials: true
-}));
-
+app.use(cors());
 app.use(express.json());
 mongoose.connect(process.env.MONGO_URL)
   .then(() => console.log("MongoDB Connected"))
@@ -74,7 +56,7 @@ app.post("/send-otp", async (req, res) => {
   }
 );
 
- const transporter = nodemailer.createTransport({
+   const transporter = nodemailer.createTransport({
   service: "gmail",
   auth: {
     user: process.env.EMAIL_USER,
@@ -166,42 +148,34 @@ app.post("/register", async (req, res) => {
   res.status(500).json({ message: "Server error" });
 }
 });
+
 app.post("/login", async (req, res) => {
   try {
     const { phone, password } = req.body;
 
     const user = await User.findOne({ phone });
 
-    if (!user) {
-      return res.json({ success: false, message: "User not found" });
+    if (!user || user.password !== password) {
+      return res.json({ success: false, message: "Invalid credentials" });
     }
 
-    if (String(user.password) !== String(password)) {
-      return res.json({ success: false, message: "Wrong password" });
-    }
-
-    return res.json({
+    res.json({
       success: true,
       message: "Login successful",
       userId: user._id
     });
 
   } catch (err) {
-    console.log(err);
+    console.log("LOGIN ERROR:", err);
     res.status(500).json({ message: "Server error" });
   }
 });
 
-const { CloudinaryStorage } = require("multer-storage-cloudinary");
 
-const storage = new CloudinaryStorage({
-  cloudinary: cloudinary,
-  params: {
-    folder: "products", // Folder name in Cloudinary
-    allowed_formats: ["jpg", "jpeg", "png", "webp"], // Allowed formats
-  },
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => cb(null, "uploads/"),
+  filename: (req, file, cb) => cb(null, Date.now() + path.extname(file.originalname))
 });
-
 const upload = multer({ storage });
 app.use("/uploads", express.static("uploads"));
 const productSchema = new mongoose.Schema({
@@ -212,6 +186,7 @@ const productSchema = new mongoose.Schema({
   image: String
 });
 const Product = mongoose.model("Product", productSchema);
+
 app.post("/additem", upload.single("image"), async (req, res) => {
   try {
     const newProduct = new Product({
@@ -219,13 +194,11 @@ app.post("/additem", upload.single("image"), async (req, res) => {
       itemQuantity: req.body.itemQuantity,
       itemPrice: req.body.itemPrice,
       category: req.body.category,
-      image: req.file.path,  // Cloudinary image URL
+      image: req.file ? req.file.filename : null
     });
-
     await newProduct.save();
     res.json({ success: true, message: "Product added" });
   } catch (err) {
-    console.error("Error adding product:", err);
     res.status(500).json({ message: "Server error" });
   }
 });
@@ -241,23 +214,19 @@ app.get("/product/:id", async (req, res) => {
   res.json(product);
 });
 
-app.delete("/product/:id", async (req, res) => {
+app.put("/updateitem/:id", upload.single("image"), async (req, res) => {
   try {
-    const product = await Product.findById(req.params.id);
-
-    if (product && product.image) {
-      // Extract the public ID from the Cloudinary image URL
-      const publicId = product.image.split("/").pop().split(".")[0];
-
-      // Delete the image from Cloudinary
-      await cloudinary.uploader.destroy(publicId);
-    }
-
-    await Product.findByIdAndDelete(req.params.id);
-    res.json({ message: "Product deleted" });
+    let data = {
+      itemName: req.body.itemName,
+      itemQuantity: Number(req.body.itemQuantity),
+      itemPrice: Number(req.body.itemPrice),
+      category: req.body.category
+    };
+    if (req.file) data.image = req.file.filename;
+    const product = await Product.findByIdAndUpdate(req.params.id, data, { new: true });
+    res.json({ success: true, product });
   } catch (err) {
-    console.error("Error deleting product:", err);
-    res.status(500).json({ message: "Error deleting product" });
+    res.status(500).send("Error updating product");
   }
 });
 
@@ -500,6 +469,8 @@ app.put("/update-order-status/:orderId", async (req, res) => {
     res.status(500).json({ success: false, message: "Server error" });
   }
 });
+
+app.listen(5000, () => console.log("Server running on port 5000"));     
 
 const PORT = process.env.PORT || 5000;
 
