@@ -72,7 +72,7 @@ function Payment() {
           alert("Order placed successfully!");
           localStorage.removeItem("cart");
           localStorage.removeItem("shippingDetails");
-          navigate("/cart");
+          navigate("/order-success");
         } else {
           alert(data.message || "Failed to place order");
         }
@@ -130,7 +130,7 @@ function Payment() {
             alert("Payment successful!");
             localStorage.removeItem("cart");
             localStorage.removeItem("shippingDetails");
-            navigate("/cart");
+         navigate("/order-success");
           } else {
             alert("Payment verification failed");
           }
