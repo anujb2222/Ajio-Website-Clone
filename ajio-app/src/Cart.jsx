@@ -29,7 +29,7 @@ function Cart() {
       return;
     }
     try {
-      const res = await fetch(`${API_URL}/user-orders/${userId}`);
+      const res = await fetch(`${API_URL}/orders/user-orders/${userId}`);
       const data = await res.json();
       setOrders(data);
     } catch (err) {
