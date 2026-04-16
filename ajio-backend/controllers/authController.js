@@ -1,12 +1,14 @@
 require("dotenv").config();
 const User = require("../models/User");
-const { BrevoClient } = require("@getbrevo/brevo"); 
+const SibApiV3Sdk = require("@getbrevo/brevo"); 
 
-const client = new BrevoClient({
-    config: {
-        apiKey: process.env.BREVO_API_KEY 
-    }
-});
+
+let defaultClient = SibApiV3Sdk.ApiClient.instance;
+let apiKey = defaultClient.authentications['api-key'];
+apiKey.apiKey = process.env.BREVO_API_KEY;
+
+
+const apiInstance = new SibApiV3Sdk.TransactionalEmailsApi();
 
 exports.sendOtp = async (req, res) => {
     try {
@@ -15,21 +17,20 @@ exports.sendOtp = async (req, res) => {
 
         const otp = Math.floor(100000 + Math.random() * 900000).toString();
 
-      
         await User.findOneAndUpdate(
             { email },
             { email, otp, otpExpiry: Date.now() + 5 * 60 * 1000 },
             { upsert: true }
         );
 
-        
-        const result = await client.transactionalEmails.sendTransacEmail({
-            subject: "Your OTP Code",
-            htmlContent: `<h2>Your OTP is: <b>${otp}</b></h2>`,
-            textContent: `Your OTP is ${otp}`,
-            sender: { name: "OTP Service", email: process.env.EMAIL_USER },
-            to: [{ email: email }]
-        });
+ 
+        const sendSmtpEmail = new SibApiV3Sdk.SendSmtpEmail();
+        sendSmtpEmail.subject = "Your OTP Code";
+        sendSmtpEmail.htmlContent = `<h2>Your OTP is: <b>${otp}</b></h2>`;
+        sendSmtpEmail.sender = { name: "OTP Service", email: process.env.EMAIL_USER };
+        sendSmtpEmail.to = [{ email: email }];
+
+        const result = await apiInstance.sendTransacEmail(sendSmtpEmail);
 
         console.log("EMAIL SENT SUCCESS:", result.messageId);
         res.json({ success: true, message: "OTP sent to email" });
