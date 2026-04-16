@@ -1,87 +1,62 @@
 require("dotenv").config();
 const User = require("../models/User");
-const nodemailer = require("nodemailer");
+const { BrevoClient } = require("@getbrevo/brevo"); 
 
 
-const transporter = nodemailer.createTransport({
-  host: "smtp.gmail.com",
-  port: 465,
-  secure: true,
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS
-  }
+const client = new BrevoClient({
+    apiKey: process.env.BREVO_API_KEY 
 });
 
-
-
 exports.sendOtp = async (req, res) => {
-  try {
-    const { email } = req.body;
-    if (!email) return res.status(400).json({ message: "Email required" });
+    try {
+        const { email } = req.body;
+        if (!email) return res.status(400).json({ message: "Email required" });
 
-    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+        const otp = Math.floor(100000 + Math.random() * 900000).toString();
 
-    await User.findOneAndUpdate(
-      { email },
-      {
-        email,
-        otp,
-        otpExpiry: Date.now() + 5 * 60 * 1000
-      },
-      { upsert: true }
-    );
+      
+        await User.findOneAndUpdate(
+            { email },
+            { email, otp, otpExpiry: Date.now() + 5 * 60 * 1000 },
+            { upsert: true }
+        );
 
-    const info = await transporter.sendMail({
-      from: `"OTP Service" <${process.env.EMAIL_USER}>`,
-      to: email,
-      subject: "Your OTP Code",
-      text: `Your OTP is ${otp}`,
-      html: `<h2>Your OTP is: <b>${otp}</b></h2>`
-    });
+        
+        const result = await client.transactionalEmails.sendTransacEmail({
+            subject: "Your OTP Code",
+            htmlContent: `<h2>Your OTP is: <b>${otp}</b></h2>`,
+            textContent: `Your OTP is ${otp}`,
+            sender: { name: "OTP Service", email: process.env.EMAIL_USER },
+            to: [{ email: email }]
+        });
 
-    console.log("EMAIL SENT SUCCESS:", info.response);
-
-    res.json({
-      success: true,
-      message: "OTP sent to email"
-    });
-
-  } catch (err) {
-    console.error("SEND OTP ERROR:", err);
-    res.status(500).json({ message: "Error sending OTP" });
-  }
+        console.log("EMAIL SENT SUCCESS:", result.messageId);
+        res.json({ success: true, message: "OTP sent to email" });
+    } catch (err) {
+        console.error("SEND OTP ERROR:", err);
+        res.status(500).json({ message: "Error sending OTP" });
+    }
 };
 
-
-
 exports.verifyOtp = async (req, res) => {
-  try {
-    const { email, otp } = req.body;
+    try {
+        const { email, otp } = req.body;
+        const user = await User.findOne({ email });
 
-    const user = await User.findOne({ email });
-    if (!user) return res.status(400).json({ message: "User not found" });
+        if (!user) return res.status(400).json({ message: "User not found" });
+        if (user.otp !== otp) return res.status(400).json({ message: "Invalid OTP" });
+        if (user.otpExpiry < Date.now()) return res.status(400).json({ message: "OTP expired" });
 
-    if (user.otp !== otp)
-      return res.status(400).json({ message: "Invalid OTP" });
+        
+        user.otp = null;
+        user.otpExpiry = null;
+        await user.save();
 
-    if (user.otpExpiry < Date.now())
-      return res.status(400).json({ message: "OTP expired" });
-
-    user.otp = null;
-    user.otpExpiry = null;
-    await user.save();
-
-    res.json({
-      success: true,
-      message: "Login successful",
-      userId: user._id
-    });
-
-  } catch (err) {
-    console.error("VERIFY OTP ERROR:", err);
-    res.status(500).json({ message: "Error verifying OTP" });
-  }
+        res.json({ success: true, message: "Login successful", userId: user._id });
+    } catch (err) {
+        console.error("VERIFY OTP ERROR:", err);
+        res.status(500).json({ message: "Error verifying OTP" });
+    }
 };
 
 
