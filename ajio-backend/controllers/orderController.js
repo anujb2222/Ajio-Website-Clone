@@ -1,7 +1,35 @@
 const Order = require("../models/Order");
-const nodemailer = require("nodemailer");
 const razorpay = require("../config/razorpay");
 const crypto = require("crypto");
+const axios = require("axios"); 
+
+
+const sendBrevoEmail = async (toEmail, subject, htmlContent) => {
+  try {
+    await axios.post(
+      "https://api.brevo.com/v3/smtp/email",
+      {
+        sender: { 
+          name: "AJIO Clone", 
+          email: process.env.EMAIL_USER 
+        },
+        to: [{ email: toEmail }],
+        subject: subject,
+        htmlContent: htmlContent,
+      },
+      {
+        headers: {
+          "api-key": process.env.BREVO_API_KEY,
+          "content-type": "application/json",
+          "accept": "application/json"
+        },
+      }
+    );
+    console.log(`✅ Email sent successfully to ${toEmail}`);
+  } catch (error) {
+    console.error(" BREVO ERROR:", error.response?.data || error.message);
+  }
+};
 
 
 exports.createOrder = async (req, res) => {
@@ -11,7 +39,6 @@ exports.createOrder = async (req, res) => {
       amount: amount * 100,
       currency: "INR"
     });
-
     res.json(order);
   } catch (err) {
     console.error("CREATE ORDER ERROR:", err);
@@ -23,7 +50,6 @@ exports.verifyPayment = async (req, res) => {
   try {
     const { razorpay_order_id, razorpay_payment_id, razorpay_signature, orderData, email } = req.body;
     
-   
     const body = razorpay_order_id + "|" + razorpay_payment_id;
     const expected = crypto.createHmac("sha256", process.env.RAZORPAY_KEY_SECRET)
       .update(body)
@@ -31,7 +57,6 @@ exports.verifyPayment = async (req, res) => {
 
     if (expected !== razorpay_signature) return res.json({ success: false });
 
- 
     const order = new Order({
       ...orderData,
       paymentMethod: "online",
@@ -41,14 +66,11 @@ exports.verifyPayment = async (req, res) => {
     });
     await order.save();
 
-   
     res.json({ success: true });
 
- 
     const emailHtml = `
       <h2>Order Placed Successfully 🎉</h2>
       <p><b>Order ID:</b> ${razorpay_order_id}</p>
-      <p><b>Payment Method:</b> Online</p>
       <p><b>Total Price:</b> ₹${orderData.totalPrice}</p>
       <p>Thank you for shopping with us!</p>`;
     
@@ -59,6 +81,7 @@ exports.verifyPayment = async (req, res) => {
     res.status(500).json({ success: false });
   }
 };
+
 exports.placeCODOrder = async (req, res) => {
   try {
     const { userId, email, shipping, items, totalPrice } = req.body;
@@ -72,7 +95,6 @@ exports.placeCODOrder = async (req, res) => {
     await order.save();
     res.json({ success: true, message: "Order placed successfully" });
 
-   
     const emailHtml = `
       <h2>COD Order Placed Successfully 🎉</h2>
       <p><b>Payment Method:</b> Cash on Delivery</p>
@@ -97,7 +119,6 @@ exports.getAllOrders = async (req, res) => {
   }
 };
 
-
 exports.getUserOrders = async (req, res) => {
   try {
     const { userId } = req.params;
@@ -108,7 +129,6 @@ exports.getUserOrders = async (req, res) => {
     res.status(500).json({ message: "Error fetching orders" });
   }
 };
-
 
 exports.updateOrderStatus = async (req, res) => {
   try {
