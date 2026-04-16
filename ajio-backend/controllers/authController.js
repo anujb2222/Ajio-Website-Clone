@@ -1,14 +1,11 @@
 require("dotenv").config();
 const User = require("../models/User");
-const SibApiV3Sdk = require("@getbrevo/brevo"); 
+const { TransactionalEmailsApi, SendSmtpEmail } = require("@getbrevo/brevo");
+
+const apiInstance = new TransactionalEmailsApi();
 
 
-let defaultClient = SibApiV3Sdk.ApiClient.instance;
-let apiKey = defaultClient.authentications['api-key'];
-apiKey.apiKey = process.env.BREVO_API_KEY;
-
-
-const apiInstance = new SibApiV3Sdk.TransactionalEmailsApi();
+apiInstance.setApiKey(0, process.env.BREVO_API_KEY); 
 
 exports.sendOtp = async (req, res) => {
     try {
@@ -23,23 +20,24 @@ exports.sendOtp = async (req, res) => {
             { upsert: true }
         );
 
- 
-        const sendSmtpEmail = new SibApiV3Sdk.SendSmtpEmail();
+       
+        const sendSmtpEmail = new SendSmtpEmail();
         sendSmtpEmail.subject = "Your OTP Code";
         sendSmtpEmail.htmlContent = `<h2>Your OTP is: <b>${otp}</b></h2>`;
         sendSmtpEmail.sender = { name: "OTP Service", email: process.env.EMAIL_USER };
         sendSmtpEmail.to = [{ email: email }];
 
+      
         const result = await apiInstance.sendTransacEmail(sendSmtpEmail);
 
-        console.log("EMAIL SENT SUCCESS:", result.messageId);
+        console.log("EMAIL SENT SUCCESS:", result.body.messageId);
         res.json({ success: true, message: "OTP sent to email" });
     } catch (err) {
-        console.error("SEND OTP ERROR:", err);
+      
+        console.error("SEND OTP ERROR:", err.response ? err.response.body : err);
         res.status(500).json({ message: "Error sending OTP" });
     }
 };
-
 exports.verifyOtp = async (req, res) => {
     try {
         const { email, otp } = req.body;
