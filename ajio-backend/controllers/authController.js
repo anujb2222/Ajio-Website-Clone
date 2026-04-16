@@ -1,11 +1,6 @@
 require("dotenv").config();
 const User = require("../models/User");
-const { TransactionalEmailsApi, SendSmtpEmail } = require("@getbrevo/brevo");
-
-const apiInstance = new TransactionalEmailsApi();
-
-
-apiInstance.setApiKey(0, process.env.BREVO_API_KEY); 
+const axios = require("axios");
 
 exports.sendOtp = async (req, res) => {
     try {
@@ -14,27 +9,44 @@ exports.sendOtp = async (req, res) => {
 
         const otp = Math.floor(100000 + Math.random() * 900000).toString();
 
+        // Update User in DB
         await User.findOneAndUpdate(
             { email },
             { email, otp, otpExpiry: Date.now() + 5 * 60 * 1000 },
             { upsert: true }
         );
 
-       
-        const sendSmtpEmail = new SendSmtpEmail();
-        sendSmtpEmail.subject = "Your OTP Code";
-        sendSmtpEmail.htmlContent = `<h2>Your OTP is: <b>${otp}</b></h2>`;
-        sendSmtpEmail.sender = { name: "OTP Service", email: process.env.EMAIL_USER };
-        sendSmtpEmail.to = [{ email: email }];
+        // Direct API Call to Brevo
+        const response = await axios({
+            method: 'post',
+            url: 'https://api.brevo.com/v3/smtp/email',
+            headers: {
+                'accept': 'application/json',
+                'api-key': process.env.BREVO_API_KEY,
+                'content-type': 'application/json'
+            },
+            data: {
+                sender: { 
+                    name: "OTP Service", 
+                    email: process.env.EMAIL_USER // Must be verified in Brevo
+                },
+                to: [{ email: email }],
+                subject: "Your OTP Code",
+                htmlContent: `<h2>Your OTP is: <b>${otp}</b></h2>`,
+                textContent: `Your OTP is ${otp}`
+            }
+        });
 
-      
-        const result = await apiInstance.sendTransacEmail(sendSmtpEmail);
-
-        console.log("EMAIL SENT SUCCESS:", result.body.messageId);
+        console.log("EMAIL SENT SUCCESS:", response.data.messageId);
         res.json({ success: true, message: "OTP sent to email" });
+
     } catch (err) {
-      
-        console.error("SEND OTP ERROR:", err.response ? err.response.body : err);
+        // Detailed error logging
+        if (err.response) {
+            console.error("BREVO API ERROR:", err.response.data);
+        } else {
+            console.error("SEND OTP ERROR:", err.message);
+        }
         res.status(500).json({ message: "Error sending OTP" });
     }
 };
