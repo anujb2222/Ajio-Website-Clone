@@ -2,9 +2,10 @@ require("dotenv").config();
 const User = require("../models/User");
 const { BrevoClient } = require("@getbrevo/brevo"); 
 
-
 const client = new BrevoClient({
-    apiKey: process.env.BREVO_API_KEY 
+    config: {
+        apiKey: process.env.BREVO_API_KEY 
+    }
 });
 
 exports.sendOtp = async (req, res) => {
