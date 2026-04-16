@@ -19,10 +19,11 @@ exports.createOrder = async (req, res) => {
   }
 };
 
-
 exports.verifyPayment = async (req, res) => {
   try {
     const { razorpay_order_id, razorpay_payment_id, razorpay_signature, orderData, email } = req.body;
+    
+   
     const body = razorpay_order_id + "|" + razorpay_payment_id;
     const expected = crypto.createHmac("sha256", process.env.RAZORPAY_KEY_SECRET)
       .update(body)
@@ -30,6 +31,7 @@ exports.verifyPayment = async (req, res) => {
 
     if (expected !== razorpay_signature) return res.json({ success: false });
 
+ 
     const order = new Order({
       ...orderData,
       paymentMethod: "online",
@@ -37,43 +39,32 @@ exports.verifyPayment = async (req, res) => {
       razorpayPaymentId: razorpay_payment_id,
       razorpayOrderId: razorpay_order_id
     });
-
     await order.save();
+
+   
     res.json({ success: true });
 
-    const transporter = nodemailer.createTransport({
-      host: "smtp.gmail.com",
-      port: 587,
-      secure: false,
-      auth: { user: process.env.EMAIL_USER, pass: process.env.EMAIL_PASS },
-      tls: { rejectUnauthorized: false }
-    });
-
-    await transporter.sendMail({
-      from: process.env.EMAIL_USER,
-      to: email,
-      subject: "Order Confirmed - AJIO",
-      html: `<h2>Order Placed Successfully 🎉</h2>
-             <p><b>Payment Method:</b> Online</p>
-             <p><b>Total Price:</b> ₹${orderData.totalPrice}</p>
-             <p>Thank you for shopping with us!</p>`
-    });
+ 
+    const emailHtml = `
+      <h2>Order Placed Successfully 🎉</h2>
+      <p><b>Order ID:</b> ${razorpay_order_id}</p>
+      <p><b>Payment Method:</b> Online</p>
+      <p><b>Total Price:</b> ₹${orderData.totalPrice}</p>
+      <p>Thank you for shopping with us!</p>`;
+    
+    sendBrevoEmail(email, "Order Confirmed - AJIO", emailHtml);
 
   } catch (err) {
     console.error("VERIFY PAYMENT ERROR:", err);
     res.status(500).json({ success: false });
   }
 };
-
 exports.placeCODOrder = async (req, res) => {
   try {
     const { userId, email, shipping, items, totalPrice } = req.body;
 
     const order = new Order({
-      userId,
-      shipping,
-      items,
-      totalPrice,
+      userId, shipping, items, totalPrice,
       paymentMethod: "COD",
       paymentStatus: "pending"
     });
@@ -81,30 +72,20 @@ exports.placeCODOrder = async (req, res) => {
     await order.save();
     res.json({ success: true, message: "Order placed successfully" });
 
-    const transporter = nodemailer.createTransport({
-      host: "smtp.gmail.com",
-      port: 587,
-      secure: false,
-      auth: { user: process.env.EMAIL_USER, pass: process.env.EMAIL_PASS },
-      tls: { rejectUnauthorized: false }
-    });
+   
+    const emailHtml = `
+      <h2>COD Order Placed Successfully 🎉</h2>
+      <p><b>Payment Method:</b> Cash on Delivery</p>
+      <p><b>Total Price:</b> ₹${totalPrice}</p>
+      <p>We will deliver your order soon 🚚</p>`;
 
-    await transporter.sendMail({
-      from: process.env.EMAIL_USER,
-      to: email,
-      subject: "COD Order Confirmed - AJIO",
-      html: `<h2>Order Placed Successfully 🎉</h2>
-             <p><b>Payment Method:</b> COD</p>
-             <p><b>Total Price:</b> ₹${totalPrice}</p>
-             <p>We will deliver your order soon 🚚</p>`
-    });
+    sendBrevoEmail(email, "COD Order Confirmed - AJIO", emailHtml);
 
   } catch (err) {
     console.error("PLACE COD ORDER ERROR:", err);
     res.status(500).json({ success: false, message: "Server error" });
   }
 };
-
 
 exports.getAllOrders = async (req, res) => {
   try {
