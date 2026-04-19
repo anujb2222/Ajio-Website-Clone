@@ -3,7 +3,6 @@ const razorpay = require("../config/razorpay");
 const crypto = require("crypto");
 const axios = require("axios");
 
-
 const sendBrevoEmail = async (toEmail, subject, htmlContent) => {
   try {
     const response = await axios.post(
@@ -29,8 +28,7 @@ const sendBrevoEmail = async (toEmail, subject, htmlContent) => {
 
     console.log("Email sent:", response.data);
   } catch (error) {
-    console.error(" BREVO FULL ERROR:", error.response?.data || error.message);
-    throw error; 
+    console.error("BREVO FULL ERROR:", error.response?.data || error.message);
   }
 };
 
@@ -92,17 +90,18 @@ exports.verifyPayment = async (req, res) => {
       <p>Thank you for shopping with us!</p>
     `;
 
-
     await sendBrevoEmail(email, "Order Confirmed - AJIO", emailHtml);
 
-    return res.json({ success: true });
+    return res.json({
+      success: true,
+      orderId: order._id,
+    });
 
   } catch (err) {
     console.error("VERIFY PAYMENT ERROR:", err);
     res.status(500).json({ success: false });
   }
 };
-
 
 exports.placeCODOrder = async (req, res) => {
   try {
@@ -128,12 +127,13 @@ exports.placeCODOrder = async (req, res) => {
       <p>We will deliver your order soon 🚚</p>
     `;
 
-  
     await sendBrevoEmail(email, "COD Order Confirmed - AJIO", emailHtml);
 
+    
     return res.json({
       success: true,
       message: "Order placed successfully",
+      orderId: order._id,
     });
 
   } catch (err) {
@@ -142,9 +142,13 @@ exports.placeCODOrder = async (req, res) => {
   }
 };
 
+
 exports.getAllOrders = async (req, res) => {
   try {
-    const orders = await Order.find().populate("items.productId").sort({ createdAt: -1 });
+    const orders = await Order.find()
+      .populate("items.productId")
+      .sort({ createdAt: -1 });
+
     res.json(orders);
   } catch (err) {
     console.error("GET ALL ORDERS ERROR:", err);
@@ -152,10 +156,15 @@ exports.getAllOrders = async (req, res) => {
   }
 };
 
+
 exports.getUserOrders = async (req, res) => {
   try {
     const { userId } = req.params;
-    const orders = await Order.find({ userId }).populate("items.productId").sort({ createdAt: -1 });
+
+    const orders = await Order.find({ userId })
+      .populate("items.productId")
+      .sort({ createdAt: -1 });
+
     res.json(orders);
   } catch (err) {
     console.error("GET USER ORDERS ERROR:", err);
@@ -163,19 +172,51 @@ exports.getUserOrders = async (req, res) => {
   }
 };
 
+
 exports.updateOrderStatus = async (req, res) => {
   try {
     const { orderId } = req.params;
     const { status } = req.body;
 
     const order = await Order.findById(orderId);
-    if (!order) return res.status(404).json({ success: false, message: "Order not found" });
+
+    if (!order) {
+      return res.status(404).json({
+        success: false,
+        message: "Order not found",
+      });
+    }
 
     order.status = status;
     await order.save();
+
     res.json({ success: true });
   } catch (err) {
     console.error("UPDATE ORDER STATUS ERROR:", err);
     res.status(500).json({ success: false, message: "Server error" });
+  }
+};
+exports.getSingleOrder = async (req, res) => {
+  try {
+    const { orderId } = req.params;
+
+    const order = await Order.findById(orderId)
+      .populate("items.productId");
+
+    if (!order) {
+      return res.status(404).json({
+        success: false,
+        message: "Order not found",
+      });
+    }
+
+    res.json(order);
+
+  } catch (err) {
+    console.error("GET SINGLE ORDER ERROR:", err);
+    res.status(500).json({
+      success: false,
+      message: "Server error",
+    });
   }
 };

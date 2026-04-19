@@ -8,10 +8,14 @@ function Cart() {
   const [cartItems, setCartItems] = useState([]);
   const [orders, setOrders] = useState([]);
   const [view, setView] = useState("cart");
+  const [reviewBox, setReviewBox] = useState(null);
+  const [comment, setComment] = useState("");
+  const [rating, setRating] = useState(5);
+
   const navigate = useNavigate();
 
   const userId = localStorage.getItem("userId");
-  const API_URL = "https://ajio-website-clone-1.onrender.com"; 
+  const API_URL = "https://ajio-website-clone-1.onrender.com";
 
   useEffect(() => {
     setCartItems(getCart());
@@ -54,7 +58,8 @@ function Cart() {
 
   const decreaseQty = (id) => {
     const updated = cartItems.map((item) => {
-      if (item._id === id && item.itemQuantity > 1) item.itemQuantity -= 1;
+      if (item._id === id && item.itemQuantity > 1)
+        item.itemQuantity -= 1;
       return item;
     });
     setCartItems(updated);
@@ -65,6 +70,43 @@ function Cart() {
   cartItems.forEach((item) => {
     totalPrice += item.itemPrice * item.itemQuantity;
   });
+
+  // ✅ FIXED REVIEW FUNCTION
+  const submitReview = async (productId) => {
+    if (!productId) {
+      alert("Invalid product");
+      return;
+    }
+
+    try {
+      const res = await fetch(`${API_URL}/reviews`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          userId,
+          productId,
+          rating: Number(rating),
+          comment
+        })
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        alert(data.message || "Error submitting review");
+        return;
+      }
+
+      alert("Review submitted successfully!");
+      setReviewBox(null);
+      setComment("");
+      setRating(5);
+
+    } catch (err) {
+      alert("Server error while submitting review");
+      console.error(err);
+    }
+  };
 
   return (
     <div className="cart-page">
@@ -80,11 +122,13 @@ function Cart() {
           >
             My Orders
           </li>
-          <li onClick={() => navigate("/home")}>Go to Home</li>
+          <li onClick={() => navigate("/")}>Go to Home</li>
         </ul>
       </div>
 
       <div className="cart-container">
+
+        {/* ================= CART ================= */}
         {view === "cart" && (
           <>
             {cartItems.length === 0 ? (
@@ -109,25 +153,12 @@ function Cart() {
                         <p>Price: ₹{item.itemPrice}</p>
 
                         <div className="quantity-control">
-                          <button
-                            className="qty-btn"
-                            onClick={() => decreaseQty(item._id)}
-                          >
-                            -
-                          </button>
+                          <button onClick={() => decreaseQty(item._id)}>-</button>
                           <span>{item.itemQuantity}</span>
-                          <button
-                            className="qty-btn"
-                            onClick={() => increaseQty(item._id)}
-                          >
-                            +
-                          </button>
+                          <button onClick={() => increaseQty(item._id)}>+</button>
                         </div>
 
-                        <button
-                          className="remove-btn"
-                          onClick={() => handleRemove(item._id)}
-                        >
+                        <button onClick={() => handleRemove(item._id)}>
                           Remove
                         </button>
                       </div>
@@ -136,41 +167,18 @@ function Cart() {
                 </div>
 
                 <div className="cart-right">
-                  <h3 className="summary-title">Order Summary</h3>
+                  <h3>Order Summary</h3>
 
-                  <div className="summary-box">
-                    <div className="summary-row">
-                      <span>Subtotal</span>
-                      <span>₹{totalPrice}</span>
-                    </div>
-
-                    <div className="summary-row">
-                      <span>Delivery</span>
-                      <span className="free">FREE</span>
-                    </div>
-
-                    <div className="summary-row">
-                      <span>Expected Delivery</span>
-                      <span>{getDeliveryDate()}</span>
-                    </div>
-
-                    <div className="summary-row">
-                      <span>Discount</span>
-                      <span className="discount">- ₹0</span>
-                    </div>
-
+                  <div>
+                    <p>Subtotal: ₹{totalPrice}</p>
+                    <p>Delivery: FREE</p>
+                    <p>Expected: {getDeliveryDate()}</p>
                     <hr />
-
-                    <div className="summary-total">
-                      <span>Total Amount</span>
-                      <span>₹{totalPrice}</span>
-                    </div>
+                    <h4>Total: ₹{totalPrice}</h4>
                   </div>
 
                   <Link to="/order">
-                    <button className="Order-btn">
-                      Proceed to Checkout
-                    </button>
+                    <button>Proceed to Checkout</button>
                   </Link>
                 </div>
               </>
@@ -178,6 +186,7 @@ function Cart() {
           </>
         )}
 
+        {/* ================= ORDERS ================= */}
         {view === "orders" && (
           <div className="orders-table-container">
             <h2>My Orders</h2>
@@ -187,6 +196,7 @@ function Cart() {
             ) : (
               orders.map((order) => (
                 <div key={order._id} className="order-card">
+
                   <div className="order-header">
                     <p>ITEM</p>
                     <span>Total: ₹{order.totalPrice}</span>
@@ -196,40 +206,78 @@ function Cart() {
                     {order.items.map((item, index) => (
                       <div key={index} className="order-item">
                         <img
-                          src={item.productId.image || "https://via.placeholder.com/150"}
-                          alt={item.productId.itemName}
+                          src={item.productId?.image}
+                          alt={item.productId?.itemName}
                           className="order-item-img"
                         />
 
-                        <div className="order-item-info">
-                          <span className="order-item-name">
-                            Item-ordered: {item.productId.itemName}
-                          </span>
-
-                          <span className="order-item-price">
-                            ₹{item.productId.itemPrice}
-                          </span>
+                        <div>
+                          <span>{item.productId?.itemName}</span>
+                          <span>₹{item.productId?.itemPrice}</span>
                         </div>
+
+                        {/* REVIEW BUTTON */}
+                        <button
+                          onClick={() => setReviewBox(item.productId?._id)}
+                        >
+                          Write Review
+                        </button>
+
+                        {/* REVIEW BOX */}
+                        {reviewBox === item.productId?._id && (
+                          <div className="review-popup">
+                            <div className="review-box">
+                              <h4>Write Review</h4>
+
+                              <select
+                                value={rating}
+                                onChange={(e) =>
+                                  setRating(Number(e.target.value))
+                                }
+                              >
+                                <option value="5">5 ⭐</option>
+                                <option value="4">4 ⭐</option>
+                                <option value="3">3 ⭐</option>
+                                <option value="2">2 ⭐</option>
+                                <option value="1">1 ⭐</option>
+                              </select>
+
+                              <textarea
+                                value={comment}
+                                onChange={(e) => setComment(e.target.value)}
+                                placeholder="Write your review..."
+                              />
+
+                              <button
+                                onClick={() =>
+                                  submitReview(item.productId?._id)
+                                }
+                              >
+                                Submit
+                              </button>
+
+                              <button onClick={() => setReviewBox(null)}>
+                                Cancel
+                              </button>
+                            </div>
+                          </div>
+                        )}
                       </div>
                     ))}
                   </div>
 
-                  <div className="payment-method">
-                    Payment-mode: {order.paymentMethod}
-                  </div>
-
-                  <div className="order-status">
-                    Order-status: {order.status}
-                  </div>
-
-                  <div className="order-date">
-                    Order Date: {new Date(order.createdAt).toLocaleDateString()}
+                  <div>Payment-mode: {order.paymentMethod}</div>
+                  <div>Status: {order.status}</div>
+                  <div>
+                    Order Date:{" "}
+                    {new Date(order.createdAt).toLocaleDateString()}
                   </div>
                 </div>
               ))
             )}
           </div>
         )}
+
       </div>
     </div>
   );

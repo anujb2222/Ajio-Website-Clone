@@ -22,10 +22,15 @@ function OrderSuccess() {
           Delivery by <b>{deliveryDate.toDateString()}</b>
         </p>
 
-        
         <div className="success-items">
           {items.map((item) => (
             <div key={item._id} className="success-item">
+
+              <img
+  src={item.image || item.productId?.image}
+  alt={item.itemName}
+  className="success-img"
+/>
 
               <div>
                 <h4>

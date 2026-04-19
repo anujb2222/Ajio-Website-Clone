@@ -4,22 +4,24 @@
   min-height: 100vh;
   padding: 40px;
   font-family: Arial, sans-serif;
-  background-color: #f5f5f5;
+  background-color:antiquewhite;
+
   display: flex;
+  flex-direction: column;  
   align-items: center;
-  justify-content: center;
 }
 
 .product-container{
-  width: 80%;
-  max-width: 1100px;
-  margin: auto;
+  width: 100%;
+  max-width: 1290px;
+  margin-bottom: 40px;  
   padding: 40px;
   display: flex;
   gap: 60px;
   position: relative;
-  background-color: #ffffff;
+  background-color: palegoldenrod;
   border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
 }
 
 .product-left{
@@ -48,30 +50,16 @@
   max-width: 600px;
 }
 
-
 .title{
   font-size: 40px;
   margin-bottom: 15px;
   font-weight: bold;
-  font-family: Verdana, Geneva, Tahoma, sans-serif;
 }
 
 .price{
   font-size: 28px;
   color: red;
   margin-bottom: 15px;
-}
-
-.stock{
-  font-size: 18px;
-  margin-bottom: 10px;
-  color: green;
-}
-
-.category{
-  font-size: 18px;
-  margin-bottom: 15px;
-  color: #555;
 }
 
 .description{
@@ -81,29 +69,18 @@
   color: #333;
 }
 
+.delivery-date{
+  padding-bottom: 20px;
+}
+
+
 .buttons{
   margin-top: 20px;
 }
 
-.order-btn{
-  padding: 12px 25px;
-  margin-right: 15px;
-  border: none;
-  background: green;
-  color: white;
-  font-size: 16px;
-  cursor: pointer;
-  border-radius: 6px;
-  transition: 0.3s;
-}
-
-.order-btn:hover{
-  background: darkgreen;
-  transform: translateY(-2px);
-}
-
 .cart-btn{
   padding: 12px 25px;
+  margin-right: 10px;
   border: none;
   background: orange;
   color: white;
@@ -117,9 +94,22 @@
   background: darkorange;
   transform: translateY(-2px);
 }
-.delivery-date{
-  padding-bottom: 20px;
+
+.buy-btn{
+  padding: 12px 25px;
+  border: none;
+  background: green;
+  color: white;
+  font-size: 16px;
+  cursor: pointer;
+  border-radius: 6px;
+  transition: 0.3s;
 }
+
+.buy-btn:hover{
+  background: darkgreen;
+}
+
 .go-home-btn {
   position: absolute;
   top: 20px;
@@ -132,10 +122,75 @@
   font-size: 12px;
   border-radius: 20px;  
   cursor: pointer;
-  transition: 0.2s ease;
 }
 
 .go-home-btn:hover {
   background: red;
   transform: scale(1.05);
+}
+
+
+
+.related-section {
+  width: 1900px;
+}
+
+.related-section h2 {
+  font-size: 22px;
+  font-weight: bold;
+  margin-bottom: 20px;
+  border-left: 5px solid red;
+  padding-left: 10px;
+}
+
+
+.slider {
+  width: 100%;
+  overflow: hidden;
+}
+
+.slider-track {
+  display: flex;
+  gap: 20px;
+  width: max-content;
+  animation: scroll 25s linear infinite;
+}
+
+
+.slider:hover .slider-track {
+  animation-play-state: paused;
+}
+
+
+.card {
+  min-width: 200px;
+  max-width: 200px;
+  background: white;
+  border-radius: 10px;
+  text-decoration: none;
+  color: black;
+  padding: 10px;
+  transition: 0.3s;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.card img {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+.card:hover {
+  transform: scale(1.08);
+}
+
+
+@keyframes scroll {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
 }

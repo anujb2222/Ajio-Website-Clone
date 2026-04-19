@@ -35,7 +35,7 @@ function Admin() {
           <li onClick={() => navigate("/admin/orders")}>Orders</li>
           <li onClick={() => navigate("/admin/users")}>Users</li>
           <li onClick={() => navigate("/admin/payments")}>Payments</li>
-          <li onClick={() => navigate("/Home")}>Go TO home</li>
+          <li onClick={() => navigate("/")}>Go TO home</li>
         </ul>
       </div>
 

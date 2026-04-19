@@ -1,46 +1,110 @@
 .success-container {
-  height: 100vh;
   display: flex;
   justify-content: center;
-  align-items: center;
+  padding: 30px 15px;
   background: #f5f5f5;
+  min-height: 100vh;
 }
 
 .success-card {
-  background: white;
-  padding: 40px;
+  width: 100%;
+  max-width: 700px;
+  background: #fff;
   border-radius: 12px;
+  padding: 25px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+
+.success-title {
+  font-size: 24px;
+  font-weight: 700;
+  color: #2ecc71;
   text-align: center;
-  width: 400px;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.1);
 }
 
-.checkmark {
-  font-size: 50px;
-  color: green;
-  margin-bottom: 10px;
-}
-
-.success-card h2 {
-  margin-bottom: 10px;
-}
-
-.success-card p {
+.success-subtitle {
+  text-align: center;
+  margin-top: 8px;
   color: #555;
-  margin-bottom: 20px;
+}
+
+.success-items {
+  margin-top: 20px;
+  border-top: 1px solid #eee;
+  padding-top: 15px;
+}
+
+.success-item {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 12px 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.success-img {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 10px;
+  border: 1px solid #ddd;
+}
+
+.success-item h4 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+}
+
+.success-item p {
+  margin: 5px 0 0;
+  color: #666;
+  font-size: 14px;
+}
+
+.success-summary {
+  margin-top: 20px;
+  padding: 15px;
+  background: #fafafa;
+  border-radius: 10px;
+  border: 1px solid #eee;
+}
+
+.success-summary p {
+  margin: 8px 0;
+  font-size: 14px;
+  color: #444;
+}
+
+.success-actions {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 25px;
+  gap: 10px;
 }
 
 .success-actions button {
-  padding: 10px 20px;
-  margin: 5px;
+  flex: 1;
+  padding: 12px;
   border: none;
-  background: black;
-  color: white;
-  border-radius: 5px;
+  border-radius: 8px;
   cursor: pointer;
+  font-weight: 600;
+  transition: 0.3s;
+  background: #3498db; /* default background */
+  color: white; /* default text color */
+}
+
+.success-actions button:hover {
+  background: #2980b9; /* hover effect for all buttons */
 }
 
 .secondary-btn {
-  background: #ccc;
-  color: black;
+  background: #eee;
+  color: #333;
+}
+
+.secondary-btn:hover {
+  background: #ddd;
 }

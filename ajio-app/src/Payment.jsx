@@ -54,7 +54,9 @@ function Payment() {
       paymentMethod: method,
     };
 
-    
+    // =========================
+    // CASH ON DELIVERY
+    // =========================
     if (method === "cod") {
       try {
         const res = await fetch(`${API_URL}/orders`, {
@@ -70,9 +72,18 @@ function Payment() {
 
         if (data.success) {
           alert("Order placed successfully!");
+
           localStorage.removeItem("cart");
           localStorage.removeItem("shippingDetails");
-          navigate("/order-success");
+
+          setTimeout(() => {
+            navigate("/order-success", {
+              state: {
+                items: cart,
+                paymentMethod: "cod",
+              },
+            });
+          }, 500);
         } else {
           alert(data.message || "Failed to place order");
         }
@@ -83,7 +94,9 @@ function Payment() {
       return;
     }
 
-   
+    // =========================
+    // ONLINE PAYMENT (RAZORPAY)
+    // =========================
     const scriptLoaded = await loadRazorpayScript();
     if (!scriptLoaded) return alert("Razorpay SDK failed to load.");
 
@@ -128,9 +141,18 @@ function Payment() {
 
           if (data.success) {
             alert("Payment successful!");
+
             localStorage.removeItem("cart");
             localStorage.removeItem("shippingDetails");
-         navigate("/order-success");
+
+            setTimeout(() => {
+              navigate("/order-success", {
+                state: {
+                  items: cart,
+                  paymentMethod: "online",
+                },
+              });
+            }, 500);
           } else {
             alert("Payment verification failed");
           }
