@@ -12,14 +12,9 @@ function Productdetails() {
   const { id } = useParams();
   const navigate = useNavigate();
 
-const API_URL = "https://ajio-website-clone-1.onrender.com";
+  const API_URL = "https://ajio-website-clone-1.onrender.com";
 
-  // 🔴 DEBUG PRODUCT ID
-  useEffect(() => {
-    console.log("PRODUCT ID FROM URL:", id);
-  }, [id]);
-
-  // ---------------- PRODUCT ----------------
+ 
   useEffect(() => {
     axios
       .get(`${API_URL}/products/${id}`)
@@ -27,7 +22,6 @@ const API_URL = "https://ajio-website-clone-1.onrender.com";
       .catch((err) => console.log(err));
   }, [id]);
 
-  // ---------------- ALL PRODUCTS ----------------
   useEffect(() => {
     axios
       .get(`${API_URL}/products`)
@@ -35,26 +29,20 @@ const API_URL = "https://ajio-website-clone-1.onrender.com";
       .catch((err) => console.log(err));
   }, []);
 
-  // ---------------- FETCH REVIEWS ----------------
+
   const fetchReviews = () => {
     axios
       .get(`${API_URL}/reviews/${id}`)
       .then((res) => {
-        console.log("REVIEWS FROM BACKEND:", res.data);
+        console.log("REVIEWS:", res.data);
         setReviews(res.data);
       })
       .catch((err) => console.log(err));
   };
 
   useEffect(() => {
-    fetchReviews();
+    if (id) fetchReviews();
   }, [id]);
-
-  useEffect(() => {
-    if (showReviews) {
-      fetchReviews();
-    }
-  }, [showReviews]);
 
   if (!product) return <h1>Loading product...</h1>;
 
@@ -78,23 +66,19 @@ const API_URL = "https://ajio-website-clone-1.onrender.com";
   return (
     <div className="product-page">
 
-      {/* PRODUCT DETAILS */}
+    
       <div className="product-container">
         <div className="product-left">
-          <img
-            src={product.image || "https://via.placeholder.com/300"}
-            alt={product.itemName}
-          />
+          <img src={product.image} alt={product.itemName} />
         </div>
 
         <div className="product-right">
           <h2 className="title">{product.itemName}</h2>
 
-          {/* ⭐ REVIEWS */}
           <div className="rating">
-            ⭐⭐⭐⭐☆
+            ⭐⭐⭐⭐⭐
             <span
-              style={{ cursor: "pointer", color: "blue", marginLeft: "5px" }}
+              style={{ cursor: "pointer", color: "blue", marginLeft: "8px" }}
               onClick={() => setShowReviews(true)}
             >
               ({reviews.length} Reviews)
@@ -122,33 +106,27 @@ const API_URL = "https://ajio-website-clone-1.onrender.com";
           </div>
 
           <div className="buttons">
-            <button
-              className="cart-btn"
-              onClick={() => addToCart(product)}
-            >
+            <button className="cart-btn" onClick={() => addToCart(product)}>
               ADD TO CART
             </button>
 
             <button className="buy-btn">ORDER NOW</button>
 
-            <button
-              className="go-home-btn"
-              onClick={() => navigate("/")}
-            >
+            <button className="go-home-btn" onClick={() => navigate("/")}>
               ← Home
             </button>
           </div>
         </div>
       </div>
 
-      {/* RELATED PRODUCTS */}
+  
       <div className="related-section">
         <div className="slider">
           <div className="slider-track">
-            {products.concat(products).map((item, index) => (
+            {products.concat(products).map((item) => (
               <Link
                 to={`/Productdetails/${item._id}`}
-                key={index}
+                key={item._id}
                 className="card"
               >
                 <img src={item.image} alt={item.itemName} />
@@ -162,7 +140,7 @@ const API_URL = "https://ajio-website-clone-1.onrender.com";
         </div>
       </div>
 
-      {/* ⭐ REVIEWS POPUP */}
+
       {showReviews && (
         <div
           style={{
@@ -201,9 +179,10 @@ const API_URL = "https://ajio-website-clone-1.onrender.com";
               {reviews.length === 0 ? (
                 <p>No reviews yet</p>
               ) : (
-                reviews.map((r, i) => (
-                  <div key={i} style={{ marginBottom: "10px" }}>
+                reviews.map((r) => (
+                  <div key={r._id} style={{ marginBottom: "10px" }}>
                     <p>{"⭐".repeat(r.rating)}</p>
+                    <p><b>{r.userEmail}</b></p>
                     <p>{r.comment}</p>
                   </div>
                 ))
