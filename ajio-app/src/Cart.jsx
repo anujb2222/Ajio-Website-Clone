@@ -15,7 +15,7 @@ function Cart() {
 
   const navigate = useNavigate();
   const userId = localStorage.getItem("userId");
-  const API_URL = "http://localhost:5000";
+  const API_URL = "https://ajio-website-clone-1.onrender.com";
 
   useEffect(() => {
     setCartItems(getCart());
