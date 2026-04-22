@@ -8,6 +8,32 @@ function OrderSuccess() {
 
   const items = state?.items || [];
   const paymentMethod = state?.paymentMethod || "cod";
+  const orderId = state?.orderId;
+
+  const API_URL = "https://ajio-website-clone-1.onrender.com";
+
+  const downloadInvoice = async () => {
+    if (!orderId) return alert("Order ID not found");
+
+    try {
+      const response = await fetch(`${API_URL}/orders/download-invoice/${orderId}`);
+      if (response.ok) {
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `invoice-${orderId}.pdf`;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+      } else {
+        alert("Failed to download invoice");
+      }
+    } catch (err) {
+      console.error("Error downloading invoice:", err);
+      alert("Error downloading invoice");
+    }
+  };
 
   const deliveryDate = new Date();
   deliveryDate.setDate(deliveryDate.getDate() + 5);
@@ -66,6 +92,10 @@ function OrderSuccess() {
         <div className="success-actions">
           <button onClick={() => navigate("/cart")}>
             View Orders
+          </button>
+
+          <button onClick={downloadInvoice} className="invoice-btn">
+            Download Invoice 📄
           </button>
 
           <button onClick={() => navigate("/home")} className="secondary-btn">

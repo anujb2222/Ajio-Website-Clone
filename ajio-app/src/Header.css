@@ -136,13 +136,13 @@
   align-items: center;
   gap: 14px;
 }
-.search img,
-.shopping-cart {
+.search img {
   align-self: center;
   height: 32px;
-  margin-top:-36px; 
+  margin-top: -36px;
+  width: 32px;
+  cursor: pointer;
 }
-
 
 .search input {
   width: 280px;
@@ -157,16 +157,6 @@
   background-size: 16px;
 }
 
-.search img {
-  width: 32px;
-  height: 34px;
-  cursor: pointer;
-}
-
-.shopping-cart {
-  font-size: 28px;
-  cursor: pointer;
-}
 .Admin {
   display: inline-flex;     
   padding: 6px 12px;            
@@ -179,8 +169,42 @@
   cursor: pointer;
   text-decoration: none;        
 }
+
 .shopping-cart {
-  color: black;           
-  font-size: 22px;      
-  vertical-align: middle; 
+  color: black;
+  font-size: 24px;
+  cursor: pointer;
+}
+
+
+.cart-link {
+  display: inline-flex;
+  align-self: center;
+  margin-top: -36px;
+  text-decoration: none;
+}
+
+.cart-icon-container {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cart-badge {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  background-color: #d5a249;
+  color: white;
+  font-size: 10px;
+  font-weight: bold;
+  height: 16px;
+  min-width: 16px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 4px;
+  border: 1px solid white;
 }

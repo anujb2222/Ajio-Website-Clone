@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import axios from "axios";
 import "./Cart.css";
 import { FaShoppingCart, FaBoxOpen, FaHome } from "react-icons/fa";
 
@@ -66,6 +67,7 @@ function Cart() {
     const updatedCart = cartItems.filter((item) => item._id !== id);
     setCartItems(updatedCart);
     localStorage.setItem("cart", JSON.stringify(updatedCart));
+    window.dispatchEvent(new Event("cartUpdated"));
   };
 
   const increaseQty = (id) => {
@@ -75,6 +77,7 @@ function Cart() {
     });
     setCartItems(updated);
     localStorage.setItem("cart", JSON.stringify(updated));
+    window.dispatchEvent(new Event("cartUpdated"));
   };
 
   const decreaseQty = (id) => {
@@ -85,6 +88,7 @@ function Cart() {
     });
     setCartItems(updated);
     localStorage.setItem("cart", JSON.stringify(updated));
+    window.dispatchEvent(new Event("cartUpdated"));
   };
 
   let totalPrice = 0;
@@ -228,11 +232,19 @@ function Cart() {
                       <span>₹{totalPrice}</span>
                     </div>
                   </div>
-                  <Link to="/order">
-                    <button className="Order-btn">
-                      Proceed to Checkout
-                    </button>
-                  </Link>
+                  <button
+                    className="Order-btn"
+                    onClick={() => {
+                      if (userId) {
+                        navigate("/order");
+                      } else {
+                        alert("First login first");
+                        navigate("/Signin");
+                      }
+                    }}
+                  >
+                    Proceed to Checkout
+                  </button>
                 </div>
               </>
             )}

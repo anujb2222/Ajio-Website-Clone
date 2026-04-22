@@ -2,15 +2,16 @@ const Order = require("../models/Order");
 const razorpay = require("../config/razorpay");
 const crypto = require("crypto");
 const axios = require("axios");
-const fs = require('fs');
+const fs = require("fs");
+const path = require("path");
 
+const { generateInvoice } = require("../utils/generateinvoice");
 
-const { generateInvoice } = require("../utils/generateinvoice"); 
-
-
-const sendBrevoEmail = async (toEmail, subject, htmlContent, attachment) => {
+const sendBrevoEmail = async (toEmail, subject, htmlContent, filePath) => {
   try {
-    const response = await axios.post(
+    const fileContent = fs.readFileSync(filePath).toString("base64");
+
+    await axios.post(
       "https://api.brevo.com/v3/smtp/email",
       {
         sender: {
@@ -20,16 +21,12 @@ const sendBrevoEmail = async (toEmail, subject, htmlContent, attachment) => {
         to: [{ email: toEmail }],
         subject,
         htmlContent,
-        textContent: "Order placed successfully",
-
-        attachment: attachment
-          ? [
-              {
-                content: attachment.content.toString("base64"),
-                name: attachment.filename,
-              },
-            ]
-          : [],
+        attachment: [
+          {
+            content: fileContent,
+            name: "invoice.pdf",
+          },
+        ],
       },
       {
         headers: {
@@ -39,12 +36,11 @@ const sendBrevoEmail = async (toEmail, subject, htmlContent, attachment) => {
       }
     );
 
-    console.log("Email sent:", response.data);
+    fs.unlinkSync(filePath);
   } catch (error) {
     console.error("BREVO ERROR:", error.response?.data || error.message);
   }
 };
-
 
 
 exports.createOrder = async (req, res) => {
@@ -85,9 +81,12 @@ exports.verifyPayment = async (req, res) => {
       return res.json({ success: false });
     }
 
-
     const order = new Order({
       ...orderData,
+      shipping: {
+        ...orderData.shipping,
+        email: email
+      },
       paymentMethod: "online",
       paymentStatus: "paid",
       razorpayPaymentId: razorpay_payment_id,
@@ -96,21 +95,21 @@ exports.verifyPayment = async (req, res) => {
 
     await order.save();
 
+    const savedOrder = await Order.findById(order._id).populate("items.productId");
 
-    const pdfBuffer = await generateInvoice({
-      ...orderData,
-      email,
-      razorpayOrderId: razorpay_order_id,
-    });
+    const invoicePath = path.join(
+      __dirname,
+      `../invoices/invoice-${order._id}.pdf`
+    );
 
-    console.log("PDF generated:", pdfBuffer.length);
+    await generateInvoice(
+      { items: savedOrder.items, email },
+      invoicePath
+    );
 
-   
-    
     const emailHtml = `
       <h2>Order Placed Successfully 🎉</h2>
-      <p><b>Order ID:</b> ${razorpay_order_id}</p>
-      <p><b>Total Price:</b> ₹${orderData.totalPrice}</p>
+      <p><b>Total Price:</b> ₹${savedOrder.totalPrice}</p>
       <p>Invoice attached below 📎</p>
     `;
 
@@ -118,32 +117,26 @@ exports.verifyPayment = async (req, res) => {
       email,
       "Order Confirmed - AJIO",
       emailHtml,
-      {
-        content: pdfBuffer,
-        filename: "invoice.pdf",
-      }
+      invoicePath
     );
 
-    return res.json({
-      success: true,
-      orderId: order._id,
-    });
-
+    res.json({ success: true, orderId: order._id });
   } catch (err) {
     console.error("VERIFY PAYMENT ERROR:", err);
     res.status(500).json({ success: false });
   }
 };
 
-
-
 exports.placeCODOrder = async (req, res) => {
   try {
     const { userId, email, shipping, items, totalPrice } = req.body;
 
     const order = new Order({
       userId,
-      shipping,
+      shipping: {
+        ...shipping,
+        email: email
+      },
       items,
       totalPrice,
       paymentMethod: "COD",
@@ -152,155 +145,112 @@ exports.placeCODOrder = async (req, res) => {
 
     await order.save();
 
-   
-    const pdfBuffer = await generateInvoice({
-      items,
-      totalPrice,
-      email,
-    });
+    const savedOrder = await Order.findById(order._id).populate("items.productId");
 
+    const invoicePath = path.join(
+      __dirname,
+      `../invoices/invoice-${order._id}.pdf`
+    );
+
+    await generateInvoice(
+      { items: savedOrder.items, email },
+      invoicePath
+    );
 
     const emailHtml = `
-      <h2>COD Order Placed 🎉</h2>
-      <p><b>Total:</b> ₹${totalPrice}</p>
+      <h2>COD Order Placed Successfully 🎉</h2>
+      <p><b>Total Price:</b> ₹${savedOrder.totalPrice}</p>
       <p>Pay on delivery 🚚</p>
+      <p>Invoice attached below 📎</p>
     `;
 
     await sendBrevoEmail(
       email,
       "COD Order Confirmed - AJIO",
       emailHtml,
-      {
-        content: pdfBuffer,
-        filename: "invoice.pdf",
-      }
+      invoicePath
     );
 
-    return res.json({
-      success: true,
-      message: "Order placed successfully",
-      orderId: order._id,
-    });
-
+    res.json({ success: true, orderId: order._id });
   } catch (err) {
-    console.error("COD ERROR:", err);
+    console.error("COD ORDER ERROR:", err);
     res.status(500).json({ success: false });
   }
 };
-exports.placeCODOrder = async (req, res) => {
-  try {
-    const { userId, email, shipping, items, totalPrice } = req.body;
-
-    console.log("EMAIL RECEIVED (COD):", email);
-
-    const order = new Order({
-      userId,
-      shipping,
-      items,
-      totalPrice,
-      paymentMethod: "COD",
-      paymentStatus: "pending",
-    });
-
-    await order.save();
-
-    const emailHtml = `
-      <h2>COD Order Placed Successfully 🎉</h2>
-      <p><b>Payment Method:</b> Cash on Delivery</p>
-      <p><b>Total Price:</b> ₹${totalPrice}</p>
-      <p>We will deliver your order soon 🚚</p>
-    `;
-
-    await sendBrevoEmail(email, "COD Order Confirmed - AJIO", emailHtml);
-
-    
-    return res.json({
-      success: true,
-      message: "Order placed successfully",
-      orderId: order._id,
-    });
-
-  } catch (err) {
-    console.error("PLACE COD ORDER ERROR:", err);
-    res.status(500).json({ success: false, message: "Server error" });
-  }
-};
-
 
 exports.getAllOrders = async (req, res) => {
-  try {
-    const orders = await Order.find()
-      .populate("items.productId")
-      .sort({ createdAt: -1 });
-
-    res.json(orders);
-  } catch (err) {
-    console.error("GET ALL ORDERS ERROR:", err);
-    res.status(500).json({ message: "Error fetching orders" });
-  }
+  const orders = await Order.find().populate("items.productId").sort({ createdAt: -1 });
+  res.json(orders);
 };
 
 
 exports.getUserOrders = async (req, res) => {
-  try {
-    const { userId } = req.params;
+  const orders = await Order.find({ userId: req.params.userId })
+    .populate("items.productId")
+    .sort({ createdAt: -1 });
 
-    const orders = await Order.find({ userId })
-      .populate("items.productId")
-      .sort({ createdAt: -1 });
-
-    res.json(orders);
-  } catch (err) {
-    console.error("GET USER ORDERS ERROR:", err);
-    res.status(500).json({ message: "Error fetching orders" });
-  }
+  res.json(orders);
 };
 
 
 exports.updateOrderStatus = async (req, res) => {
-  try {
-    const { orderId } = req.params;
-    const { status } = req.body;
+  const { status } = req.body;
 
-    const order = await Order.findById(orderId);
+  await Order.findByIdAndUpdate(req.params.orderId, {
+    orderStatus: status,
+  });
+
+  res.json({ success: true });
+};
+
+
+exports.downloadInvoice = async (req, res) => {
+  try {
+    const orderId = req.params.orderId;
+    const order = await Order.findById(orderId).populate("items.productId");
 
     if (!order) {
-      return res.status(404).json({
-        success: false,
-        message: "Order not found",
-      });
+      return res.status(404).json({ error: "Order not found" });
     }
 
-    order.status = status;
-    await order.save();
+    const invoiceDir = path.join(__dirname, "../invoices");
+    if (!fs.existsSync(invoiceDir)) {
+      fs.mkdirSync(invoiceDir);
+    }
 
-    res.json({ success: true });
+    const invoicePath = path.join(invoiceDir, `invoice-${order._id}.pdf`);
+
+  
+    await generateInvoice(
+      { 
+        items: order.items, 
+        email: order.shipping?.email || "customer@example.com",
+        name: order.shipping?.name || "Customer",
+        orderId: order._id,
+        paymentId: order.razorpayPaymentId || "COD"
+      },
+      invoicePath
+    );
+
+    res.download(invoicePath, `invoice-${order._id}.pdf`, (err) => {
+      if (err) {
+        console.error("DOWNLOAD ERROR:", err);
+      }
+     
+    });
   } catch (err) {
-    console.error("UPDATE ORDER STATUS ERROR:", err);
-    res.status(500).json({ success: false, message: "Server error" });
+    console.error("DOWNLOAD INVOICE ERROR:", err);
+    res.status(500).json({ error: "Error downloading invoice" });
   }
 };
+
+
 exports.getSingleOrder = async (req, res) => {
   try {
-    const { orderId } = req.params;
-
-    const order = await Order.findById(orderId)
-      .populate("items.productId");
-
-    if (!order) {
-      return res.status(404).json({
-        success: false,
-        message: "Order not found",
-      });
-    }
-
+    const order = await Order.findById(req.params.orderId).populate("items.productId");
     res.json(order);
-
   } catch (err) {
     console.error("GET SINGLE ORDER ERROR:", err);
-    res.status(500).json({
-      success: false,
-      message: "Server error",
-    });
+    res.status(500).json({ error: "Error fetching order" });
   }
 };

@@ -3,15 +3,16 @@ import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import "./Additem.css";
 
-function ProductForm() {
+function Additem() {
   const navigate = useNavigate();
   const { id } = useParams();
 
   const [itemName, setItemName] = useState("");
   const [itemQuantity, setItemQuantity] = useState("");
   const [itemPrice, setItemPrice] = useState("");
-  const [category, setCategory] = useState("");
   const [image, setImage] = useState(null);
+  const [preview, setPreview] = useState(null);
+  const [category, setCategory] = useState("Electronics");
 
   const API_URL = "https://ajio-website-clone-1.onrender.com";
 
@@ -24,10 +25,19 @@ function ProductForm() {
           setItemQuantity(res.data.itemQuantity);
           setItemPrice(res.data.itemPrice);
           setCategory(res.data.category);
+          setPreview(res.data.image); 
         })
         .catch((err) => console.log("GET PRODUCT ERROR:", err));
     }
   }, [id]);
+
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    setImage(file);
+    if (file) {
+      setPreview(URL.createObjectURL(file)); 
+    }
+  };
 
   const handleSubmit = async () => {
     const data = new FormData();
@@ -97,7 +107,23 @@ function ProductForm() {
         <option value="Other">Other</option>
       </select>
 
-      <input type="file" onChange={(e) => setImage(e.target.files[0])} />
+      <div className="image-preview-container">
+        {preview && (
+          <img
+            src={preview}
+            alt="Preview"
+            style={{
+              width: "100px",
+              height: "100px",
+              objectFit: "cover",
+              marginBottom: "10px",
+              borderRadius: "5px",
+            }}
+          />
+        )}
+      </div>
+
+      <input type="file" onChange={handleImageChange} />
 
       <button onClick={handleSubmit}>
         {id ? "Update Item" : "Add Item"}
@@ -106,4 +132,4 @@ function ProductForm() {
   );
 }
 
-export default ProductForm;
+export default Additem;

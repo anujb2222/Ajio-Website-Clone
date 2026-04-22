@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import "./Admin.css";
-import { FaBox, FaPlus, FaShoppingCart, FaUsers, FaMoneyBill, FaHome } from "react-icons/fa";
+import { FaBox, FaPlus, FaShoppingCart, FaUsers, FaMoneyBill, FaHome, FaStar } from "react-icons/fa";
 
 function Admin() {
   const navigate = useNavigate();
@@ -55,6 +55,11 @@ function Admin() {
   <li onClick={() => navigate("/admin/payments")}>
     <FaMoneyBill style={{ marginRight: "8px" }} />
     Payments
+  </li>
+
+  <li onClick={() => navigate("/admin/reviews")}>
+    <FaStar style={{ marginRight: "8px" }} />
+    Reviews
   </li>
 
   <li onClick={() => navigate("/")}>

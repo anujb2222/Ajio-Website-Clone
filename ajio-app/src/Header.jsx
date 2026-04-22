@@ -1,14 +1,39 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { FaShoppingBag, FaUserCircle } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import "./Header.css";
 
 function Header({ isLoggedIn, setIsLoggedIn }) {
+  const [cartCount, setCartCount] = useState(0);
+
+  useEffect(() => {
+    const updateCartCount = () => {
+      if (isLoggedIn) {
+        const cart = JSON.parse(localStorage.getItem("cart")) || [];
+        const count = cart.reduce((total, item) => total + (item.itemQuantity || 1), 0);
+        setCartCount(count);
+      } else {
+        setCartCount(0);
+      }
+    };
+
+    updateCartCount();
+
+    
+    window.addEventListener("cartUpdated", updateCartCount);
+    
+    window.addEventListener("storage", updateCartCount);
+
+    return () => {
+      window.removeEventListener("cartUpdated", updateCartCount);
+      window.removeEventListener("storage", updateCartCount);
+    };
+  }, [isLoggedIn]);
 
   const handleLogout = () => {
-  localStorage.removeItem("userId");
-  setIsLoggedIn(false);              
-};
+    localStorage.removeItem("userId");
+    setIsLoggedIn(false);
+  };
 
   return (
     <div className="header">
@@ -53,8 +78,13 @@ function Header({ isLoggedIn, setIsLoggedIn }) {
             <input type="text" placeholder="Search AJIO" />
             <img src="https://assets-jiocdn.ajio.com/static/img/wishlistIcon.svg" alt="Wishlist" />
           <Link to="/Cart" className="cart-link">
-  <FaShoppingBag className="shopping-cart" />
-</Link>
+            <div className="cart-icon-container">
+              <FaShoppingBag className="shopping-cart" />
+              {isLoggedIn && cartCount > 0 && (
+                <span className="cart-badge">{cartCount}</span>
+              )}
+            </div>
+          </Link>
           </div>
         </div>
       </div>

@@ -1,13 +1,13 @@
 const mongoose = require("mongoose");
 const Review = require("../models/Review");
 const User = require("../models/User");
+const Product = require("../models/Product"); 
 
-// ✅ ADD REVIEW
 exports.addReview = async (req, res) => {
   try {
     const { userId, productId, rating, comment } = req.body;
 
-    // 🔥 Validate user
+
     const userExists = await User.findById(userId);
     if (!userExists) {
       return res.status(400).json({ error: "Invalid userId" });
@@ -24,6 +24,24 @@ exports.addReview = async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: err.message });
+  }
+};
+
+exports.getAllReviews = async (req, res) => {
+  try {
+    console.log("Fetching all reviews...");
+    const reviews = await Review.find()
+      .populate("userId", "email phone")
+      .populate("productId", "itemName image")
+      .sort({ createdAt: -1 });
+    console.log(`Found ${reviews.length} reviews`);
+    res.json(reviews);
+  } catch (err) {
+    console.error("CRITICAL ERROR in getAllReviews:", err);
+    res.status(500).json({ 
+      error: "Server error while fetching reviews",
+      details: err.message 
+    });
   }
 };
 
@@ -48,14 +66,14 @@ exports.getReviews = async (req, res) => {
   }
 };
 
-// ✅ GET USER REVIEWS
+
 exports.getUserReviews = async (req, res) => {
   try {
     const { userId } = req.params;
 
     const reviews = await Review.find({ userId })
       .populate("userId", "email")
-      .populate("productId") // ✅ IMPORTANT
+      .populate("productId") 
       .sort({ createdAt: -1 })
       .lean();
 

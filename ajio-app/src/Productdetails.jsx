@@ -3,14 +3,14 @@ import { useParams, useNavigate, Link } from "react-router-dom";
 import axios from "axios";
 import "./Productdetails.css";
 
-function Productdetails() {
+function ProductDetails() {
+  const { id } = useParams();
+  const navigate = useNavigate();
   const [product, setProduct] = useState(null);
   const [products, setProducts] = useState([]);
   const [reviews, setReviews] = useState([]);
   const [showReviews, setShowReviews] = useState(false);
-
-  const { id } = useParams();
-  const navigate = useNavigate();
+  const [loading, setLoading] = useState(true);
 
   const API_URL = "https://ajio-website-clone-1.onrender.com";
 
@@ -52,15 +52,24 @@ function Productdetails() {
     return date.toDateString();
   };
 
-  const addToCart = (product) => {
+  const addToCart = (product, redirect = false) => {
     const cart = JSON.parse(localStorage.getItem("cart")) || [];
     const existing = cart.find((item) => item._id === product._id);
 
-    if (existing) existing.itemQuantity += 1;
-    else cart.push({ ...product, itemQuantity: 1 });
+    if (existing) {
+      existing.itemQuantity += 1;
+    } else {
+      cart.push({ ...product, itemQuantity: 1 });
+    }
 
     localStorage.setItem("cart", JSON.stringify(cart));
-    alert("Product added to Cart!");
+    window.dispatchEvent(new Event("cartUpdated"));
+
+    if (redirect) {
+      navigate("/Cart");
+    } else {
+      alert("Product added to Cart!");
+    }
   };
 
   return (
@@ -110,7 +119,9 @@ function Productdetails() {
               ADD TO CART
             </button>
 
-            <button className="buy-btn">ORDER NOW</button>
+            <button className="buy-btn" onClick={() => addToCart(product, true)}>
+              ORDER NOW
+            </button>
 
             <button className="go-home-btn" onClick={() => navigate("/")}>
               ← Home
@@ -196,4 +207,4 @@ function Productdetails() {
   );
 }
 
-export default Productdetails;
+export default ProductDetails;

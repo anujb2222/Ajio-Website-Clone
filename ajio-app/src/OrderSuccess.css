@@ -1,3 +1,4 @@
+
 .success-container {
   display: flex;
   justify-content: center;
@@ -97,7 +98,23 @@
 }
 
 .success-actions button:hover {
-  background: #2980b9; /* hover effect for all buttons */
+  background: #2980b9;
+}
+
+.success-actions .invoice-btn {
+  background: #27ae60;
+}
+
+.success-actions .invoice-btn:hover {
+  background: #219150;
+}
+
+.success-actions .secondary-btn {
+  background: #95a5a6;
+}
+
+.success-actions .secondary-btn:hover {
+  background: #7f8c8d;
 }
 
 .secondary-btn {

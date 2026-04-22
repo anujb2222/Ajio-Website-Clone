@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { FaCreditCard, FaMoneyBillWave, FaShieldAlt } from "react-icons/fa";
 import "./Payment.css";
 
 function Payment() {
@@ -54,9 +55,6 @@ function Payment() {
       paymentMethod: method,
     };
 
-    // =========================
-    // CASH ON DELIVERY
-    // =========================
     if (method === "cod") {
       try {
         const res = await fetch(`${API_URL}/orders`, {
@@ -74,6 +72,7 @@ function Payment() {
           alert("Order placed successfully!");
 
           localStorage.removeItem("cart");
+          window.dispatchEvent(new Event("cartUpdated"));
           localStorage.removeItem("shippingDetails");
 
           setTimeout(() => {
@@ -81,6 +80,7 @@ function Payment() {
               state: {
                 items: cart,
                 paymentMethod: "cod",
+                orderId: data.orderId,
               },
             });
           }, 500);
@@ -94,9 +94,6 @@ function Payment() {
       return;
     }
 
-    // =========================
-    // ONLINE PAYMENT (RAZORPAY)
-    // =========================
     const scriptLoaded = await loadRazorpayScript();
     if (!scriptLoaded) return alert("Razorpay SDK failed to load.");
 
@@ -143,6 +140,7 @@ function Payment() {
             alert("Payment successful!");
 
             localStorage.removeItem("cart");
+            window.dispatchEvent(new Event("cartUpdated"));
             localStorage.removeItem("shippingDetails");
 
             setTimeout(() => {
@@ -150,6 +148,7 @@ function Payment() {
                 state: {
                   items: cart,
                   paymentMethod: "online",
+                  orderId: data.orderId,
                 },
               });
             }, 500);
@@ -169,7 +168,7 @@ function Payment() {
 
   return (
     <div className="payment-container">
-      <h2>Select Payment Mode</h2>
+      <h2>Payment Options</h2>
 
       <div className="payment-box">
         <div className="payment-left">
@@ -177,21 +176,40 @@ function Payment() {
             className={method === "card" ? "active" : ""}
             onClick={() => setMethod("card")}
           >
-            Credit / Debit Card
+            <FaCreditCard size={20} />
+            <span>Credit / Debit Card</span>
           </div>
 
           <div
             className={method === "cod" ? "active" : ""}
             onClick={() => setMethod("cod")}
           >
-            Cash on Delivery
+            <FaMoneyBillWave size={20} />
+            <span>Cash on Delivery</span>
           </div>
         </div>
 
         <div className="payment-right">
+          {method === "card" ? (
+            <>
+              <h3>Pay Online</h3>
+              <p>Securely pay using your Credit or Debit card via Razorpay.</p>
+            </>
+          ) : (
+            <>
+              <h3>Cash on Delivery</h3>
+              <p>Pay with cash upon delivery of your order at your doorstep.</p>
+            </>
+          )}
+
           <button className="pay-btn" onClick={handlePayment}>
-            {method === "card" ? "PAY-ONLINE" : "PAY-COD"} ₹{total}
+            {method === "card" ? "PROCEED TO PAY" : "CONFIRM ORDER"} ₹{total}
           </button>
+
+          <div className="secure-badge">
+            <FaShieldAlt />
+            <span>100% SECURE PAYMENT</span>
+          </div>
         </div>
       </div>
     </div>

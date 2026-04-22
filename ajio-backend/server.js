@@ -5,11 +5,13 @@ const connectDB = require("./config/db");
 
 require("./models/User");
 require("./models/Review");
+require("./models/Product");
 
 const authRoutes = require("./routes/authRoutes");
 const productRoutes = require("./routes/productRoutes");
 const orderRoutes = require("./routes/orderRoutes");
 const reviewRoutes = require("./routes/reviewRoutes");
+const addressRoutes = require("./routes/addressRoutes");
 
 const app = express();
 
@@ -21,6 +23,7 @@ app.use("/auth", authRoutes);
 app.use("/products", productRoutes);
 app.use("/orders", orderRoutes);
 app.use("/reviews", reviewRoutes);
+app.use("/addresses", addressRoutes);
 
 connectDB();
 
