@@ -5,7 +5,7 @@ const axios = require("axios");
 const { generateInvoice } = require("../utils/invoiceGenerator");
 
 
-const sendBrevoEmail = async (toEmail, subject, htmlContent) => {
+const sendBrevoEmail = async (toEmail, subject, htmlContent, attachmentPath) => {
   try {
     const response = await axios.post(
       "https://api.brevo.com/v3/smtp/email",
@@ -18,6 +18,12 @@ const sendBrevoEmail = async (toEmail, subject, htmlContent) => {
         subject,
         htmlContent,
         textContent: "Order placed successfully",
+        attachment: [
+          {
+            url: attachmentPath,
+            name: attachmentPath.split("/").pop(),  
+          },
+        ],
       },
       {
         headers: {
@@ -30,10 +36,9 @@ const sendBrevoEmail = async (toEmail, subject, htmlContent) => {
 
     console.log("Email sent:", response.data);
   } catch (error) {
-    console.error("BREVO FULL ERROR:", error.response?.data || error.message);
+    console.error("Error sending email with attachment:", error.response?.data || error.message);
   }
 };
-
 
 
 
