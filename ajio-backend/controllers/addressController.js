@@ -1,15 +1,14 @@
-const mongoose = require("mongoose");
 const Address = require("../models/Address");
 
-// GET addresses for a user
+// GET addresses of user
 exports.getAddresses = async (req, res) => {
   try {
     const { userId } = req.params;
 
-    if (!userId || !mongoose.Types.ObjectId.isValid(userId)) {
+    if (!userId) {
       return res.status(400).json({
         success: false,
-        message: "Invalid or missing User ID"
+        message: "User ID required"
       });
     }
 
@@ -21,6 +20,7 @@ exports.getAddresses = async (req, res) => {
     });
 
   } catch (error) {
+    console.error("GET ADDRESS ERROR:", error);
     res.status(500).json({
       success: false,
       message: error.message
@@ -28,24 +28,15 @@ exports.getAddresses = async (req, res) => {
   }
 };
 
-
 // ADD address
 exports.addAddress = async (req, res) => {
   try {
     const { userId, firstName, lastName, address1, address2, state } = req.body;
 
-    // validation
     if (!userId || !firstName || !lastName || !address1 || !state) {
       return res.status(400).json({
         success: false,
         message: "Required fields missing"
-      });
-    }
-
-    if (!mongoose.Types.ObjectId.isValid(userId)) {
-      return res.status(400).json({
-        success: false,
-        message: "Invalid User ID"
       });
     }
 
@@ -74,34 +65,18 @@ exports.addAddress = async (req, res) => {
   }
 };
 
-
 // DELETE address
 exports.deleteAddress = async (req, res) => {
   try {
-    const { id } = req.params;
-
-    if (!mongoose.Types.ObjectId.isValid(id)) {
-      return res.status(400).json({
-        success: false,
-        message: "Invalid address ID"
-      });
-    }
-
-    const deleted = await Address.findByIdAndDelete(id);
-
-    if (!deleted) {
-      return res.status(404).json({
-        success: false,
-        message: "Address not found"
-      });
-    }
+    await Address.findByIdAndDelete(req.params.id);
 
     res.json({
       success: true,
-      message: "Address deleted successfully"
+      message: "Address deleted"
     });
 
   } catch (error) {
+    console.error("DELETE ADDRESS ERROR:", error);
     res.status(500).json({
       success: false,
       message: error.message
