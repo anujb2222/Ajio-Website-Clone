@@ -20,6 +20,6 @@ const orderSchema = new mongoose.Schema({
   paymentStatus: { type: String, default: "pending" },
   status: { type: String, default: "Pending" },
   createdAt: { type: Date, default: Date.now }
-});
+}); 
 
 module.exports = mongoose.model("Order", orderSchema);

@@ -14,7 +14,7 @@ const generateInvoice = (orderData) => {
   doc.pipe(fs.createWriteStream(filePath));
 
   doc.fontSize(18).text('AJIO Clone Store', { align: 'center' });
-  doc.fontSize(12).text('Address: 123 Fake Street, City, State, ZIP', { align: 'center' });
+  doc.fontSize(12).text('Address: 123, State', { align: 'center' });
   doc.moveDown();
   doc.text(`Invoice for Order ID: ${orderData.razorpayOrderId}`, { align: 'center' });
   doc.text(`Date: ${new Date().toLocaleDateString()}`);
