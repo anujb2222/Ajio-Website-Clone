@@ -32,12 +32,16 @@ font-family: Verdana, Geneva, Tahoma, sans-serif;
   cursor: pointer;
   font-size:20px;
   color: white;
+    border-bottom: 1px solid black;
   border-radius: 5px;
+   
 }
 .sidebar ul li:hover{
   color: black;
   background-color:wheat;
+    transition: 0.3s;
 }
+
 
 .main-content {
   flex: 1;

@@ -24,7 +24,7 @@ function ViewItems() {
   if (!product) {
     return (
       <p style={{ textAlign: "center", marginTop: "120px", fontSize: "22px" }}>
-        No Product Found
+        No Product 
       </p>
     );
   }
@@ -63,7 +63,7 @@ function ViewItems() {
           ×
         </span>
 
-        <h2 style={{ marginBottom: "20px", fontSize: "35px" }}>
+        <h2 style={{ marginBottom: "20px", fontSize: "45px", paddingLeft:"150px",color:"red",fontFamily:"fantazy"}}>
           {product.itemName}
         </h2>
 
@@ -77,15 +77,16 @@ function ViewItems() {
               objectFit: "contain",
               borderRadius: "12px",
               marginBottom: "20px",
+              backgroundColor:"lavender"
             }}
           />
         )}
 
-        <p style={{ margin: "12px ", fontSize: "24px" }}>
+        <p style={{ margin: "12px ", fontSize: "29px",color:"red" }}>
           <strong>Quantity:</strong> {product.itemQuantity}
         </p>
 
-        <p style={{ margin: "12px ", fontSize: "24px" }}>
+        <p style={{ margin: "12px ", fontSize: "32px",color:"green" ,fontFamily:"fantasy"}}>
           <strong>Price:</strong> ₹{product.itemPrice}
         </p>
       </div>

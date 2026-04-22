@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import "./Admin.css";
+import { FaBox, FaPlus, FaShoppingCart, FaUsers, FaMoneyBill, FaHome } from "react-icons/fa";
 
 function Admin() {
   const navigate = useNavigate();
@@ -28,15 +29,39 @@ function Admin() {
   return (
     <div className="dashboard">
       <div className="sidebar">
-        <h2>Admin Panel</h2>
-        <ul>
-          <li>Products</li>
-          <li onClick={() => navigate("/additem")}>Add Item</li>
-          <li onClick={() => navigate("/admin/orders")}>Orders</li>
-          <li onClick={() => navigate("/admin/users")}>Users</li>
-          <li onClick={() => navigate("/admin/payments")}>Payments</li>
-          <li onClick={() => navigate("/")}>Go TO home</li>
-        </ul>
+       <h2>Admin Panel</h2>
+
+<ul>
+  <li>
+    <FaBox style={{ marginRight: "8px" }} />
+    Products
+  </li>
+
+  <li onClick={() => navigate("/additem")}>
+    <FaPlus style={{ marginRight: "8px" }} />
+    Add Item
+  </li>
+
+  <li onClick={() => navigate("/admin/orders")}>
+    <FaShoppingCart style={{ marginRight: "8px" }} />
+    Orders
+  </li>
+
+  <li onClick={() => navigate("/admin/users")}>
+    <FaUsers style={{ marginRight: "8px" }} />
+    All-Users
+  </li>
+
+  <li onClick={() => navigate("/admin/payments")}>
+    <FaMoneyBill style={{ marginRight: "8px" }} />
+    Payments
+  </li>
+
+  <li onClick={() => navigate("/")}>
+    <FaHome style={{ marginRight: "8px" }} />
+    Go To Home
+  </li>
+</ul>
       </div>
 
       <div className="main-content">

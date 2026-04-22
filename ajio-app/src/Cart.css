@@ -17,6 +17,8 @@
 .cart-sidebar h3 {
   margin-bottom: 20px;
   font-size: 30px;
+  color: wheat;
+  font-family: 'Times New Roman', Times, serif;
   font-weight: 700;
 }
 
@@ -34,6 +36,10 @@
 
 .cart-sidebar li:hover {
   color: #ff3b30;
+  background-color: wheat;
+  transition: 0.3s;
+  border-radius: 6px;
+  color: black;
 }
 
 .cart-container {

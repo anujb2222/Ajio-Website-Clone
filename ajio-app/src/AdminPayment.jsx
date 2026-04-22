@@ -9,7 +9,7 @@ function Payments() {
 
   useEffect(() => {
     axios
-      .get(`${API_URL}/orders`)  // Updated with live backend URL
+      .get(`${API_URL}/orders`)  
       .then((res) => setOrders(res.data))
       .catch((err) => console.log(err));
   }, []);

@@ -156,3 +156,17 @@ exports.login = async (req, res) => {
     return res.status(500).json({ success: false, message: "Server error" });
   }
 };
+
+
+exports.getAllUsers = async (req, res) => {
+  try {
+    const users = await User.find();  // Fetch all users
+    res.json(users);
+  } catch (err) {
+    console.error("Error fetching users:", err);  // Log the actual error object
+    res.status(500).json({
+      message: "Error fetching users",
+      error: err.message,  // Send back the error message
+    });
+  }
+};

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "./Cart.css";
+import { FaShoppingCart, FaBoxOpen, FaHome } from "react-icons/fa";
 
 const getCart = () => JSON.parse(localStorage.getItem("cart")) || [];
 
@@ -21,7 +22,7 @@ function Cart() {
     setCartItems(getCart());
   }, []);
 
-  // Fetch user's already reviewed products
+  
   useEffect(() => {
     const fetchUserReviews = async () => {
       if (!userId) return;
@@ -29,7 +30,7 @@ function Cart() {
         const res = await fetch(`${API_URL}/reviews/user/${userId}`);
         const data = await res.json();
 
-        // Ensure productId is always a string
+    
         const reviewedIds = data.map(r =>
           typeof r.productId === "string" ? r.productId : r.productId._id
         );
@@ -127,21 +128,31 @@ function Cart() {
 
   return (
     <div className="cart-page">
-      <div className="cart-sidebar">
-        <h3>My Account</h3>
-        <ul>
-          <li onClick={() => setView("cart")}>My Cart</li>
-          <li
-            onClick={() => {
-              setView("orders");
-              fetchOrders();
-            }}
-          >
-            My Orders
-          </li>
-          <li onClick={() => navigate("/")}>Go to Home</li>
-        </ul>
-      </div>
+    <div className="cart-sidebar">
+  <h3>My Account</h3>
+
+  <ul>
+    <li onClick={() => setView("cart")}>
+      <FaShoppingCart style={{ marginRight: "10px" }} />
+      My Cart
+    </li>
+
+    <li
+      onClick={() => {
+        setView("orders");
+        fetchOrders();
+      }}
+    >
+      <FaBoxOpen style={{ marginRight: "10px" }} />
+      My Orders
+    </li>
+
+    <li onClick={() => navigate("/")}>
+      <FaHome style={{ marginRight: "10px" }} />
+      Go to Home
+    </li>
+  </ul>
+</div>
 
       <div className="cart-container">
         {/* CART VIEW */}
