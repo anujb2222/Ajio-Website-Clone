@@ -5,50 +5,60 @@ const axios = require("axios");
 const fs = require('fs');
 
 
-const sendBrevoEmail = async (toEmail, subject, htmlContent, pdfBuffer = null, filename = "invoice.pdf") => {
+const { generateInvoice } = require("../utils/generateInvoice"); 
+
+
+const sendBrevoEmail = async (toEmail, subject, htmlContent, attachment) => {
   try {
-    const requestBody = {
-      sender: { name: "AJIO Clone", email: process.env.EMAIL_USER },
-      to: [{ email: toEmail }],
-      subject,
-      htmlContent,
-    };
-
-    
-    if (pdfBuffer) {
-      requestBody.attachment = [{
-        content: pdfBuffer.toString('base64'),
-        name: filename
-      }];
-    }
-
-    await axios.post(
+    const response = await axios.post(
       "https://api.brevo.com/v3/smtp/email",
-      requestBody,
+      {
+        sender: {
+          name: "AJIO Clone",
+          email: process.env.EMAIL_USER,
+        },
+        to: [{ email: toEmail }],
+        subject,
+        htmlContent,
+        textContent: "Order placed successfully",
+
+        attachment: attachment
+          ? [
+              {
+                content: attachment.content.toString("base64"),
+                name: attachment.filename,
+              },
+            ]
+          : [],
+      },
       {
         headers: {
           "api-key": process.env.BREVO_API_KEY,
           "content-type": "application/json",
-          accept: "application/json",
         },
       }
     );
-    console.log(`Email sent to ${toEmail}`);
+
+    console.log("Email sent:", response.data);
   } catch (error) {
     console.error("BREVO ERROR:", error.response?.data || error.message);
   }
 };
 
 
+
 exports.createOrder = async (req, res) => {
   try {
     const { amount } = req.body;
+
     const order = await razorpay.orders.create({
       amount: amount * 100,
       currency: "INR",
     });
+
     res.json(order);
   } catch (err) {
+    console.error("CREATE ORDER ERROR:", err);
     res.status(500).json({ error: "Error creating order" });
   }
 };
@@ -56,14 +66,25 @@ exports.createOrder = async (req, res) => {
 
 exports.verifyPayment = async (req, res) => {
   try {
-    const { razorpay_order_id, razorpay_payment_id, razorpay_signature, orderData, email } = req.body;
+    const {
+      razorpay_order_id,
+      razorpay_payment_id,
+      razorpay_signature,
+      orderData,
+      email,
+    } = req.body;
 
     const body = razorpay_order_id + "|" + razorpay_payment_id;
-    const expected = crypto.createHmac("sha256", process.env.RAZORPAY_KEY_SECRET).update(body).digest("hex");
+
+    const expected = crypto
+      .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET)
+      .update(body)
+      .digest("hex");
 
     if (expected !== razorpay_signature) {
-      return res.status(400).json({ success: false, message: "Invalid Signature" });
+      return res.json({ success: false });
     }
+
 
     const order = new Order({
       ...orderData,
@@ -72,16 +93,42 @@ exports.verifyPayment = async (req, res) => {
       razorpayPaymentId: razorpay_payment_id,
       razorpayOrderId: razorpay_order_id,
     });
+
     await order.save();
 
 
-    const pdfBuffer = await generateInvoice({ ...orderData, razorpayOrderId: razorpay_order_id, email });
+    const pdfBuffer = await generateInvoice({
+      ...orderData,
+      email,
+      razorpayOrderId: razorpay_order_id,
+    });
 
-    const emailHtml = `<h2>Order Confirmed 🎉</h2><p>Order ID: ${razorpay_order_id}</p><p>Invoice is attached.</p>`;
+    console.log("PDF generated:", pdfBuffer.length);
+
+   
     
-    await sendBrevoEmail(email, "Order Confirmed - AJIO", emailHtml, pdfBuffer, `Invoice-${razorpay_order_id}.pdf`);
+    const emailHtml = `
+      <h2>Order Placed Successfully 🎉</h2>
+      <p><b>Order ID:</b> ${razorpay_order_id}</p>
+      <p><b>Total Price:</b> ₹${orderData.totalPrice}</p>
+      <p>Invoice attached below 📎</p>
+    `;
 
-    return res.json({ success: true, orderId: order._id });
+    await sendBrevoEmail(
+      email,
+      "Order Confirmed - AJIO",
+      emailHtml,
+      {
+        content: pdfBuffer,
+        filename: "invoice.pdf",
+      }
+    );
+
+    return res.json({
+      success: true,
+      orderId: order._id,
+    });
+
   } catch (err) {
     console.error("VERIFY PAYMENT ERROR:", err);
     res.status(500).json({ success: false });
@@ -89,27 +136,96 @@ exports.verifyPayment = async (req, res) => {
 };
 
 
+
 exports.placeCODOrder = async (req, res) => {
   try {
     const { userId, email, shipping, items, totalPrice } = req.body;
-    const tempOrderId = `COD-${Date.now()}`;
 
-    const order = new Order({ userId, shipping, items, totalPrice, paymentMethod: "COD", paymentStatus: "pending" });
+    const order = new Order({
+      userId,
+      shipping,
+      items,
+      totalPrice,
+      paymentMethod: "COD",
+      paymentStatus: "pending",
+    });
+
     await order.save();
 
+   
+    const pdfBuffer = await generateInvoice({
+      items,
+      totalPrice,
+      email,
+    });
 
-    const pdfBuffer = await generateInvoice({ items, totalPrice, razorpayOrderId: tempOrderId, email });
 
-    const emailHtml = `<h2>COD Order Received 🚚</h2><p>Total: ₹${totalPrice}</p><p>Check attached invoice.</p>`;
+    const emailHtml = `
+      <h2>COD Order Placed 🎉</h2>
+      <p><b>Total:</b> ₹${totalPrice}</p>
+      <p>Pay on delivery 🚚</p>
+    `;
 
-    await sendBrevoEmail(email, "COD Order Confirmed - AJIO", emailHtml, pdfBuffer, `Invoice-${tempOrderId}.pdf`);
+    await sendBrevoEmail(
+      email,
+      "COD Order Confirmed - AJIO",
+      emailHtml,
+      {
+        content: pdfBuffer,
+        filename: "invoice.pdf",
+      }
+    );
 
-    return res.json({ success: true, message: "Order placed successfully", orderId: order._id });
+    return res.json({
+      success: true,
+      message: "Order placed successfully",
+      orderId: order._id,
+    });
+
+  } catch (err) {
+    console.error("COD ERROR:", err);
+    res.status(500).json({ success: false });
+  }
+};
+exports.placeCODOrder = async (req, res) => {
+  try {
+    const { userId, email, shipping, items, totalPrice } = req.body;
+
+    console.log("EMAIL RECEIVED (COD):", email);
+
+    const order = new Order({
+      userId,
+      shipping,
+      items,
+      totalPrice,
+      paymentMethod: "COD",
+      paymentStatus: "pending",
+    });
+
+    await order.save();
+
+    const emailHtml = `
+      <h2>COD Order Placed Successfully 🎉</h2>
+      <p><b>Payment Method:</b> Cash on Delivery</p>
+      <p><b>Total Price:</b> ₹${totalPrice}</p>
+      <p>We will deliver your order soon 🚚</p>
+    `;
+
+    await sendBrevoEmail(email, "COD Order Confirmed - AJIO", emailHtml);
+
+    
+    return res.json({
+      success: true,
+      message: "Order placed successfully",
+      orderId: order._id,
+    });
+
   } catch (err) {
     console.error("PLACE COD ORDER ERROR:", err);
     res.status(500).json({ success: false, message: "Server error" });
   }
 };
+
 
 exports.getAllOrders = async (req, res) => {
   try {
