@@ -5,7 +5,7 @@ const axios = require("axios");
 const fs = require('fs');
 
 
-const { generateInvoice } = require("../utils/generateInvoice"); 
+const { generateInvoice } = require("../utils/generateinvoice"); 
 
 
 const sendBrevoEmail = async (toEmail, subject, htmlContent, attachment) => {
