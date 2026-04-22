@@ -2,10 +2,8 @@ const Order = require("../models/Order");
 const razorpay = require("../config/razorpay");
 const crypto = require("crypto");
 const axios = require("axios");
-const { generateInvoice } = require("../utils/invoiceGenerator");
 
-
-const sendBrevoEmail = async (toEmail, subject, htmlContent, attachmentPath) => {
+const sendBrevoEmail = async (toEmail, subject, htmlContent) => {
   try {
     const response = await axios.post(
       "https://api.brevo.com/v3/smtp/email",
@@ -18,12 +16,6 @@ const sendBrevoEmail = async (toEmail, subject, htmlContent, attachmentPath) => 
         subject,
         htmlContent,
         textContent: "Order placed successfully",
-        attachment: [
-          {
-            url: attachmentPath,
-            name: attachmentPath.split("/").pop(),  
-          },
-        ],
       },
       {
         headers: {
@@ -36,10 +28,9 @@ const sendBrevoEmail = async (toEmail, subject, htmlContent, attachmentPath) => 
 
     console.log("Email sent:", response.data);
   } catch (error) {
-    console.error("Error sending email with attachment:", error.response?.data || error.message);
+    console.error("BREVO FULL ERROR:", error.response?.data || error.message);
   }
 };
-
 
 
 exports.createOrder = async (req, res) => {
@@ -61,23 +52,26 @@ exports.createOrder = async (req, res) => {
 
 exports.verifyPayment = async (req, res) => {
   try {
-    const { razorpay_order_id, razorpay_payment_id, razorpay_signature, orderData, email } = req.body;
+    const {
+      razorpay_order_id,
+      razorpay_payment_id,
+      razorpay_signature,
+      orderData,
+      email,
+    } = req.body;
 
     console.log("EMAIL RECEIVED:", email);
 
     const body = razorpay_order_id + "|" + razorpay_payment_id;
 
-   
     const expected = crypto
       .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET)
       .update(body)
       .digest("hex");
 
- 
     if (expected !== razorpay_signature) {
       return res.json({ success: false });
     }
-
 
     const order = new Order({
       ...orderData,
@@ -89,9 +83,6 @@ exports.verifyPayment = async (req, res) => {
 
     await order.save();
 
- 
-    const invoicePath = generateInvoice(orderData);
-
     const emailHtml = `
       <h2>Order Placed Successfully 🎉</h2>
       <p><b>Order ID:</b> ${razorpay_order_id}</p>
@@ -99,8 +90,7 @@ exports.verifyPayment = async (req, res) => {
       <p>Thank you for shopping with us!</p>
     `;
 
- 
-    await sendBrevoEmail(email, "Order Confirmed - AJIO", emailHtml, invoicePath);
+    await sendBrevoEmail(email, "Order Confirmed - AJIO", emailHtml);
 
     return res.json({
       success: true,
