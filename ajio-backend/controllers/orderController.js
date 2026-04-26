@@ -1,4 +1,5 @@
 const Order = require("../models/Order");
+const Product = require("../models/Product");
 const razorpay = require("../config/razorpay");
 const crypto = require("crypto");
 const axios = require("axios");
@@ -230,35 +231,43 @@ exports.getSingleOrder = async (req, res) => {
 
 
 
-
 exports.getSalesStats = async (req, res) => {
   try {
+    console.log("Sales API HIT");
+
     const orders = await Order.find();
     const totalProducts = await Product.countDocuments();
-    
-    const totalRevenue = orders
-      .filter(order => order.status !== "Cancelled")
-      .reduce((sum, order) => sum + (order.totalPrice || 0), 0);
 
-    const totalOrders = orders.length;
-    
-    const productsSold = orders
-      .filter(order => order.status !== "Cancelled")
-      .reduce((sum, order) => sum + order.items.reduce((iSum, item) => iSum + (item.quantity || 0), 0), 0);
+    const validOrders = orders.filter(
+      (o) => o.status !== "Cancelled"
+    );
 
-    const recentOrders = await Order.find()
-      .sort({ createdAt: -1 })
-      .limit(5);
+    const totalRevenue = validOrders.reduce(
+      (sum, o) => sum + (o.totalPrice || 0),
+      0
+    );
+
+    const productsSold = validOrders.reduce(
+      (sum, o) =>
+        sum +
+        (o.items?.reduce(
+          (s, i) => s + (i.quantity || 0),
+          0
+        ) || 0),
+      0
+    );
 
     res.json({
       totalRevenue,
-      totalOrders,
+      totalOrders: orders.length,
       productsSold,
       totalProducts,
-      recentOrders
+      recentOrders: await Order.find()
+        .sort({ createdAt: -1 })
+        .limit(5),
     });
   } catch (err) {
     console.error("SALES STATS ERROR:", err);
-    res.status(500).json({ error: "Error fetching sales stats" });
+    res.status(500).json({ error: err.message });
   }
 };
