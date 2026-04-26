@@ -14,7 +14,7 @@ import AdminPayment from "./AdminPayment";
 import OrderSuccess from "./OrderSuccess";
 import UserPage from "./UserPage";
 import AdminReviews from "./AdminReviews";
-
+import AdminSalesOverview from "./AdminSalesOverview";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <BrowserRouter>
@@ -34,7 +34,8 @@ ReactDOM.createRoot(document.getElementById("root")).render(
 <Route path="/order-success" element={<OrderSuccess />} />
   <Route path="/admin/users" element={<UserPage/>} /> 
 <Route path="/admin/reviews" element={<AdminReviews />} /> 
-             
+ 
+        <Route path="/admin/sales" element={<AdminSalesOverview />} /> 
 
          
     

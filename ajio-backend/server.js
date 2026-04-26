@@ -13,6 +13,7 @@ const orderRoutes = require("./routes/orderRoutes");
 const reviewRoutes = require("./routes/reviewRoutes");
 const addressRoutes = require("./routes/addressRoutes");
 
+
 const app = express();
 
 app.use(cors());
@@ -24,6 +25,8 @@ app.use("/products", productRoutes);
 app.use("/orders", orderRoutes);
 app.use("/reviews", reviewRoutes);
 app.use("/addresses", addressRoutes);
+
+
 
 connectDB();
 

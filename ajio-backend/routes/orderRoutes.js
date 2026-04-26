@@ -7,7 +7,7 @@ router.post("/verify-payment", orderController.verifyPayment);
 
 
 router.post("/", orderController.placeCODOrder);
-
+router.get("/sales-stats", orderController.getSalesStats);
 
 router.get("/", orderController.getAllOrders);
 router.get("/user-orders/:userId", orderController.getUserOrders);

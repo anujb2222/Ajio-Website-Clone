@@ -96,7 +96,7 @@ function Cart() {
     totalPrice += item.itemPrice * item.itemQuantity;
   });
 
-  // SUBMIT REVIEW
+
   const submitReview = async (productId) => {
     try {
       const res = await fetch(`${API_URL}/reviews`, {
@@ -122,7 +122,7 @@ function Cart() {
       setComment("");
       setRating(5);
 
-      // Ensure productId is string
+   
       const productIdStr = typeof productId === "string" ? productId : productId._id;
       setReviewedProducts([...reviewedProducts, productIdStr]);
     } catch (err) {

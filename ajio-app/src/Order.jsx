@@ -23,7 +23,7 @@ function Order() {
 
   const API_URL = "https://ajio-website-clone-1.onrender.com";
 
-  // ---------------- FETCH ADDRESSES ----------------
+  
   const fetchAddresses = async () => {
     setLoading(true);
     try {
@@ -54,7 +54,7 @@ function Order() {
     }
   }, [userId]);
 
-  // ---------------- FORM CHANGE ----------------
+
   const handleChange = (e) =>
     setForm({ ...form, [e.target.name]: e.target.value });
 
@@ -62,13 +62,13 @@ function Order() {
     setSelectedAddressIndex(index);
   };
 
-  // ---------------- SUBMIT ----------------
+
   const handleProceed = async (e) => {
     e.preventDefault();
 
     let shippingDetails;
 
-    // -------- SELECT EXISTING ADDRESS --------
+  
     if (activeTab === "select") {
       if (selectedAddressIndex === null) {
         alert("Please select an address");
@@ -78,7 +78,7 @@ function Order() {
       shippingDetails = savedAddresses[selectedAddressIndex];
     }
 
-    // -------- ADD NEW ADDRESS --------
+  
     else {
       if (
         !form.firstName ||
@@ -106,7 +106,7 @@ function Order() {
         if (res.data.success) {
           shippingDetails = res.data.address;
 
-          // ✅ IMPORTANT: refresh list instantly
+        
           await fetchAddresses();
           setActiveTab("select");
         }
@@ -119,7 +119,7 @@ function Order() {
       }
     }
 
-    // ---------------- SAVE & GO TO PAYMENT ----------------
+   
     localStorage.setItem(
       "shippingDetails",
       JSON.stringify(shippingDetails)
@@ -128,7 +128,6 @@ function Order() {
     navigate("/Payment");
   };
 
-  // ---------------- UI ----------------
   return (
     <div className="order-container">
       <h2 className="order-header">1. DELIVERY ADDRESS</h2>
@@ -156,7 +155,6 @@ function Order() {
           </div>
         </div>
 
-        {/* ---------------- SELECT ADDRESS ---------------- */}
         {activeTab === "select" ? (
           <div className="select-address-view">
             {loading ? (
@@ -199,7 +197,7 @@ function Order() {
             )}
           </div>
         ) : (
-          /* ---------------- ADD ADDRESS ---------------- */
+     
           <form onSubmit={handleProceed} className="order-form">
             <input
               name="firstName"

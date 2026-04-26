@@ -227,3 +227,38 @@ exports.getSingleOrder = async (req, res) => {
     res.status(500).json({ error: "Error fetching order" });
   }
 };
+
+
+
+
+exports.getSalesStats = async (req, res) => {
+  try {
+    const orders = await Order.find();
+    const totalProducts = await Product.countDocuments();
+    
+    const totalRevenue = orders
+      .filter(order => order.status !== "Cancelled")
+      .reduce((sum, order) => sum + (order.totalPrice || 0), 0);
+
+    const totalOrders = orders.length;
+    
+    const productsSold = orders
+      .filter(order => order.status !== "Cancelled")
+      .reduce((sum, order) => sum + order.items.reduce((iSum, item) => iSum + (item.quantity || 0), 0), 0);
+
+    const recentOrders = await Order.find()
+      .sort({ createdAt: -1 })
+      .limit(5);
+
+    res.json({
+      totalRevenue,
+      totalOrders,
+      productsSold,
+      totalProducts,
+      recentOrders
+    });
+  } catch (err) {
+    console.error("SALES STATS ERROR:", err);
+    res.status(500).json({ error: "Error fetching sales stats" });
+  }
+};
