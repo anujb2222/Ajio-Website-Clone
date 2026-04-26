@@ -4,7 +4,21 @@ import "./AdminSalesOverview.css";
 import { FaMoneyBillWave, FaShoppingCart, FaBox, FaChartLine, FaArrowLeft } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  PieChart,
+  Pie,
+  Cell,
+  Legend
+} from "recharts";
 
+const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042", "#8884d8"];
 
 function AdminSalesOverview() {
   const [stats, setStats] = useState({
@@ -12,12 +26,12 @@ function AdminSalesOverview() {
     totalOrders: 0,
     productsSold: 0,
     totalProducts: 0,
-    recentOrders: []
+    recentOrders: [],
+    barChartData: [],
+    pieChartData: []
   });
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
-
-  
 
   const API_URL = "https://ajio-website-clone-1.onrender.com"; 
 
@@ -35,7 +49,7 @@ function AdminSalesOverview() {
     fetchData();
   }, []);
 
-  const { totalRevenue, totalOrders, totalProducts, productsSold, recentOrders } = stats;
+  const { totalRevenue, totalOrders, totalProducts, productsSold, recentOrders, barChartData, pieChartData } = stats;
 
   if (loading) return <div className="loading">Loading Sales Overview...</div>;
 
@@ -45,7 +59,7 @@ function AdminSalesOverview() {
         <button className="back-btn" onClick={() => navigate("/admin")}>
           <FaArrowLeft /> Back to Dashboard
         </button>
-        <h1>Sales Overview</h1>
+        <h1>Sales Analysis</h1>
       </div>
 
       <div className="stats-grid">
@@ -90,6 +104,48 @@ function AdminSalesOverview() {
         </div>
       </div>
 
+      <div className="charts-section">
+        <div className="chart-container bar-chart">
+          <h3>Monthly Sales Performance (Revenue)</h3>
+          <div style={{ width: "100%", height: 300 }}>
+            <ResponsiveContainer>
+              <BarChart data={barChartData}>
+                <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                <XAxis dataKey="name" />
+                <YAxis tickFormatter={(value) => `₹${value}`} />
+                <Tooltip formatter={(value) => [`₹${value}`, "Revenue"]} />
+                <Bar dataKey="sales" fill="#1976d2" radius={[4, 4, 0, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+
+        <div className="chart-container pie-chart">
+          <h3>Sales by Category (Quantity)</h3>
+          <div style={{ width: "100%", height: 300 }}>
+            <ResponsiveContainer>
+              <PieChart>
+                <Pie
+                  data={pieChartData}
+                  cx="50%"
+                  cy="50%"
+                  innerRadius={60}
+                  outerRadius={80}
+                  paddingAngle={5}
+                  dataKey="value"
+                >
+                  {pieChartData.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                  ))}
+                </Pie>
+                <Tooltip />
+                <Legend />
+              </PieChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+      </div>
+
       <div className="recent-sales-section">
         <h2>Recent Sales</h2>
         <table className="sales-table">
@@ -110,8 +166,8 @@ function AdminSalesOverview() {
                 <td>{new Date(order.createdAt).toLocaleDateString()}</td>
                 <td>₹{order.totalPrice}</td>
                 <td>
-                  <span className={`status-badge ${order.status.toLowerCase()}`}>
-                    {order.status}
+                  <span className={`status-badge ${(order.status || "pending").toLowerCase()}`}>
+                    {order.status || "Pending"}
                   </span>
                 </td>
               </tr>

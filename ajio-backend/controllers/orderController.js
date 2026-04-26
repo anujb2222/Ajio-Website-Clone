@@ -231,43 +231,73 @@ exports.getSingleOrder = async (req, res) => {
 
 
 
+
 exports.getSalesStats = async (req, res) => {
   try {
-    console.log("Sales API HIT");
-
-    const orders = await Order.find();
+    const orders = await Order.find().populate("items.productId");
     const totalProducts = await Product.countDocuments();
+    
+    const totalRevenue = orders
+      .filter(order => order.status !== "Cancelled")
+      .reduce((sum, order) => sum + (order.totalPrice || 0), 0);
 
-    const validOrders = orders.filter(
-      (o) => o.status !== "Cancelled"
-    );
+    const totalOrders = orders.length;
+    
+    const productsSold = orders
+      .filter(order => order.status !== "Cancelled")
+      .reduce((sum, order) => sum + order.items.reduce((iSum, item) => iSum + (item.quantity || 0), 0), 0);
 
-    const totalRevenue = validOrders.reduce(
-      (sum, o) => sum + (o.totalPrice || 0),
-      0
-    );
+    const recentOrders = await Order.find()
+      .sort({ createdAt: -1 })
+      .limit(5);
 
-    const productsSold = validOrders.reduce(
-      (sum, o) =>
-        sum +
-        (o.items?.reduce(
-          (s, i) => s + (i.quantity || 0),
-          0
-        ) || 0),
-      0
-    );
+    // Monthly Sales Data
+    const monthlySales = {};
+    const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+    
+    orders.forEach(order => {
+      if (order.status !== "Cancelled") {
+        const date = new Date(order.createdAt);
+        const month = months[date.getMonth()];
+        monthlySales[month] = (monthlySales[month] || 0) + order.totalPrice;
+      }
+    });
+
+    const barChartData = months.map(month => ({
+      name: month,
+      sales: monthlySales[month] || 0
+    }));
+
+    // Category Sales Data
+    const categorySales = {};
+    orders.forEach(order => {
+      if (order.status !== "Cancelled") {
+        order.items.forEach(item => {
+          if (item.productId && item.productId.category) {
+            const cat = item.productId.category;
+            categorySales[cat] = (categorySales[cat] || 0) + (item.quantity || 0);
+          }
+        });
+      }
+    });
+
+    const pieChartData = Object.keys(categorySales).map(cat => ({
+      name: cat,
+      value: categorySales[cat]
+    }));
 
     res.json({
       totalRevenue,
-      totalOrders: orders.length,
+      totalOrders,
       productsSold,
       totalProducts,
-      recentOrders: await Order.find()
-        .sort({ createdAt: -1 })
-        .limit(5),
+      recentOrders,
+      barChartData,
+      pieChartData
     });
   } catch (err) {
     console.error("SALES STATS ERROR:", err);
-    res.status(500).json({ error: err.message });
+    res.status(500).json({ error: "Error fetching sales stats" });
   }
 };
+
