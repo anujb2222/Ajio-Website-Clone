@@ -9,6 +9,6 @@ router.get("/:userId", addressController.getAddresses);
 router.post("/", addressController.addAddress);
 
 
-router.delete("/:id", addressController.deleteAddress);
+
 
 module.exports = router;
