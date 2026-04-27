@@ -15,7 +15,6 @@ function AdminOrders() {
   const [updatingId, setUpdatingId] = useState(null);
   const navigate = useNavigate();
 
-
     const API_URL = "https://ajio-website-clone-1.onrender.com";
 
   const fetchOrders = async () => {
@@ -45,10 +44,13 @@ function AdminOrders() {
             order._id === orderId ? { ...order, status } : order
           )
         );
+      } else {
+        alert(res.data.message || "Failed to update status");
       }
     } catch (err) {
       console.error("Error updating status:", err);
-      alert("Failed to update status. Please try again.");
+      const errorMsg = err.response?.data?.message || err.response?.data?.error || "Failed to update status. Please try again.";
+      alert(errorMsg);
     } finally {
       setUpdatingId(null);
     }

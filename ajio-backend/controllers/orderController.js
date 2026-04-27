@@ -198,15 +198,38 @@ exports.getUserOrders = async (req, res) => {
 };
 
 // ================= UPDATE ORDER STATUS =================
+
 exports.updateOrderStatus = async (req, res) => {
-  const { status } = req.body;
+  try {
+    const { status } = req.body;
+    const { orderId } = req.params;
 
-  await Order.findByIdAndUpdate(req.params.orderId, {
-    orderStatus: status,
-  });
+    if (!status) {
+      return res.status(400).json({ success: false, message: "Status is required" });
+    }
 
-  res.json({ success: true });
+    console.log(`Updating order ${orderId} to status: ${status}`);
+
+    const updatedOrder = await Order.findByIdAndUpdate(
+      orderId,
+      { status },
+      { new: true }
+    );
+
+    if (!updatedOrder) {
+      console.log(`Order ${orderId} not found`);
+      return res.status(404).json({ success: false, message: "Order not found" });
+    }
+
+    console.log(`Order ${orderId} updated successfully to ${updatedOrder.status}`);
+    res.json({ success: true, order: updatedOrder });
+  } catch (err) {
+    console.error("UPDATE STATUS ERROR:", err);
+    res.status(500).json({ success: false, error: err.message });
+  }
 };
+
+
 
 // ================= DOWNLOAD INVOICE =================
 // (OPTIONAL - you can REMOVE this completely now)

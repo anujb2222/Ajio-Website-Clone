@@ -5,6 +5,8 @@ import "./Cart.css";
 import { FaShoppingCart, FaBoxOpen, FaHome, FaTrash, FaPlus, FaMinus, FaCheckCircle, FaTruck, FaClock, FaTimesCircle, FaBox, FaMapMarkerAlt } from "react-icons/fa";
 import { motion } from "framer-motion";
 
+
+
 const getCart = () => JSON.parse(localStorage.getItem("cart")) || [];
 
 function Cart() {
@@ -16,9 +18,11 @@ function Cart() {
   const [rating, setRating] = useState(5);
   const [reviewedProducts, setReviewedProducts] = useState([]);
 
+
+    const API_URL = "https://ajio-website-clone-1.onrender.com";
+
   const navigate = useNavigate();
   const userId = localStorage.getItem("userId");
-  const API_URL = "https://ajio-website-clone-1.onrender.com";
 
   useEffect(() => {
     setCartItems(getCart());
