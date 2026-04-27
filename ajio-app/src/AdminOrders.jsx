@@ -127,8 +127,8 @@ function AdminOrders() {
                   </td>
 
                   <td className="customer-cell">
-                    <div className="customer-name">{order.shipping?.name || "Anonymous"}</div>
-                    <div className="customer-email">{order.shipping?.email || "No Email"}</div>
+                    <div className="customer-name">{order.shipping?.name}</div>
+                    <div className="customer-email">{order.shipping?.email}</div>
                   </td>
 
                   <td className="shipping-cell">
