@@ -12,7 +12,7 @@ import Payment from "./Payment";
 import AdminOrders from "./AdminOrders";
 import AdminPayment from "./AdminPayment";
 import OrderSuccess from "./OrderSuccess";
-import UserPage from "./UserPage";
+import AdminUsers from "./AdminUsers";
 import AdminReviews from "./AdminReviews";
 import AdminSalesOverview from "./AdminSalesOverview";
 
@@ -32,7 +32,7 @@ ReactDOM.createRoot(document.getElementById("root")).render(
                <Route path="/admin/orders" element={<AdminOrders />} />
              <Route path="/admin/payments" element={<AdminPayment />} />
 <Route path="/order-success" element={<OrderSuccess />} />
-  <Route path="/admin/users" element={<UserPage/>} /> 
+  <Route path="/admin/users" element={<AdminUsers/>} /> 
 <Route path="/admin/reviews" element={<AdminReviews />} /> 
  
         <Route path="/admin/sales" element={<AdminSalesOverview />} /> 

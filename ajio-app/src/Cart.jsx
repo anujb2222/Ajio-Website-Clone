@@ -2,7 +2,8 @@ import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import "./Cart.css";
-import { FaShoppingCart, FaBoxOpen, FaHome } from "react-icons/fa";
+import { FaShoppingCart, FaBoxOpen, FaHome, FaTrash, FaPlus, FaMinus, FaCheckCircle, FaTruck, FaClock, FaTimesCircle, FaBox, FaMapMarkerAlt } from "react-icons/fa";
+import { motion } from "framer-motion";
 
 const getCart = () => JSON.parse(localStorage.getItem("cart")) || [];
 
@@ -32,9 +33,9 @@ function Cart() {
         const data = await res.json();
 
     
-        const reviewedIds = data.map(r =>
-          typeof r.productId === "string" ? r.productId : r.productId._id
-        );
+        const reviewedIds = data
+          .filter(r => r.productId) // Only keep reviews where product still exists
+          .map(r => (typeof r.productId === "string" ? r.productId : r.productId._id));
         setReviewedProducts(reviewedIds);
       } catch (err) {
         console.error("Error fetching user reviews:", err);
@@ -96,7 +97,7 @@ function Cart() {
     totalPrice += item.itemPrice * item.itemQuantity;
   });
 
-
+  // SUBMIT REVIEW
   const submitReview = async (productId) => {
     try {
       const res = await fetch(`${API_URL}/reviews`, {
@@ -113,7 +114,7 @@ function Cart() {
       const data = await res.json();
 
       if (!res.ok) {
-        alert(data.message || "Error submitting review");
+        alert(data.error || data.message || "Error submitting review");
         return;
       }
 
@@ -122,7 +123,7 @@ function Cart() {
       setComment("");
       setRating(5);
 
-   
+      // Ensure productId is string
       const productIdStr = typeof productId === "string" ? productId : productId._id;
       setReviewedProducts([...reviewedProducts, productIdStr]);
     } catch (err) {
@@ -136,12 +137,16 @@ function Cart() {
   <h3>My Account</h3>
 
   <ul>
-    <li onClick={() => setView("cart")}>
+    <li 
+      className={view === "cart" ? "active" : ""} 
+      onClick={() => setView("cart")}
+    >
       <FaShoppingCart style={{ marginRight: "10px" }} />
       My Cart
     </li>
 
     <li
+      className={view === "orders" ? "active" : ""}
       onClick={() => {
         setView("orders");
         fetchOrders();
@@ -261,28 +266,69 @@ function Cart() {
               orders.map((order) => (
                 <div key={order._id} className="order-card">
                   <div className="order-summary">
+                    <div className="order-status-container">
+                      <div className="order-status-banner">
+                        {order.status === 'Delivered' && <FaCheckCircle className="status-icon delivered" />}
+                        {order.status === 'Processing' && <FaTruck className="status-icon processing" />}
+                        {order.status === 'Pending' && <FaClock className="status-icon pending" />}
+                        {order.status === 'Cancelled' && <FaTimesCircle className="status-icon cancelled" />}
+                        <span className={`status-text ${order.status?.toLowerCase()}`}>
+                          {order.status === 'Delivered' ? `Delivered ${new Date(order.updatedAt || order.createdAt).toLocaleDateString()}` : order.status}
+                        </span>
+                      </div>
+
+                      <div className="order-progress-wrapper">
+                        <div className="progress-track">
+                          <div 
+                            className={`progress-fill ${order.status?.toLowerCase()}`}
+                            style={{ 
+                              width: order.status === 'Delivered' ? '100%' : 
+                                     order.status === 'Processing' ? '66%' : 
+                                     order.status === 'Pending' ? '33%' : '0%' 
+                            }}
+                          ></div>
+                        </div>
+                        <div className="progress-steps">
+                          <div className={`step ${['Pending', 'Processing', 'Delivered'].includes(order.status) ? 'completed' : ''}`}>
+                            <div className="step-dot"><FaBox /></div>
+                            <span className="step-label">Ordered</span>
+                          </div>
+                          <div className={`step ${['Processing', 'Delivered'].includes(order.status) ? 'completed' : ''}`}>
+                            <div className="step-dot"><FaTruck /></div>
+                            <span className="step-label">Shipped</span>
+                          </div>
+                          <div className={`step ${['Delivered'].includes(order.status) ? 'completed' : ''}`}>
+                            <div className="step-dot"><FaMapMarkerAlt /></div>
+                            <span className="step-label">Out for Delivery</span>
+                          </div>
+                          <div className={`step ${order.status === 'Delivered' ? 'completed' : ''}`}>
+                            <div className="step-dot"><FaCheckCircle /></div>
+                            <span className="step-label">Delivered</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
                     <span className="order-date">
                       Order Date: {new Date(order.createdAt).toLocaleDateString()}
                     </span>
                     <span className="order-total">Total: ₹{order.totalPrice}</span>
-                    <span className="order-status">{order.status}</span>
                   </div>
 
                   <div className="order-items">
                     {order.items.map((item, idx) => {
-                      const productId = typeof item.productId === "string" ? item.productId : item.productId._id;
+                      const productId = item.productId?._id || item.productId;
                       const alreadyReviewed = reviewedProducts.includes(productId);
 
                       return (
                         <div key={idx} className="order-item-card">
                           <img
-                            src={item.productId.image || "https://via.placeholder.com/100"}
-                            alt={item.productId.itemName}
+                            src={item.productId?.image || "https://via.placeholder.com/100"}
+                            alt={item.productId?.itemName || "Product"}
                             className="order-item-img"
                           />
                           <div className="order-item-details">
-                            <h4>{item.productId.itemName}</h4>
-                            <p>Price: ₹{item.productId.itemPrice}</p>
+                            <h4>{item.productId?.itemName || "Product Deleted"}</h4>
+                            <p>Price: ₹{item.productId?.itemPrice || 0}</p>
                             <p>Quantity: {item.quantity || 1}</p>
 
                             {!alreadyReviewed && (

@@ -1,56 +1,101 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import "./AdminPayment.css";
+import { FaArrowLeft, FaCreditCard, FaMoneyBillWave, FaCalendarAlt, FaUser, FaHashtag, FaCheckCircle, FaExclamationCircle } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
 
-function Payments() {
+
+function AdminPayment() {
   const [orders, setOrders] = useState([]);
+  const navigate = useNavigate();
 
-  const API_URL = "https://ajio-website-clone-1.onrender.com"; 
+  const API_URL = "https://ajio-website-clone-1.onrender.com";
+
 
   useEffect(() => {
     axios
-      .get(`${API_URL}/orders`)  
+      .get(`${API_URL}/orders`)
       .then((res) => setOrders(res.data))
       .catch((err) => console.log(err));
   }, []);
 
   return (
-    <div className="main-content">
-      <h2>Payments</h2>
+    <div className="admin-payments-container">
+      <div className="admin-payments-header">
+        <button className="back-btn" onClick={() => navigate("/admin")}>
+          <FaArrowLeft /> Back to Dashboard
+        </button>
+        <h2>Payment Transactions</h2>
+      </div>
 
-      <table className="product-table">
-        <thead>
-          <tr>
-            <th>Payment ID</th>
-            <th>Order ID</th>
-            <th>User</th>
-            <th>Amount</th>
-            <th>Status</th>
-            <th>Date</th>
-          </tr>
-        </thead>
-
-        <tbody>
-          {orders
-            .filter((order) => order.paymentMethod === "online")
-            .map((order) => (
-              <tr key={order._id}>
-                <td>{order.razorpayPaymentId || "N/A"}</td>
-                <td>{order.razorpayOrderId}</td>
-                <td>{order.userId}</td>
-                <td>₹{order.totalPrice}</td>
-
-                <td>
-                  {order.paymentStatus === "paid" ? "🟢 Paid" : "🟡 Pending"}
-                </td>
-
-                <td>{new Date(order.createdAt).toLocaleDateString()}</td>
+      {orders.filter((order) => order.paymentMethod === "online").length === 0 ? (
+        <div className="empty-payments">
+          <FaMoneyBillWave size={50} style={{ marginBottom: '15px', opacity: 0.3 }} />
+          <p>No online payment transactions found.</p>
+        </div>
+      ) : (
+        <div className="payments-table-wrapper">
+          <table className="payments-table">
+            <thead>
+              <tr>
+                <th><FaHashtag /> Payment ID</th>
+                <th><FaHashtag /> Order ID</th>
+                <th><FaUser /> User ID</th>
+                <th><FaMoneyBillWave /> Amount</th>
+                <th>Status</th>
+                <th><FaCalendarAlt /> Date</th>
               </tr>
-            ))}
-        </tbody>
-      </table>
+            </thead>
+
+            <tbody>
+              {orders
+                .filter((order) => order.paymentMethod === "online")
+                .map((order) => (
+                  <tr key={order._id}>
+                    <td>
+                      <span className="payment-id">
+                        {order.razorpayPaymentId || "N/A"}
+                      </span>
+                    </td>
+                    <td>
+                      <span className="order-ref">
+                        {order.razorpayOrderId || order._id.slice(-12)}
+                      </span>
+                    </td>
+                    <td>
+                      <span className="user-id-text">{order.userId}</span>
+                    </td>
+                    <td>
+                      <span className="amount-text">₹{order.totalPrice}</span>
+                    </td>
+                    <td>
+                      {order.paymentStatus === "paid" ? (
+                        <span className="status-badge status-paid">
+                          <FaCheckCircle /> Paid
+                        </span>
+                      ) : (
+                        <span className="status-badge status-pending">
+                          <FaExclamationCircle /> Pending
+                        </span>
+                      )}
+                    </td>
+                    <td>
+                      <span className="date-text">
+                        {new Date(order.createdAt).toLocaleDateString(undefined, {
+                          year: 'numeric',
+                          month: 'short',
+                          day: 'numeric'
+                        })}
+                      </span>
+                    </td>
+                  </tr>
+                ))}
+            </tbody>
+          </table>
+        </div>
+      )}
     </div>
   );
 }
 
-export default Payments;
+export default AdminPayment;

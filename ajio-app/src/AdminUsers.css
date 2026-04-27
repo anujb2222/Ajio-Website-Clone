@@ -1,0 +1,93 @@
+.admin-users-container {
+  padding: 30px;
+  background-color: #f4f6f8;
+  min-height: 100vh;
+}
+
+/* Header */
+.admin-users-header {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 25px;
+}
+
+.admin-users-container h2 {
+  color: #2c3e50;
+  font-size: 26px;
+  margin: 0;
+  font-weight: 600;
+}
+
+/* Back Button */
+.back-btn {
+  background: #e9ecef;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.back-btn:hover {
+  background: #d6d8db;
+}
+
+/* Table */
+.users-table-wrapper {
+  background: #ffffff;
+  border-radius: 10px;
+  box-shadow: 0 3px 12px rgba(0,0,0,0.06);
+  overflow: hidden;
+}
+
+.users-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.users-table th,
+.users-table td {
+  padding: 14px 16px;
+  border-bottom: 1px solid #eef1f4;
+  font-size: 14px;
+}
+
+/* Header */
+.users-table th {
+  background-color: #f7f9fb;
+  color: #6c757d;
+  font-weight: 500;
+  text-transform: uppercase;
+  font-size: 12px;
+}
+
+/* Row Hover */
+.users-table tr:hover {
+  background-color: #f9fbfc;
+}
+
+/* Text Styles */
+.user-id {
+  font-family: monospace;
+  color: #8a94a6;
+  font-size: 13px;
+}
+
+.user-email {
+  color: #2f3542;
+  font-weight: 500;
+}
+
+.user-phone {
+  color: #6c757d;
+}
+
+/* Empty */
+.empty-users {
+  text-align: center;
+  padding: 50px;
+  background: white;
+  border-radius: 10px;
+  color: #8a94a6;
+}
