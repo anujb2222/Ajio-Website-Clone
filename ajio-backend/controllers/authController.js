@@ -160,13 +160,13 @@ exports.login = async (req, res) => {
 
 exports.getAllUsers = async (req, res) => {
   try {
-    const users = await User.find();  // Fetch all users
+    const users = await User.find();  
     res.json(users);
   } catch (err) {
-    console.error("Error fetching users:", err);  // Log the actual error object
+    console.error("Error fetching users:", err);  
     res.status(500).json({
       message: "Error fetching users",
-      error: err.message,  // Send back the error message
+      error: err.message,  
     });
   }
 };

@@ -320,7 +320,7 @@
   padding: 20px 0;
   border-bottom: 1px solid #f0f0f0;
   margin-bottom: 20px;
-  width:790px;
+  width: 800px;
 }
 
 .order-progress-wrapper {
@@ -428,8 +428,8 @@
   padding: 25px;
   margin-bottom: 25px;
   background: #fff;
-  border-radius: 8px;
   width: 1200px;
+  border-radius: 8px;
   box-shadow: 0 2px 12px rgba(0,0,0,0.06);
   border: 1px solid #e0e0e0;
 }
@@ -488,65 +488,120 @@
   color: #555;
 }
 
-.review-btn {
-  margin-top: 8px;
-  padding: 5px 10px;
-  background-color: #ff7f50;
-  color: white;
-  border: none;
-  width: 300px;
-  border-radius: 5px;
-  cursor: pointer;
+.order-footer {
+  margin-top: 15px;
+  padding-top: 15px;
+  border-top: 1px solid #f0f0f0;
 }
 
-.review-popup {
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: lavenderblush;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
+.footer-main {
+  font-weight: 600;
+  color: #212121;
+  margin-bottom: 12px;
 }
 
-.review-box {
-  background: #fff;
-  padding: 20px;
-  border-radius: 10px;
-  width: 300px;
+.footer-reviews-area {
   display: flex;
   flex-direction: column;
   gap: 10px;
 }
 
-.review-buttons {
+.inline-review-section {
+  background: #fdfdfd;
+  border: 1px solid #eef0f2;
+  border-radius: 8px;
+  padding: 12px;
+}
+
+.review-trigger {
   display: flex;
   justify-content: space-between;
+  align-items: center;
 }
 
-.submit-review-btn {
-  background-color: #4CAF50;
-  color: white;
+.review-trigger p {
+  margin: 0;
+  font-size: 14px;
+  color: #444;
+}
+
+.inline-write-btn {
+  background: #ff7f50;
+  color: #fff;
   border: none;
-  padding: 7px 12px;
-  border-radius: 5px;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-weight: 700;
+  font-size: 14px;
   cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
-.cancel-review-btn {
-  background-color: #f44336;
-  color: white;
+.inline-write-btn:hover {
+  background: #ff6347;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+.inline-review-form {
+  margin-top: 15px;
+  padding: 20px;
+  background: #fff;
+  border: 1px solid #ff7f50;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  box-shadow: 0 4px 15px rgba(255, 127, 80, 0.1);
+}
+
+.inline-review-form h5 {
+  margin: 0;
+  font-size: 16px;
+  color: #ff7f50;
+  border-bottom: 2px solid #fff5f0;
+  padding-bottom: 10px;
+}
+
+.rating-selector {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+}
+
+.rating-selector select {
+  padding: 6px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  outline: none;
+}
+
+.inline-review-form textarea {
+  width: 100%;
+  min-height: 80px;
+  padding: 10px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-family: inherit;
+  font-size: 14px;
+  resize: vertical;
+}
+
+.inline-submit-btn {
+  background: #26a541;
+  color: #fff;
   border: none;
-  padding: 7px 12px;
-  border-radius: 5px;
+  padding: 10px;
+  border-radius: 6px;
+  font-weight: 700;
   cursor: pointer;
+  transition: background 0.2s;
 }
 
-.order-footer {
-  margin-top: 10px;
-  font-weight: 500;
+.inline-submit-btn:hover {
+  background: #1e8535;
 }
 /* ===========================
    ORDER TRACKING ANIMATION BAR

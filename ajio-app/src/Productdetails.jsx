@@ -109,9 +109,7 @@ function ProductDetails() {
         </div>
 
         <div className="product-info-panel">
-          <nav className="breadcrumb">
-            <Link to="/">Home</Link> / <span>Product Details</span>
-          </nav>
+         
 
           <h1 className="product-title-text">{product.itemName}</h1>
           
@@ -125,7 +123,7 @@ function ProductDetails() {
           <div className="pricing-container">
             <span className="current-price">₹{product.itemPrice}</span>
             <span className="mrp">MRP <del>₹{Math.round(product.itemPrice * 1.5)}</del></span>
-            <span className="discount-tag">(50% OFF)</span>
+            <span className="discount-tag">(60% OFF)</span>
             <p className="tax-info">inclusive of all taxes</p>
           </div>
 
@@ -228,7 +226,7 @@ function ProductDetails() {
                           {r.rating} <FaStar className="small-star" />
                         </div>
                       </div>
-                      <span className="review-date">{new Date(r.createdAt).toLocaleDateString()}</span>
+               
                     </div>
                     <p className="review-comment-text">{r.comment}</p>
                   </div>

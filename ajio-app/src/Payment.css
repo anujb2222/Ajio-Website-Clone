@@ -116,30 +116,3 @@
   font-size: 13px;
   font-weight: 500;
 }
-
-@media (max-width: 768px) {
-  .payment-box {
-    flex-direction: column;
-  }
-  .payment-left {
-    width: 100%;
-    border-right: none;
-    border-bottom: 1px solid #eeeeee;
-    display: flex;
-  }
-  .payment-left div {
-    flex: 1;
-    justify-content: center;
-    padding: 15px;
-    border-bottom: none;
-    border-right: 1px solid #f5f5f5;
-  }
-  .payment-left .active {
-    border-left: none;
-    border-bottom: 4px solid #2c4152;
-  }
-  .payment-right {
-    width: 100%;
-    padding: 40px 20px;
-  }
-}

@@ -188,20 +188,4 @@
   font-weight: 700;
 }
 
-/* Responsive adjustments */
-@media (max-width: 768px) {
-  .product-card-premium {
-    flex: 0 0 220px;
-  }
-  
-  .image-wrapper {
-    height: 260px;
-  }
-  
-  .quick-add-btn {
-    bottom: 0;
-    padding: 10px;
-    font-size: 11px;
-    background: rgba(255, 255, 255, 0.8);
-  }
-}
+

@@ -93,8 +93,8 @@
   cursor: pointer;
   font-weight: 600;
   transition: 0.3s;
-  background: #3498db; /* default background */
-  color: white; /* default text color */
+  background: #3498db; 
+  color: white; 
 }
 
 .success-actions button:hover {

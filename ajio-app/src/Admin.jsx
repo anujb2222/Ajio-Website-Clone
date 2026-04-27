@@ -77,18 +77,24 @@ function Admin() {
       <div className="main-content">
         <div className="navbar"></div>
 
-        <div style={{ marginBottom: "15px" }}>
-          <select
-            value={selectedCategory}
-            onChange={(e) => setSelectedCategory(e.target.value)}
-          >
-            <option value="">All Categories</option>
-            <option value="Electronics">Electronics</option>
-            <option value="Clothing">Clothing</option>
-           <option value="Home and Kitchen">Home and Kitchen</option>
-            <option value="Other">Other</option>
-          </select>
-        </div>
+       <div style={{ marginBottom: "15px", backgroundColor: "#f4f4f4", padding: "10px", borderRadius: "5px" }}>
+  <select
+    value={selectedCategory}
+    onChange={(e) => setSelectedCategory(e.target.value)}
+    style={{
+      padding: "8px",
+      borderRadius: "5px",
+      backgroundColor: "wheat",
+      border: "1px solid black",
+    }}
+  >
+    <option value="">All Categories</option>
+    <option value="Electronics">Electronics</option>
+    <option value="Clothing">Clothing</option>
+    <option value="Home and Kitchen">Home and Kitchen</option>
+    <option value="Other">Other</option>
+  </select>
+</div>
 
         <table className="product-table">
           <thead>

@@ -1,6 +1,5 @@
 const Address = require("../models/Address");
 
-// GET addresses of user
 exports.getAddresses = async (req, res) => {
   try {
     const { userId } = req.params;
@@ -28,7 +27,7 @@ exports.getAddresses = async (req, res) => {
   }
 };
 
-// ADD address
+
 exports.addAddress = async (req, res) => {
   try {
     const { userId, firstName, lastName, address1, address2, state } = req.body;
@@ -65,21 +64,3 @@ exports.addAddress = async (req, res) => {
   }
 };
 
-// DELETE address
-exports.deleteAddress = async (req, res) => {
-  try {
-    await Address.findByIdAndDelete(req.params.id);
-
-    res.json({
-      success: true,
-      message: "Address deleted"
-    });
-
-  } catch (error) {
-    console.error("DELETE ADDRESS ERROR:", error);
-    res.status(500).json({
-      success: false,
-      message: error.message
-    });
-  }
-};

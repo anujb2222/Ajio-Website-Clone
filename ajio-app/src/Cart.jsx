@@ -18,8 +18,8 @@ function Cart() {
   const [rating, setRating] = useState(5);
   const [reviewedProducts, setReviewedProducts] = useState([]);
 
+  const API_URL = "https://ajio-website-clone-1.onrender.com";
 
-    const API_URL = "https://ajio-website-clone-1.onrender.com";
 
   const navigate = useNavigate();
   const userId = localStorage.getItem("userId");
@@ -36,10 +36,15 @@ function Cart() {
         const res = await fetch(`${API_URL}/reviews/user/${userId}`);
         const data = await res.json();
 
-    
+   
         const reviewedIds = data
-          .filter(r => r.productId) // Only keep reviews where product still exists
-          .map(r => (typeof r.productId === "string" ? r.productId : r.productId._id));
+          .filter(r => r.productId)
+          .map(r => {
+            const pId = typeof r.productId === "string" ? r.productId : r.productId._id;
+            return pId ? pId.toString() : null;
+          })
+          .filter(id => id !== null);
+        
         setReviewedProducts(reviewedIds);
       } catch (err) {
         console.error("Error fetching user reviews:", err);
@@ -101,7 +106,7 @@ function Cart() {
     totalPrice += item.itemPrice * item.quantity;
   });
 
-  // SUBMIT REVIEW
+
   const submitReview = async (productId) => {
     try {
       const res = await fetch(`${API_URL}/reviews`, {
@@ -127,9 +132,10 @@ function Cart() {
       setComment("");
       setRating(5);
 
-      // Ensure productId is string
-      const productIdStr = typeof productId === "string" ? productId : productId._id;
-      setReviewedProducts([...reviewedProducts, productIdStr]);
+      const productIdStr = productId?.toString();
+      if (productIdStr) {
+        setReviewedProducts([...reviewedProducts, productIdStr]);
+      }
     } catch (err) {
       alert("Server error while submitting review");
     }
@@ -168,7 +174,7 @@ function Cart() {
 </div>
 
       <div className="cart-container">
-        {/* CART VIEW */}
+   
         {view === "cart" && (
           <>
             {cartItems.length === 0 ? (
@@ -260,7 +266,7 @@ function Cart() {
           </>
         )}
 
-        {/* ORDERS VIEW */}
+    
         {view === "orders" && (
           <div className="orders-container">
             <h2>My Orders</h2>
@@ -320,7 +326,7 @@ function Cart() {
 
                   <div className="order-items">
                     {order.items.map((item, idx) => {
-                      const productId = item.productId?._id || item.productId;
+                      const productId = (item.productId?._id || item.productId)?.toString();
                       const alreadyReviewed = reviewedProducts.includes(productId);
 
                       return (
@@ -334,62 +340,78 @@ function Cart() {
                             <h4>{item.productId?.itemName || "Product Deleted"}</h4>
                             <p>Price: ₹{item.productId?.itemPrice || 0}</p>
                             <p>Quantity: {item.quantity || 1}</p>
-
-                            {!alreadyReviewed && (
-                              <button
-                                className="review-btn"
-                                onClick={() => setReviewBox(productId)}
-                              >
-                                Write Review
-                              </button>
-                            )}
-
-                            {reviewBox === productId && (
-                              <div className="review-popup">
-                                <div className="review-box">
-                                  <h4>Write Review</h4>
-
-                                  <select
-                                    value={rating}
-                                    onChange={(e) => setRating(Number(e.target.value))}
-                                  >
-                                    <option value="5">5 ⭐</option>
-                                    <option value="4">4 ⭐</option>
-                                    <option value="3">3 ⭐</option>
-                                    <option value="2">2 ⭐</option>
-                                    <option value="1">1 ⭐</option>
-                                  </select>
-
-                                  <textarea
-                                    placeholder="Write your review..."
-                                    value={comment}
-                                    onChange={(e) => setComment(e.target.value)}
-                                  />
-
-                                  <div className="review-buttons">
-                                    <button
-                                      onClick={() => submitReview(productId)}
-                                      className="submit-review-btn"
-                                    >
-                                      Submit
-                                    </button>
-                                    <button
-                                      onClick={() => setReviewBox(null)}
-                                      className="cancel-review-btn"
-                                    >
-                                      Cancel
-                                    </button>
-                                  </div>
-                                </div>
-                              </div>
-                            )}
                           </div>
                         </div>
                       );
                     })}
                   </div>
                   <div className="order-footer">
-                    <span>Payment Mode: {order.paymentMethod}</span>
+                    <div className="footer-main">
+                      <span>Payment Mode: {order.paymentMethod}</span>
+                    </div>
+                    
+                    <div className="footer-reviews-area">
+                      {order.items.map((item, idx) => {
+                        const productId = (item.productId?._id || item.productId)?.toString();
+                        const alreadyReviewed = reviewedProducts.includes(productId);
+                        
+                        if (alreadyReviewed || !productId || !item.productId) return null;
+
+                        return (
+                          <div key={idx} className="inline-review-section">
+                            <div className="review-trigger">
+                              <p>Write Your review on <strong>{item.productId.itemName}</strong>?</p>
+                              <button 
+                                className="inline-write-btn"
+                                onClick={() => {
+                                  if (reviewBox === productId) {
+                                    setReviewBox(null);
+                                  } else {
+                                    setReviewBox(productId);
+                                    setComment("");
+                                    setRating(5);
+                                  }
+                                }}
+                              >
+                                {reviewBox === productId ? "Cancel Review" : "Write Review"}
+                              </button>
+                            </div>
+
+                            {reviewBox === productId && (
+                              <div className="inline-review-form">
+                                <h5>Reviewing {item.productId.itemName}</h5>
+                                <div className="rating-selector">
+                                  <span>Your Rating: </span>
+                                  <select
+                                    value={rating}
+                                    onChange={(e) => setRating(Number(e.target.value))}
+                                  >
+                                    <option value="5">5 ⭐ - Excellent</option>
+                                    <option value="4">4 ⭐ - Very Good</option>
+                                    <option value="3">3 ⭐ - Good</option>
+                                    <option value="2">2 ⭐ - Fair</option>
+                                    <option value="1">1 ⭐ - Poor</option>
+                                  </select>
+                                </div>
+
+                                <textarea
+                                  placeholder={`Share your experience with this ${item.productId.itemName}...`}
+                                  value={comment}
+                                  onChange={(e) => setComment(e.target.value)}
+                                />
+
+                                <button
+                                  onClick={() => submitReview(productId)}
+                                  className="inline-submit-btn"
+                                >
+                                  Submit Review
+                                </button>
+                              </div>
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
                   </div>
                 </div>
               ))

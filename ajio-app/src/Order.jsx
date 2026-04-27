@@ -134,7 +134,7 @@ function Order() {
 
       <div className="address-section">
 
-        {/* TABS */}
+       
         <div className="address-tabs">
           <div
             className={`address-tab ${

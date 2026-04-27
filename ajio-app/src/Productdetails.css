@@ -15,19 +15,18 @@
   width: 45px;
   height: 45px;
   border-radius: 50%;
-  background: white;
+  background: black;
   border: 1px solid #eee;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
   z-index: 100;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
   transition: all 0.3s ease;
 }
 
 .floating-back-btn:hover {
-  background: #2d2d2d;
+  background: red;
   color: white;
   transform: translateX(-3px);
 }
@@ -40,7 +39,7 @@
   padding: 40px 20px;
 }
 
-/* LEFT SIDE: VISUALS */
+
 .product-visuals {
   flex: 1.2;
   position: sticky;
@@ -71,7 +70,7 @@
   transform: scale(1.02);
 }
 
-/* RIGHT SIDE: INFO */
+
 .product-info-panel {
   flex: 1;
   display: flex;
@@ -256,7 +255,9 @@
   color: #555;
 }
 
-/* RELATED PRODUCTS SECTION */
+
+
+
 .related-products-section {
   max-width: 1400px;
   margin: 60px auto 0;
@@ -350,7 +351,6 @@
   font-size: 16px;
 }
 
-/* REVIEWS MODAL */
 .reviews-modal-overlay {
   position: fixed;
   top: 0;
@@ -360,7 +360,7 @@
   background: rgba(0,0,0,0.7);
   backdrop-filter: blur(5px);
   display: flex;
-  justify-content: flex-end; /* Slide in from right */
+  justify-content: flex-end; 
   align-items: center;
   z-index: 1000;
 }
@@ -498,7 +498,7 @@
   color: #888;
 }
 
-/* LOADING & ERROR STATES */
+
 .product-loading {
   height: 100vh;
   display: flex;
