@@ -73,7 +73,7 @@ function Cart() {
 
   const increaseQty = (id) => {
     const updated = cartItems.map((item) => {
-      if (item._id === id) item.itemQuantity += 1;
+      if (item._id === id) item.quantity += 1;
       return item;
     });
     setCartItems(updated);
@@ -83,8 +83,8 @@ function Cart() {
 
   const decreaseQty = (id) => {
     const updated = cartItems.map((item) => {
-      if (item._id === id && item.itemQuantity > 1)
-        item.itemQuantity -= 1;
+      if (item._id === id && item.quantity > 1)
+        item.quantity -= 1;
       return item;
     });
     setCartItems(updated);
@@ -94,7 +94,7 @@ function Cart() {
 
   let totalPrice = 0;
   cartItems.forEach((item) => {
-    totalPrice += item.itemPrice * item.itemQuantity;
+    totalPrice += item.itemPrice * item.quantity;
   });
 
   // SUBMIT REVIEW
@@ -193,7 +193,7 @@ function Cart() {
                           >
                             -
                           </button>
-                          <span>{item.itemQuantity}</span>
+                          <span>{item.quantity}</span>
                           <button
                             className="qty-btn"
                             onClick={() => increaseQty(item._id)}

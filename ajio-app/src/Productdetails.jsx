@@ -13,8 +13,8 @@ function ProductDetails() {
   const [reviews, setReviews] = useState([]);
   const [showReviews, setShowReviews] = useState(false);
   const [loading, setLoading] = useState(true);
-  
-  const API_URL = "https://ajio-website-clone-1.onrender.com";
+
+    const API_URL = "https://ajio-website-clone-1.onrender.com";
 
   const getDeliveryDate = () => {
     const today = new Date();
@@ -34,7 +34,8 @@ function ProductDetails() {
     if (existingItem) {
       existingItem.quantity += 1;
     } else {
-      cart.push({ ...item, quantity: 1 });
+      const { itemQuantity, ...rest } = item;
+      cart.push({ ...rest, quantity: 1 });
     }
 
     localStorage.setItem("cart", JSON.stringify(cart));
@@ -109,7 +110,7 @@ function ProductDetails() {
 
         <div className="product-info-panel">
           <nav className="breadcrumb">
-           
+            <Link to="/">Home</Link> / <span>Product Details</span>
           </nav>
 
           <h1 className="product-title-text">{product.itemName}</h1>

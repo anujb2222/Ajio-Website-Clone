@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { FaCreditCard, FaMoneyBillWave, FaShieldAlt } from "react-icons/fa";
 import "./Payment.css";
 
+
 function Payment() {
   const [method, setMethod] = useState("card");
   const [cart, setCart] = useState([]);
@@ -11,12 +12,14 @@ function Payment() {
 
   const API_URL = "https://ajio-website-clone-1.onrender.com";
 
+
+
   useEffect(() => {
     const cartItems = JSON.parse(localStorage.getItem("cart")) || [];
     setCart(cartItems);
 
     const sum = cartItems.reduce(
-      (acc, item) => acc + item.itemPrice * item.itemQuantity,
+      (acc, item) => acc + item.itemPrice * item.quantity,
       0
     );
 
@@ -49,7 +52,7 @@ function Payment() {
       },
       items: cart.map((i) => ({
         productId: i._id,
-        quantity: i.itemQuantity,
+        quantity: i.quantity,
       })),
       totalPrice: total,
       paymentMethod: method,
