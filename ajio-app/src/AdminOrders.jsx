@@ -86,7 +86,7 @@ function AdminOrders() {
           </button>
           <div className="header-title">
             <h2>Order Management</h2>
-            <p>Track and manage your store's orders efficiently</p>
+         
           </div>
         </div>
         <div className="header-stats">

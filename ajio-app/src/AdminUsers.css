@@ -4,7 +4,7 @@
   min-height: 100vh;
 }
 
-/* Header */
+
 .admin-users-header {
   display: flex;
   align-items: center;
@@ -19,7 +19,7 @@
   font-weight: 600;
 }
 
-/* Back Button */
+
 .back-btn {
   background: #e9ecef;
   border: none;
@@ -33,7 +33,7 @@
   background: #d6d8db;
 }
 
-/* Table */
+
 .users-table-wrapper {
   background: #ffffff;
   border-radius: 10px;
@@ -53,7 +53,7 @@
   font-size: 14px;
 }
 
-/* Header */
+
 .users-table th {
   background-color: #f7f9fb;
   color: #6c757d;
@@ -62,12 +62,12 @@
   font-size: 12px;
 }
 
-/* Row Hover */
+
 .users-table tr:hover {
   background-color: #f9fbfc;
 }
 
-/* Text Styles */
+
 .user-id {
   font-family: monospace;
   color: #8a94a6;
@@ -83,7 +83,6 @@
   color: #6c757d;
 }
 
-/* Empty */
 .empty-users {
   text-align: center;
   padding: 50px;

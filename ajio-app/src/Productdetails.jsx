@@ -2,8 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import axios from "axios";
 import "./Productdetails.css";
-import { FaStar, FaShoppingCart, FaBolt, FaShieldAlt, FaTruck, FaUndo, FaArrowLeft, FaStarHalfAlt, FaTimes, FaUserCircle } from "react-icons/fa";
-
+import { FaStar, FaShoppingCart, FaBolt, FaShieldAlt, FaTruck, FaUndo, FaArrowLeft, FaTimes, FaUserCircle } from "react-icons/fa";
 
 function ProductDetails() {
   const { id } = useParams();
@@ -12,9 +11,8 @@ function ProductDetails() {
   const [products, setProducts] = useState([]);
   const [reviews, setReviews] = useState([]);
   const [showReviews, setShowReviews] = useState(false);
-  const [loading, setLoading] = useState(true);
 
-    const API_URL = "https://ajio-website-clone-1.onrender.com";
+  const API_URL = "https://ajio-website-clone-1.onrender.com";
 
   const getDeliveryDate = () => {
     const today = new Date();
@@ -51,24 +49,15 @@ function ProductDetails() {
   const fetchReviews = () => {
     axios
       .get(`${API_URL}/reviews/${id}`)
-      .then((res) => {
-        setReviews(res.data);
-      })
+      .then((res) => setReviews(res.data))
       .catch((err) => console.log(err));
   };
 
   useEffect(() => {
-    setLoading(true);
     axios
       .get(`${API_URL}/products/${id}`)
-      .then((res) => {
-        setProduct(res.data);
-        setLoading(false);
-      })
-      .catch((err) => {
-        console.log(err);
-        setLoading(false);
-      });
+      .then((res) => setProduct(res.data))
+      .catch((err) => console.log(err));
   }, [id]);
 
   useEffect(() => {
@@ -82,18 +71,22 @@ function ProductDetails() {
     if (id) fetchReviews();
   }, [id]);
 
-  if (loading) return (
-    <div className="product-loading">
-      <div className="spinner"></div>
-      <p>Loading your product...</p>
-    </div>
-  );
+  // Handle product not found (or still null)
+  if (!product)
+    return (
+      <div className="error-state">
+        <h1>Product not found</h1>
+        <button onClick={() => navigate("/")}>Go Home</button>
+      </div>
+    );
 
-  if (!product) return <div className="error-state"><h1>Product not found</h1><button onClick={() => navigate("/")}>Go Home</button></div>;
-
-  const averageRating = reviews.length > 0 
-    ? (reviews.reduce((acc, r) => acc + r.rating, 0) / reviews.length).toFixed(1)
-    : 0;
+  const averageRating =
+    reviews.length > 0
+      ? (
+          reviews.reduce((acc, r) => acc + r.rating, 0) /
+          reviews.length
+        ).toFixed(1)
+      : 0;
 
   return (
     <div className="product-details-page">
@@ -104,25 +97,34 @@ function ProductDetails() {
       <div className="main-content-wrapper">
         <div className="product-visuals">
           <div className="image-main-container">
-            <img src={product.image} alt={product.itemName} className="main-image" />
+            <img
+              src={product.image}
+              alt={product.itemName}
+              className="main-image"
+            />
           </div>
         </div>
 
         <div className="product-info-panel">
-         
-
           <h1 className="product-title-text">{product.itemName}</h1>
-          
-          <div className="rating-summary" onClick={() => setShowReviews(true)}>
+
+          <div
+            className="rating-summary"
+            onClick={() => setShowReviews(true)}
+          >
             <div className="stars-pill">
               {averageRating} <FaStar className="star-icon" />
             </div>
-            <span className="review-count">{reviews.length} Ratings & Reviews</span>
+            <span className="review-count">
+              {reviews.length} Ratings & Reviews
+            </span>
           </div>
 
           <div className="pricing-container">
             <span className="current-price">₹{product.itemPrice}</span>
-            <span className="mrp">MRP <del>₹{Math.round(product.itemPrice * 1.5)}</del></span>
+            <span className="mrp">
+              MRP <del>₹{Math.round(product.itemPrice * 1.5)}</del>
+            </span>
             <span className="discount-tag">(60% OFF)</span>
             <p className="tax-info">inclusive of all taxes</p>
           </div>
@@ -130,9 +132,13 @@ function ProductDetails() {
           <div className="delivery-pincode-section">
             <div className="delivery-header">
               <FaTruck className="truck-icon" />
-              <span>Deliver to: <b>400001</b></span>
+              <span>
+                Deliver to: <b>400001</b>
+              </span>
             </div>
-            <p className="expected-delivery">Expected Delivery by <b>{getDeliveryDate()}</b></p>
+            <p className="expected-delivery">
+              Expected Delivery by <b>{getDeliveryDate()}</b>
+            </p>
           </div>
 
           <div className="trust-badges">
@@ -151,17 +157,27 @@ function ProductDetails() {
           </div>
 
           <div className="action-footer">
-            <button className="add-to-cart-btn" onClick={() => addToCart(product)}>
+            <button
+              className="add-to-cart-btn"
+              onClick={() => addToCart(product)}
+            >
               <FaShoppingCart /> ADD TO BAG
             </button>
-            <button className="buy-now-btn" onClick={() => addToCart(product, true)}>
+            <button
+              className="buy-now-btn"
+              onClick={() => addToCart(product, true)}
+            >
               BUY NOW
             </button>
           </div>
 
           <div className="product-description-card">
             <h3>Product Details</h3>
-            <p>Premium quality craftsmanship meets modern design. This product offers exceptional durability and a sleek aesthetic that complements any lifestyle. Engineered with high-performance materials for long-lasting use.</p>
+            <p>
+              Premium quality craftsmanship meets modern design. This product
+              offers exceptional durability and a sleek aesthetic that
+              complements any lifestyle.
+            </p>
           </div>
         </div>
       </div>
@@ -171,10 +187,15 @@ function ProductDetails() {
           <h2>Customers Also Viewed</h2>
           <div className="header-line"></div>
         </div>
+
         <div className="related-slider-container">
           <div className="slider-track-premium">
             {products.concat(products).map((item, index) => (
-              <Link to={`/Productdetails/${item._id}`} key={`${item._id}-${index}`} className="related-card-premium">
+              <Link
+                to={`/Productdetails/${item._id}`}
+                key={`${item._id}-${index}`}
+                className="related-card-premium"
+              >
                 <div className="card-img-wrapper">
                   <img src={item.image} alt={item.itemName} />
                 </div>
@@ -189,11 +210,20 @@ function ProductDetails() {
       </div>
 
       {showReviews && (
-        <div className="reviews-modal-overlay" onClick={() => setShowReviews(false)}>
-          <div className="reviews-modal-content" onClick={(e) => e.stopPropagation()}>
+        <div
+          className="reviews-modal-overlay"
+          onClick={() => setShowReviews(false)}
+        >
+          <div
+            className="reviews-modal-content"
+            onClick={(e) => e.stopPropagation()}
+          >
             <div className="modal-header">
               <h3>Ratings & Reviews</h3>
-              <button className="close-modal" onClick={() => setShowReviews(false)}>
+              <button
+                className="close-modal"
+                onClick={() => setShowReviews(false)}
+              >
                 <FaTimes />
               </button>
             </div>
@@ -203,7 +233,14 @@ function ProductDetails() {
               <div className="rating-desc">
                 <div className="star-row">
                   {[...Array(5)].map((_, i) => (
-                    <FaStar key={i} className={i < Math.floor(averageRating) ? "star filled" : "star"} />
+                    <FaStar
+                      key={i}
+                      className={
+                        i < Math.floor(averageRating)
+                          ? "star filled"
+                          : "star"
+                      }
+                    />
                   ))}
                 </div>
                 <p>{reviews.length} Verified Buyers</p>
@@ -213,7 +250,7 @@ function ProductDetails() {
             <div className="reviews-list-premium">
               {reviews.length === 0 ? (
                 <div className="empty-reviews">
-                  <p>No reviews yet. Be the first to review this product!</p>
+                  <p>No reviews yet</p>
                 </div>
               ) : (
                 reviews.map((r) => (
@@ -221,12 +258,13 @@ function ProductDetails() {
                     <div className="review-user-info">
                       <FaUserCircle className="user-icon" />
                       <div className="user-details-meta">
-                        <p className="user-email">{r.userEmail || "Verified User"}</p>
+                        <p className="user-email">
+                          {r.userEmail || "Verified User"}
+                        </p>
                         <div className="user-rating-pill">
                           {r.rating} <FaStar className="small-star" />
                         </div>
                       </div>
-               
                     </div>
                     <p className="review-comment-text">{r.comment}</p>
                   </div>

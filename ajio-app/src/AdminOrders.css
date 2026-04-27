@@ -5,7 +5,7 @@
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
-/* Top Bar Styling */
+
 .admin-top-bar {
   display: flex;
   justify-content: space-between;
@@ -235,7 +235,7 @@
   padding-left: 10px;
 }
 
-/* Status Dropdown Premium */
+
 .status-dropdown-wrapper {
   display: flex;
   align-items: center;
@@ -262,7 +262,7 @@
   font-size: 14px;
 }
 
-/* Status variants */
+
 .status-Pending { background: #fffaf0; color: #975a16; border-color: #fbd38d; }
 .status-Processing { background: #ebf8ff; color: #2b6cb0; border-color: #90cdf4; }
 .status-Shipped { background: #e6fffa; color: #285e61; border-color: #81e6d9; }

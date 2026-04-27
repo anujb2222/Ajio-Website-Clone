@@ -262,7 +262,6 @@
   text-decoration: underline;
 }
 
-/* Orders Section */
 .orders-table-container {
   max-width: 900px;
   margin: auto;
@@ -315,7 +314,6 @@
   color: #ff6161;
 }
 
-/* ORDER PROGRESS BAR ENHANCEMENT */
 .order-status-container {
   padding: 20px 0;
   border-bottom: 1px solid #f0f0f0;
@@ -341,7 +339,7 @@
 
 .progress-fill {
   height: 100%;
-  background: #2874f0; /* Real blue like Flipkart */
+  background: #2874f0;
   border-radius: 2px;
   transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
@@ -349,7 +347,7 @@
 }
 
 .progress-fill.delivered {
-  background: #26a541; /* Real green */
+  background: #26a541;
 }
 
 .progress-fill.cancelled {
@@ -412,7 +410,6 @@
   color: #212121;
 }
 
-/* Add a pulse animation for the current step */
 @keyframes pulse {
   0% { transform: scale(1.1); box-shadow: 0 0 0 0 rgba(40, 116, 240, 0.4); }
   70% { transform: scale(1.15); box-shadow: 0 0 0 10px rgba(40, 116, 240, 0); }
@@ -423,7 +420,6 @@
   animation: pulse 2s infinite;
 }
 
-/* Update order card for better flow */
 .order-card {
   padding: 25px;
   margin-bottom: 25px;
@@ -603,15 +599,6 @@
 .inline-submit-btn:hover {
   background: #1e8535;
 }
-/* ===========================
-   ORDER TRACKING ANIMATION BAR
-=========================== */
-
-/* ===========================
-   PREMIUM ORDER TRACKING UI
-=========================== */
-
-/* ================= TRACKING UI ================= */
 
 .track-wrapper {
   width: 100%;
@@ -619,7 +606,6 @@
   margin-bottom: 15px;
 }
 
-/* LONG LINE BACKGROUND */
 .track-line {
   position: relative;
   height: 6px;
@@ -630,7 +616,6 @@
   overflow: hidden;
 }
 
-/* ANIMATED PROGRESS LINE */
 .track-progress {
   height: 100%;
   background: linear-gradient(90deg, #ff7f50, #ff3b30);
@@ -638,15 +623,23 @@
   transition: width 0.8s ease-in-out;
 }
 
-/* STEPS ON TOP OF LINE */
 .track-steps {
   display: flex;
   justify-content: space-between;
   position: relative;
   margin-top: -18px;
 }
+.orders-container h2 {
+  font-size: 28px;
+  font-weight: 700;
+  font-family: 'Times New Roman', Times, serif;
+  margin-bottom: 20px;
+  color: black;
+  background-color: lawngreen;
+  width: 200px;
+  border-radius: 8px;
+}
 
-/* EACH STEP */
 .track-step {
   display: flex;
   flex-direction: column;
@@ -656,7 +649,6 @@
   transition: all 0.3s ease;
 }
 
-/* ICON CIRCLE */
 .track-step .icon {
   width: 42px;
   height: 42px;
@@ -671,7 +663,6 @@
   border: 2px solid #fff;
 }
 
-/* LABEL */
 .track-step span {
   margin-top: 8px;
   font-size: 12px;
@@ -679,7 +670,6 @@
   font-weight: 500;
 }
 
-/* ACTIVE STEP */
 .track-step.active .icon {
   background: #ff7f50;
   color: white;
@@ -692,7 +682,6 @@
   font-weight: 600;
 }
 
-/* DONE STEP */
 .track-step.done .icon {
   background: #22c55e;
   color: white;
@@ -702,7 +691,6 @@
   color: #22c55e;
 }
 
-/* CONNECTOR DOT EFFECT */
 .track-step::before {
   content: "";
   position: absolute;
@@ -714,7 +702,6 @@
   z-index: 0;
 }
 
-/* FIRST STEP FIX */
 .track-step:first-child::before {
   display: none;
 }
