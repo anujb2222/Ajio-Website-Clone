@@ -5,7 +5,7 @@
   font-family: "Segoe UI", sans-serif;
 }
 
-/* Header */
+
 .admin-users-header {
   display: flex;
   align-items: center;
@@ -20,7 +20,7 @@
   margin: 0;
 }
 
-/* Back Button */
+
 .back-btn-user {
   display: flex;
   align-items: center;
@@ -39,7 +39,7 @@
   background: #333;
 }
 
-/* Table Wrapper */
+
 .users-table-wrapper {
   background: #fff;
   border-radius: 10px;
@@ -47,13 +47,13 @@
   border: 1px solid #e5e5e5;
 }
 
-/* Table */
+
 .users-table {
   width: 100%;
   border-collapse: collapse;
 }
 
-/* Table Header */
+
 .users-table th {
   background: #111;
   color: #fff;
@@ -64,14 +64,14 @@
   text-align: left;
 }
 
-/* Table Rows */
+
 .users-table td {
   padding: 14px;
   font-size: 14px;
   border-bottom: 1px solid #eee;
 }
 
-/* Hover Effect */
+
 .users-table tbody tr {
   transition: 0.2s;
 }
@@ -80,7 +80,7 @@
   background: #fafafa;
 }
 
-/* Text styles */
+
 .user-id {
   font-family: monospace;
   color: #777;
@@ -95,7 +95,7 @@
   color: #555;
 }
 
-/* Empty State */
+
 .empty-users {
   text-align: center;
   padding: 60px;

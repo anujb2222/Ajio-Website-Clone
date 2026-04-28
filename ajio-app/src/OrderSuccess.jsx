@@ -10,31 +10,6 @@ function OrderSuccess() {
   const paymentMethod = state?.paymentMethod || "cod";
   const orderId = state?.orderId;
 
-  const API_URL = "https://ajio-website-clone-1.onrender.com";
-
-  const downloadInvoice = async () => {
-    if (!orderId) return alert("Order ID not found");
-
-    try {
-      const response = await fetch(`${API_URL}/orders/download-invoice/${orderId}`);
-      if (response.ok) {
-        const blob = await response.blob();
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = `invoice-${orderId}.pdf`;
-        document.body.appendChild(a);
-        a.click();
-        a.remove();
-      } else {
-        alert("Failed to download invoice");
-      }
-    } catch (err) {
-      console.error("Error downloading invoice:", err);
-      alert("Error downloading invoice");
-    }
-  };
-
   const deliveryDate = new Date();
   deliveryDate.setDate(deliveryDate.getDate() + 5);
 
@@ -53,10 +28,10 @@ function OrderSuccess() {
             <div key={item._id} className="success-item">
 
               <img
-  src={item.image || item.productId?.image}
-  alt={item.itemName}
-  className="success-img"
-/>
+                src={item.image || item.productId?.image}
+                alt={item.itemName}
+                className="success-img"
+              />
 
               <div>
                 <h4>
@@ -87,15 +62,15 @@ function OrderSuccess() {
           <p>
             <b>Order Status:</b> Confirmed
           </p>
+
+          <p style={{ marginTop: "10px", color: "green" }}>
+            📧 Invoice has been sent to your email
+          </p>
         </div>
 
         <div className="success-actions">
           <button onClick={() => navigate("/cart")}>
             View Orders
-          </button>
-
-          <button onClick={downloadInvoice} className="invoice-btn">
-            Download Invoice 📄
           </button>
 
           <button onClick={() => navigate("/home")} className="secondary-btn">

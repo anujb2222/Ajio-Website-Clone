@@ -1,6 +1,4 @@
-/* ===========================
-   ADMIN REVIEWS PREMIUM UI
-   =========================== */
+
 
 .admin-reviews-page {
   padding: 30px;
@@ -8,7 +6,7 @@
   min-height: 100vh;
 }
 
-/* TOP BAR */
+
 .admin-top-bar {
   display: flex;
   justify-content: space-between;
@@ -82,7 +80,7 @@
   color: #ff7f50;
 }
 
-/* TABLE CONTAINER */
+
 .admin-table-container {
   background: white;
   border-radius: 12px;
@@ -113,7 +111,7 @@
   vertical-align: top;
 }
 
-/* PRODUCT CELL */
+
 .product-cell {
   display: flex;
   align-items: center;
@@ -141,7 +139,7 @@
   font-size: 15px;
 }
 
-/* USER CELL */
+
 .user-info-stack {
   display: flex;
   flex-direction: column;
@@ -164,7 +162,7 @@
   font-weight: 500;
 }
 
-/* RATING CELL */
+
 .review-content-stack {
   display: flex;
   flex-direction: column;
@@ -187,14 +185,13 @@
   line-height: 1.5;
 }
 
-/* DATE CELL */
+
 .date-cell-text {
   font-size: 14px;
   color: #6c757d;
   font-weight: 500;
 }
 
-/* LOADING & ERROR */
 .admin-loading-screen {
   display: flex;
   flex-direction: column;

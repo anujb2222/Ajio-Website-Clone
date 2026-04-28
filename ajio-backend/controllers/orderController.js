@@ -231,11 +231,7 @@ exports.updateOrderStatus = async (req, res) => {
 
 
 
-exports.downloadInvoice = async (req, res) => {
-  res.status(200).json({
-    message: "Invoice is now sent via email. No file download needed.",
-  });
-};
+
 
 exports.getSingleOrder = async (req, res) => {
   try {

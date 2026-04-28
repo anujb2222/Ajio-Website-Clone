@@ -27,9 +27,6 @@ function App() {
         <Route path="/register" element={<Register />} />
         <Route path="/admin-login" element={<AdminLogin />} />
         <Route path="/otp-login" element={<OtpLogin setIsLoggedIn={setIsLoggedIn} />} />
-        {/* <Route path="/admin" element={<Admin />} /> */}
-        {/* <Route path="/additem" element={<Additem />} /> */}
-        {/* <Route path="/viewitems/:id" element={<ViewItems />} /> */}
       </Routes>
 
       <Display />

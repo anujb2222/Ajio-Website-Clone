@@ -26,12 +26,12 @@ const generateInvoiceBuffer = (data) => {
       10000000 + Math.random() * 90000000
     )}`;
 
-    // ===== HEADER =====
+    
     doc.fillColor(primary).fontSize(30).font("Helvetica-Bold")
       .text("AJIO", 40, 50);
 
     doc.fillColor(gray).fontSize(10).font("Helvetica")
-      .text("by AJIO Clone", 40, 85);
+      .text("by AJIO ", 40, 85);
 
     doc.fillColor(primary).fontSize(20).font("Helvetica-Bold")
       .text("TAX INVOICE", 350, 50, { align: "right" });
@@ -43,12 +43,12 @@ const generateInvoiceBuffer = (data) => {
 
     doc.moveTo(40, 110).lineTo(555, 110).strokeColor(primary).stroke();
 
-    // ===== SELLER / BUYER BOX =====
+
     const boxTop = 130;
     doc.strokeColor(border).rect(40, boxTop, 515, 90).stroke();
     doc.moveTo(297, boxTop).lineTo(297, boxTop + 90).stroke();
 
-    // Seller
+  
     doc.fillColor(gray).fontSize(8).font("Helvetica-Bold")
       .text("STORE DETAILS", 55, boxTop + 12);
 
@@ -56,11 +56,10 @@ const generateInvoiceBuffer = (data) => {
       .text("AJIO Clone Fashion Ltd", 55, boxTop + 28);
 
     doc.fillColor(gray).font("Helvetica").fontSize(9)
-      .text("123 Fashion Street, Cyber City", 55, boxTop + 45)
       .text("Bangalore, Karnataka - 560001", 55, boxTop + 58)
       .text("GSTIN: 29ABCDE1234F1Z5", 55, boxTop + 71);
 
-    // Buyer
+   
     doc.fillColor(gray).fontSize(8).font("Helvetica-Bold")
       .text("BILL TO", 312, boxTop + 12);
 
@@ -73,7 +72,6 @@ const generateInvoiceBuffer = (data) => {
     doc.fillColor(accent).font("Helvetica-Bold")
       .text("PAID ONLINE", 312, boxTop + 65);
 
-    // ===== ORDER SUMMARY =====
     const summaryTop = boxTop + 110;
 
     doc.fillColor(lightGray).rect(40, summaryTop, 515, 45).fill();
@@ -87,7 +85,7 @@ const generateInvoiceBuffer = (data) => {
     doc.fillColor(primary).fontSize(16).font("Helvetica-Bold")
       .text(mainItemName, 55, summaryTop + 25);
 
-    // ===== TABLE =====
+    
     const tableTop = summaryTop + 70;
 
     doc.moveTo(40, tableTop).lineTo(555, tableTop).stroke();
