@@ -268,156 +268,178 @@ function Cart() {
 
     
         {view === "orders" && (
-          <div className="orders-container">
-            <h2>My Orders</h2>
-            {orders.length === 0 ? (
-              <p className="empty-orders">You have no orders yet.</p>
-            ) : (
-              orders.map((order) => (
-                <div key={order._id} className="order-card">
-                  <div className="order-summary">
-                    <div className="order-status-container">
-                      <div className="order-status-banner">
-                        {order.status === 'Delivered' && <FaCheckCircle className="status-icon delivered" />}
-                        {order.status === 'Processing' && <FaTruck className="status-icon processing" />}
-                        {order.status === 'Pending' && <FaClock className="status-icon pending" />}
-                        {order.status === 'Cancelled' && <FaTimesCircle className="status-icon cancelled" />}
-                        <span className={`status-text ${order.status?.toLowerCase()}`}>
-                          {order.status === 'Delivered' ? `Delivered ${new Date(order.updatedAt || order.createdAt).toLocaleDateString()}` : order.status}
-                        </span>
-                      </div>
+  <div className="orders-container">
+    <h2>My Orders</h2>
+    {orders.length === 0 ? (
+      <p className="empty-orders">You have no orders yet.</p>
+    ) : (
+      orders.map((order) => (
+        <div key={order._id} className="order-card">
+          
+         
+          <div className="order-summary">
+            <div className="order-status-container">
+              
+            
+              <div className="order-status-banner">
+                {order.status === 'Delivered' && <FaCheckCircle className="status-icon delivered" />}
+                {order.status === 'Shipped' && <FaTruck className="status-icon shipped" />}
+                {order.status === 'Processing' && <FaTruck className="status-icon processing" />}
+                {order.status === 'Pending' && <FaClock className="status-icon pending" />}
+                {order.status === 'Cancelled' && <FaTimesCircle className="status-icon cancelled" />}
 
-                      <div className="order-progress-wrapper">
-                        <div className="progress-track">
-                          <div 
-                            className={`progress-fill ${order.status?.toLowerCase()}`}
-                            style={{ 
-                              width: order.status === 'Delivered' ? '100%' : 
-                                     order.status === 'Processing' ? '66%' : 
-                                     order.status === 'Pending' ? '33%' : '0%' 
-                            }}
-                          ></div>
-                        </div>
-                        <div className="progress-steps">
-                          <div className={`step ${['Pending', 'Processing', 'Delivered'].includes(order.status) ? 'completed' : ''}`}>
-                            <div className="step-dot"><FaBox /></div>
-                            <span className="step-label">Ordered</span>
-                          </div>
-                          <div className={`step ${['Processing', 'Delivered'].includes(order.status) ? 'completed' : ''}`}>
-                            <div className="step-dot"><FaTruck /></div>
-                            <span className="step-label">Shipped</span>
-                          </div>
-                          <div className={`step ${['Delivered'].includes(order.status) ? 'completed' : ''}`}>
-                            <div className="step-dot"><FaMapMarkerAlt /></div>
-                            <span className="step-label">Out for Delivery</span>
-                          </div>
-                          <div className={`step ${order.status === 'Delivered' ? 'completed' : ''}`}>
-                            <div className="step-dot"><FaCheckCircle /></div>
-                            <span className="step-label">Delivered</span>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <span className="order-date">
-                      Order Date: {new Date(order.createdAt).toLocaleDateString()}
-                    </span>
-                    <span className="order-total">Total: ₹{order.totalPrice}</span>
-                  </div>
+                <span className={`status-text ${order.status?.toLowerCase()}`}>
+                  {order.status === 'Delivered'
+                    ? `Delivered ${new Date(order.updatedAt || order.createdAt).toLocaleDateString()}`
+                    : order.status}
+                </span>
+              </div>
 
-                  <div className="order-items">
-                    {order.items.map((item, idx) => {
-                      const productId = (item.productId?._id || item.productId)?.toString();
-                      const alreadyReviewed = reviewedProducts.includes(productId);
-
-                      return (
-                        <div key={idx} className="order-item-card">
-                          <img
-                            src={item.productId?.image || "https://via.placeholder.com/100"}
-                            alt={item.productId?.itemName || "Product"}
-                            className="order-item-img"
-                          />
-                          <div className="order-item-details">
-                            <h4>{item.productId?.itemName || "Product Deleted"}</h4>
-                            <p>Price: ₹{item.productId?.itemPrice || 0}</p>
-                            <p>Quantity: {item.quantity || 1}</p>
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                  <div className="order-footer">
-                    <div className="footer-main">
-                      <span>Payment Mode: {order.paymentMethod}</span>
-                    </div>
-                    
-                    <div className="footer-reviews-area">
-                      {order.items.map((item, idx) => {
-                        const productId = (item.productId?._id || item.productId)?.toString();
-                        const alreadyReviewed = reviewedProducts.includes(productId);
-                        
-                        if (alreadyReviewed || !productId || !item.productId) return null;
-
-                        return (
-                          <div key={idx} className="inline-review-section">
-                            <div className="review-trigger">
-                              <p>Write Your review on <strong>{item.productId.itemName}</strong>?</p>
-                              <button 
-                                className="inline-write-btn"
-                                onClick={() => {
-                                  if (reviewBox === productId) {
-                                    setReviewBox(null);
-                                  } else {
-                                    setReviewBox(productId);
-                                    setComment("");
-                                    setRating(5);
-                                  }
-                                }}
-                              >
-                                {reviewBox === productId ? "Cancel Review" : "Write Review"}
-                              </button>
-                            </div>
-
-                            {reviewBox === productId && (
-                              <div className="inline-review-form">
-                                <h5>Reviewing {item.productId.itemName}</h5>
-                                <div className="rating-selector">
-                                  <span>Your Rating: </span>
-                                  <select
-                                    value={rating}
-                                    onChange={(e) => setRating(Number(e.target.value))}
-                                  >
-                                    <option value="5">5 ⭐ - Excellent</option>
-                                    <option value="4">4 ⭐ - Very Good</option>
-                                    <option value="3">3 ⭐ - Good</option>
-                                    <option value="2">2 ⭐ - Fair</option>
-                                    <option value="1">1 ⭐ - Poor</option>
-                                  </select>
-                                </div>
-
-                                <textarea
-                                  placeholder={`Share your experience with this ${item.productId.itemName}...`}
-                                  value={comment}
-                                  onChange={(e) => setComment(e.target.value)}
-                                />
-
-                                <button
-                                  onClick={() => submitReview(productId)}
-                                  className="inline-submit-btn"
-                                >
-                                  Submit Review
-                                </button>
-                              </div>
-                            )}
-                          </div>
-                        );
-                      })}
-                    </div>
-                  </div>
+              
+              <div className="order-progress-wrapper">
+                <div className="progress-track">
+                  <div
+                    className={`progress-fill ${order.status?.toLowerCase()}`}
+                    style={{
+                      width:
+                        order.status === 'Delivered' ? '100%' :
+                        order.status === 'Shipped' ? '80%' :
+                        order.status === 'Processing' ? '60%' :
+                        order.status === 'Pending' ? '30%' : '0%'
+                    }}
+                  ></div>
                 </div>
-              ))
-            )}
+
+                <div className="progress-steps">
+
+                  <div className={`step ${['Pending','Processing','Shipped','Delivered'].includes(order.status) ? 'completed' : ''}`}>
+                    <div className="step-dot"><FaBox /></div>
+                    <span className="step-label">Ordered</span>
+                  </div>
+
+                  <div className={`step ${['Processing','Shipped','Delivered'].includes(order.status) ? 'completed' : ''}`}>
+                    <div className="step-dot"><FaTruck /></div>
+                    <span className="step-label">Packed</span>
+                  </div>
+
+                  <div className={`step ${['Shipped','Delivered'].includes(order.status) ? 'completed' : ''}`}>
+                    <div className="step-dot"><FaMapMarkerAlt /></div>
+                    <span className="step-label">Out for Delivery</span>
+                  </div>
+
+                  <div className={`step ${order.status === 'Delivered' ? 'completed' : ''}`}>
+                    <div className="step-dot"><FaCheckCircle /></div>
+                    <span className="step-label">Delivered</span>
+                  </div>
+
+                </div>
+              </div>
+            </div>
+
+            <span className="order-date">
+              Order Date: {new Date(order.createdAt).toLocaleDateString()}
+            </span>
+
+            <span className="order-total">
+              Total: ₹{order.totalPrice}
+            </span>
           </div>
-        )}
+
+          <div className="order-items">
+            {order.items.map((item, idx) => (
+              <div key={idx} className="order-item-card">
+                <img
+                  src={item.productId?.image || "https://via.placeholder.com/100"}
+                  alt={item.productId?.itemName || "Product"}
+                  className="order-item-img"
+                />
+                <div className="order-item-details">
+                  <h4>{item.productId?.itemName || "Product Deleted"}</h4>
+                  <p>Price: ₹{item.productId?.itemPrice || 0}</p>
+                  <p>Quantity: {item.quantity || 1}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div className="order-footer">
+            <div className="footer-main">
+              <span>Payment Mode: {order.paymentMethod}</span>
+            </div>
+
+           
+            <div className="footer-reviews-area">
+              {order.items.map((item, idx) => {
+                const productId = (item.productId?._id || item.productId)?.toString();
+                const alreadyReviewed = reviewedProducts.includes(productId);
+
+                if (alreadyReviewed || !productId || !item.productId) return null;
+
+                return (
+                  <div key={idx} className="inline-review-section">
+                    <div className="review-trigger">
+                      <p>
+                        Write Your review on <strong>{item.productId.itemName}</strong>?
+                      </p>
+                      <button
+                        className="inline-write-btn"
+                        onClick={() => {
+                          if (reviewBox === productId) {
+                            setReviewBox(null);
+                          } else {
+                            setReviewBox(productId);
+                            setComment("");
+                            setRating(5);
+                          }
+                        }}
+                      >
+                        {reviewBox === productId ? "Cancel Review" : "Write Review"}
+                      </button>
+                    </div>
+
+                    {reviewBox === productId && (
+                      <div className="inline-review-form">
+                        <h5>Reviewing {item.productId.itemName}</h5>
+
+                        <div className="rating-selector">
+                          <span>Your Rating: </span>
+                          <select
+                            value={rating}
+                            onChange={(e) => setRating(Number(e.target.value))}
+                          >
+                            <option value="5">5 ⭐ - Excellent</option>
+                            <option value="4">4 ⭐ - Very Good</option>
+                            <option value="3">3 ⭐ - Good</option>
+                            <option value="2">2 ⭐ - Fair</option>
+                            <option value="1">1 ⭐ - Poor</option>
+                          </select>
+                        </div>
+
+                        <textarea
+                          placeholder={`Share your experience with this ${item.productId.itemName}...`}
+                          value={comment}
+                          onChange={(e) => setComment(e.target.value)}
+                        />
+
+                        <button
+                          onClick={() => submitReview(productId)}
+                          className="inline-submit-btn"
+                        >
+                          Submit Review
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+        </div>
+      ))
+    )}
+  </div>
+)}
       </div>
     </div>
   );
