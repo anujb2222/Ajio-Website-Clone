@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 
 const addressSchema = new mongoose.Schema({
   userId: {
-    type: String, // ✅ FIXED (was ObjectId)
+    type: String, 
     required: true
   },
   firstName: { type: String, required: true },

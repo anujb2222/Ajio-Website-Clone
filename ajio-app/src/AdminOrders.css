@@ -269,7 +269,6 @@
 .status-Delivered { background: #f0fff4; color: #276749; border-color: #9ae6b4; }
 .status-Cancelled { background: #fff5f5; color: #9b2c2c; border-color: #feb2b2; }
 
-/* Loading State */
 .admin-loading-screen {
   display: flex;
   flex-direction: column;
@@ -293,7 +292,7 @@
   100% { transform: rotate(360deg); }
 }
 
-/* Empty State */
+
 .admin-empty-state {
   text-align: center;
   padding: 80px 40px;

@@ -55,7 +55,7 @@ function OtpLogin({ setIsLoggedIn }) {
   return (
     <div className="overlay">
       <div className="login-box">
-        <span className="close-btn" onClick={() => navigate("/")}>X</span>
+        <span className="close-btn-login" onClick={() => navigate("/")}>X</span>
         <h2>Login using OTP</h2>
 
         <label>Email</label>

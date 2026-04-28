@@ -39,7 +39,7 @@ function SignIn({ setIsLoggedIn }) {
   return (
     <div className="overlay">
       <div className="login-box">
-        <span className="close-btn" onClick={() => navigate("/")}>X</span>
+        <span className="close-btn-login" onClick={() => navigate("/")}>X</span>
         <h2>Welcome to AJIO</h2>
 
         <label>Enter Mobile Number <span>*</span></label>

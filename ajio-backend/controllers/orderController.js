@@ -6,7 +6,7 @@ const axios = require("axios");
 
 const { generateInvoiceBuffer } = require("../utils/generateinvoice");
 
-// ================= EMAIL =================
+
 const sendBrevoEmail = async (toEmail, subject, htmlContent, pdfBuffer) => {
   try {
     await axios.post(
@@ -38,7 +38,7 @@ const sendBrevoEmail = async (toEmail, subject, htmlContent, pdfBuffer) => {
   }
 };
 
-// ================= CREATE RAZORPAY ORDER =================
+
 exports.createOrder = async (req, res) => {
   try {
     const { amount } = req.body;
@@ -55,7 +55,6 @@ exports.createOrder = async (req, res) => {
   }
 };
 
-// ================= VERIFY PAYMENT =================
 exports.verifyPayment = async (req, res) => {
   try {
     const {
@@ -95,7 +94,7 @@ exports.verifyPayment = async (req, res) => {
       "items.productId"
     );
 
-    // ✅ NO FILE SYSTEM — BUFFER PDF
+   
     const pdfBuffer = await generateInvoiceBuffer({
       items: savedOrder.items,
       email,
@@ -125,7 +124,7 @@ exports.verifyPayment = async (req, res) => {
   }
 };
 
-// ================= COD ORDER =================
+
 exports.placeCODOrder = async (req, res) => {
   try {
     const { userId, email, shipping, items, totalPrice } = req.body;
@@ -148,7 +147,7 @@ exports.placeCODOrder = async (req, res) => {
       "items.productId"
     );
 
-    // ✅ BUFFER INVOICE (NO FILES)
+   
     const pdfBuffer = await generateInvoiceBuffer({
       items: savedOrder.items,
       email,
@@ -179,7 +178,7 @@ exports.placeCODOrder = async (req, res) => {
   }
 };
 
-// ================= GET ALL ORDERS =================
+
 exports.getAllOrders = async (req, res) => {
   const orders = await Order.find()
     .populate("items.productId")
@@ -188,7 +187,7 @@ exports.getAllOrders = async (req, res) => {
   res.json(orders);
 };
 
-// ================= USER ORDERS =================
+
 exports.getUserOrders = async (req, res) => {
   const orders = await Order.find({ userId: req.params.userId })
     .populate("items.productId")
@@ -197,7 +196,7 @@ exports.getUserOrders = async (req, res) => {
   res.json(orders);
 };
 
-// ================= UPDATE ORDER STATUS =================
+
 
 exports.updateOrderStatus = async (req, res) => {
   try {
@@ -231,15 +230,13 @@ exports.updateOrderStatus = async (req, res) => {
 
 
 
-// ================= DOWNLOAD INVOICE =================
-// (OPTIONAL - you can REMOVE this completely now)
+
 exports.downloadInvoice = async (req, res) => {
   res.status(200).json({
     message: "Invoice is now sent via email. No file download needed.",
   });
 };
 
-// ================= SINGLE ORDER =================
 exports.getSingleOrder = async (req, res) => {
   try {
     const order = await Order.findById(req.params.orderId).populate(
@@ -274,7 +271,7 @@ exports.getSalesStats = async (req, res) => {
       .sort({ createdAt: -1 })
       .limit(5);
 
-    // Monthly Sales Data
+   
     const monthlySales = {};
     const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
     
@@ -291,7 +288,7 @@ exports.getSalesStats = async (req, res) => {
       sales: monthlySales[month] || 0
     }));
 
-    // Category Sales Data
+   
     const categorySales = {};
     orders.forEach(order => {
       if (order.status !== "Cancelled") {
