@@ -11,12 +11,13 @@
   margin-bottom: 30px;
 }
 
-.back-btn {
+.back-btn-5 {
   display: flex;
   align-items: center;
   gap: 8px;
+  width: 200px;
   padding: 8px 16px;
-  background-color: #fff;
+  background-color:black;
   border: 1px solid #ddd;
   border-radius: 4px;
   cursor: pointer;
@@ -24,8 +25,9 @@
   transition: all 0.3s;
 }
 
-.back-btn:hover {
-  background-color: #f0f0f0;
+.back-btn-5:hover {
+  background-color: khaki;
+  color: black;
 }
 
 .stats-grid {
@@ -150,4 +152,8 @@
   height: 200px;
   font-size: 18px;
   color: #666;
+}
+.sales-title{
+  padding-left: 400px;
+
 }

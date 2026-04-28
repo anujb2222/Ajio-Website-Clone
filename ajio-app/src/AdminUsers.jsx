@@ -20,10 +20,10 @@ function AdminUsers() {
   return (
     <div className="admin-users-container">
       <div className="admin-users-header">
-        <button className="back-btn" onClick={() => navigate("/admin")}>
+        <button className="back-btn-user" onClick={() => navigate("/admin")}>
           <FaArrowLeft /> Back
         </button>
-        <h2>User Management</h2>
+       
       </div>
 
       {users.length === 0 ? (

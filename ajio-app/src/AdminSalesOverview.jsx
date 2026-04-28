@@ -56,10 +56,10 @@ function AdminSalesOverview() {
   return (
     <div className="sales-overview-container">
       <div className="sales-header">
-        <button className="back-btn" onClick={() => navigate("/admin")}>
+        <button className="back-btn-5" onClick={() => navigate("/admin")}>
           <FaArrowLeft /> Back to Dashboard
         </button>
-        <h1>Sales Analysis</h1>
+      <h1 className="sales-title">Sales Analysis</h1>
       </div>
 
       <div className="stats-grid">

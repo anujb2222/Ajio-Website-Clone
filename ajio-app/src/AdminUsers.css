@@ -1,92 +1,106 @@
 .admin-users-container {
   padding: 30px;
-  background-color: #f4f6f8;
+  background: #f6f6f6;
   min-height: 100vh;
+  font-family: "Segoe UI", sans-serif;
 }
 
-
+/* Header */
 .admin-users-header {
   display: flex;
   align-items: center;
-  gap: 15px;
+  justify-content: space-between;
   margin-bottom: 25px;
 }
 
-.admin-users-container h2 {
-  color: #2c3e50;
+.admin-users-header h2 {
   font-size: 26px;
-  margin: 0;
+  color: #111;
   font-weight: 600;
+  margin: 0;
 }
 
-
-.back-btn {
-  background: #e9ecef;
+/* Back Button */
+.back-btn-user {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: black;
+  color: #fff;
   border: none;
   padding: 8px 14px;
   border-radius: 6px;
   cursor: pointer;
-  font-size: 14px;
+  width: 200px;
+  transition: 0.3s;
 }
 
 .back-btn:hover {
-  background: #d6d8db;
+  background: #333;
 }
 
-
+/* Table Wrapper */
 .users-table-wrapper {
-  background: #ffffff;
+  background: #fff;
   border-radius: 10px;
-  box-shadow: 0 3px 12px rgba(0,0,0,0.06);
   overflow: hidden;
+  border: 1px solid #e5e5e5;
 }
 
+/* Table */
 .users-table {
   width: 100%;
   border-collapse: collapse;
 }
 
-.users-table th,
-.users-table td {
-  padding: 14px 16px;
-  border-bottom: 1px solid #eef1f4;
-  font-size: 14px;
-}
-
-
+/* Table Header */
 .users-table th {
-  background-color: #f7f9fb;
-  color: #6c757d;
-  font-weight: 500;
-  text-transform: uppercase;
+  background: #111;
+  color: #fff;
   font-size: 12px;
+  text-transform: uppercase;
+  padding: 14px;
+  letter-spacing: 0.5px;
+  text-align: left;
 }
 
-
-.users-table tr:hover {
-  background-color: #f9fbfc;
+/* Table Rows */
+.users-table td {
+  padding: 14px;
+  font-size: 14px;
+  border-bottom: 1px solid #eee;
 }
 
+/* Hover Effect */
+.users-table tbody tr {
+  transition: 0.2s;
+}
 
+.users-table tbody tr:hover {
+  background: #fafafa;
+}
+
+/* Text styles */
 .user-id {
   font-family: monospace;
-  color: #8a94a6;
-  font-size: 13px;
+  color: #777;
 }
 
 .user-email {
-  color: #2f3542;
+  color: #111;
   font-weight: 500;
 }
 
 .user-phone {
-  color: #6c757d;
+  color: #555;
 }
 
+/* Empty State */
 .empty-users {
   text-align: center;
-  padding: 50px;
-  background: white;
+  padding: 60px;
+  background: #fff;
   border-radius: 10px;
-  color: #8a94a6;
+  color: #888;
+  border: 1px solid #e5e5e5;
 }

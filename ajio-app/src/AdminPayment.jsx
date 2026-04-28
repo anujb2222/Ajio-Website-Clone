@@ -22,7 +22,7 @@ function AdminPayment() {
   return (
     <div className="admin-payments-container">
       <div className="admin-payments-header">
-        <button className="back-btn" onClick={() => navigate("/admin")}>
+        <button className="back-btn-4" onClick={() => navigate("/admin")}>
           <FaArrowLeft /> Back to Dashboard
         </button>
         <h2>Payment Transactions</h2>

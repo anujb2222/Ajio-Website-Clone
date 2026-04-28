@@ -9,7 +9,7 @@ function AdminLogin() {
 
 
   const handleLogin = () => {
-    if (phone === "1234567890" && password === "1234") {
+    if (phone === "1234" && password === "1234") {
       alert("Login Successful");
       navigate("/admin");
     } else {
