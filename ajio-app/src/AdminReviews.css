@@ -155,16 +155,7 @@
   gap: 2px;
 }
 
-.comment-text-box {
-  background: #fff8f5;
-  padding: 10px 15px;
-  border-radius: 8px;
-  border-left: 3px solid #ff7f50;
-  font-style: italic;
-  color: #444;
-  font-size: 14px;
-  line-height: 1.5;
-}
+
 
 
 .date-cell-text {
