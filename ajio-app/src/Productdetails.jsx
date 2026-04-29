@@ -71,7 +71,6 @@ function ProductDetails() {
     if (id) fetchReviews();
   }, [id]);
 
-  // Handle product not found (or still null)
   if (!product)
     return (
       <div className="error-state">
