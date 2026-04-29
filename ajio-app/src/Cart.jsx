@@ -108,41 +108,38 @@ function Cart() {
   });
 
 
-  const submitReview = async (productId) => {
-    try {
-      const res = await fetch(`${API_URL}/reviews`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          userId,
-          productId,
-          rating: Number(rating),
-          comment
-        })
-      });
+  const submitReview = async (productId, orderId) => {
+  try {
+    const res = await fetch(`${API_URL}/reviews`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        userId,
+        productId,
+        orderId, 
+        rating: Number(rating),
+        comment
+      })
+    });
 
-      const data = await res.json();
+    const data = await res.json();
 
-      if (!res.ok) {
-        alert(data.error || data.message || "Error submitting review");
-        return;
-      }
-
-      alert("Review submitted successfully!");
-      setReviewBox(null);
-      setComment("");
-      setRating(5);
-
-      const productIdStr = productId?.toString();
-      if (productIdStr) {
-     const updatedRes = await fetch(`${API_URL}/reviews/user/${userId}`);
-const updatedData = await updatedRes.json();
-setUserReviews(updatedData);
-      }
-    } catch (err) {
-      alert("Server error while submitting review");
+    if (!res.ok) {
+      alert(data.error || "Error submitting review");
+      return;
     }
-  };
+
+    alert("Review submitted successfully!");
+    setReviewBox(null);
+
+    const updatedRes = await fetch(`${API_URL}/reviews/user/${userId}`);
+    const updatedData = await updatedRes.json();
+    setUserReviews(updatedData);
+
+  } catch (err) {
+    alert("Server error");
+  }
+};
 
   return (
     <div className="cart-page">
@@ -332,26 +329,29 @@ setUserReviews(updatedData);
               <span>Payment Mode: {order.paymentMethod}</span>
             </div>
 
-           
-          
-            <div className="footer-reviews-area">
+           <div className="footer-reviews-area">
   {order.items.map((item, idx) => {
     const productId = (item.productId?._id || item.productId)?.toString();
 
     if (!productId || !item.productId) return null;
 
+    // ✅ UNIQUE KEY (IMPORTANT FIX)
+    const reviewKey = productId + "_" + order._id;
 
     const review = userReviews.find(r => {
       const pid = typeof r.productId === "string"
         ? r.productId
         : r.productId?._id;
-      return pid?.toString() === productId;
+
+      return (
+        pid?.toString() === productId &&
+        r.orderId?.toString() === order._id.toString()
+      );
     });
 
     return (
       <div key={idx} className="inline-review-section">
 
-      
         {review ? (
           <div className="submitted-review">
             <p>
@@ -362,29 +362,29 @@ setUserReviews(updatedData);
           </div>
         ) : (
           <>
-         
             <div className="review-trigger">
               <p>
                 Write your review on{" "}
                 <strong>{item.productId.itemName}</strong>?
               </p>
+
               <button
                 className="inline-write-btn"
                 onClick={() => {
-                  if (reviewBox === productId) {
+                  if (reviewBox === reviewKey) {
                     setReviewBox(null);
                   } else {
-                    setReviewBox(productId);
+                    setReviewBox(reviewKey);   // ✅ FIXED
                     setComment("");
                     setRating(5);
                   }
                 }}
               >
-                {reviewBox === productId ? "Cancel Review" : "Write Review"}
+                {reviewBox === reviewKey ? "Cancel Review" : "Write Review"}
               </button>
             </div>
 
-            {reviewBox === productId && (
+            {reviewBox === reviewKey && (
               <div className="inline-review-form">
                 <h5>Reviewing {item.productId.itemName}</h5>
 
@@ -409,7 +409,7 @@ setUserReviews(updatedData);
                 />
 
                 <button
-                  onClick={() => submitReview(productId)}
+                  onClick={() => submitReview(productId, order._id)}
                   className="inline-submit-btn"
                 >
                   Submit Review

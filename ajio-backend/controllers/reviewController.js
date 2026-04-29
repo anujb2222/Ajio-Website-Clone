@@ -5,23 +5,39 @@ const Product = require("../models/Product");
 
 exports.addReview = async (req, res) => {
   try {
-    const { userId, productId, rating, comment } = req.body;
+    const { userId, productId, orderId, rating, comment } = req.body;
 
-    const userExists = await User.findById(userId);
-    if (!userExists) {
-      return res.status(400).json({ error: "Invalid userId" });
+    // ❌ prevent null orderId
+    if (!orderId) {
+      return res.status(400).json({
+        error: "orderId is required for review"
+      });
+    }
+
+    // optional: prevent duplicates manually (better UX)
+    const existing = await Review.findOne({
+      userId,
+      productId,
+      orderId
+    });
+
+    if (existing) {
+      return res.status(400).json({
+        error: "You already reviewed this product in this order"
+      });
     }
 
     const review = await Review.create({
       userId,
       productId,
+      orderId,
       rating,
       comment
     });
-    res.json({ message: "Review added successfully", review });
+
+    res.json({ message: "Review added", review });
 
   } catch (err) {
-    console.error(err);
     res.status(500).json({ error: err.message });
   }
 };
