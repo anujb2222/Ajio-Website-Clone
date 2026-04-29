@@ -335,7 +335,6 @@ function Cart() {
 
     if (!productId || !item.productId) return null;
 
-    // ✅ UNIQUE KEY (IMPORTANT FIX)
     const reviewKey = productId + "_" + order._id;
 
     const review = userReviews.find(r => {
@@ -374,7 +373,7 @@ function Cart() {
                   if (reviewBox === reviewKey) {
                     setReviewBox(null);
                   } else {
-                    setReviewBox(reviewKey);   // ✅ FIXED
+                    setReviewBox(reviewKey);  
                     setComment("");
                     setRating(5);
                   }

@@ -7,14 +7,14 @@ exports.addReview = async (req, res) => {
   try {
     const { userId, productId, orderId, rating, comment } = req.body;
 
-    // ❌ prevent null orderId
+
     if (!orderId) {
       return res.status(400).json({
         error: "orderId is required for review"
       });
     }
 
-    // optional: prevent duplicates manually (better UX)
+  
     const existing = await Review.findOne({
       userId,
       productId,
