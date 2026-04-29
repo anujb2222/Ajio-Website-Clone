@@ -73,12 +73,6 @@ function AdminReviews() {
 
           </div>
         </div>
-        <div className="header-stats">
-          <div className="mini-stat">
-            <span className="label">Total Reviews</span>
-            <span className="value">{reviews.length}</span>
-          </div>
-        </div>
       </div>
 
       {reviews.length === 0 ? (
