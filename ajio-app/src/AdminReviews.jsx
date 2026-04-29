@@ -70,7 +70,7 @@ function AdminReviews() {
           </button>
           <div className="header-title">
             <h2>Reviews Management</h2>
-            <p>Monitor and analyze customer feedback</p>
+
           </div>
         </div>
         <div className="header-stats">
