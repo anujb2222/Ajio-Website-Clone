@@ -69,8 +69,14 @@ const generateInvoiceBuffer = (data) => {
     doc.fillColor(gray).font("Helvetica").fontSize(9)
       .text(data.email, 312, boxTop + 45, { width: 220 });
 
-    doc.fillColor(accent).font("Helvetica-Bold")
-      .text("PAID ONLINE", 312, boxTop + 65);
+
+doc.fillColor(accent)
+  .font("Helvetica-Bold")
+  .text(paymentText, 312, boxTop + 65);
+
+doc.fillColor(accent)
+  .font("Helvetica-Bold")
+  .text(paymentText, 312, boxTop + 65);
 
     const summaryTop = boxTop + 110;
 
