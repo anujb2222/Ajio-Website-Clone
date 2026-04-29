@@ -26,14 +26,14 @@ function AdminSalesOverview() {
     totalOrders: 0,
     productsSold: 0,
     totalProducts: 0,
-    recentOrders: [],
     barChartData: [],
     pieChartData: []
   });
+
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
-  const API_URL = "https://ajio-website-clone-1.onrender.com"; 
+  const API_URL = "https://ajio-website-clone-1.onrender.com";
 
   useEffect(() => {
     const fetchData = async () => {
@@ -49,7 +49,14 @@ function AdminSalesOverview() {
     fetchData();
   }, []);
 
-  const { totalRevenue, totalOrders, totalProducts, productsSold, recentOrders, barChartData, pieChartData } = stats;
+  const {
+    totalRevenue,
+    totalOrders,
+    totalProducts,
+    productsSold,
+    barChartData,
+    pieChartData
+  } = stats;
 
   if (loading) return <div className="loading">Loading Sales Overview...</div>;
 
@@ -59,7 +66,7 @@ function AdminSalesOverview() {
         <button className="back-btn-5" onClick={() => navigate("/admin")}>
           <FaArrowLeft /> Back to Dashboard
         </button>
-      <h1 className="sales-title">Sales Analysis</h1>
+        <h1 className="sales-title">Sales Analysis</h1>
       </div>
 
       <div className="stats-grid">
@@ -93,15 +100,6 @@ function AdminSalesOverview() {
           </div>
         </div>
 
-        <div className="stat-card">
-          <div className="stat-icon inventory">
-            <FaChartLine />
-          </div>
-          <div className="stat-info">
-            <h3>Active Inventory</h3>
-            <p>{totalProducts}</p>
-          </div>
-        </div>
       </div>
 
       <div className="charts-section">
@@ -144,36 +142,6 @@ function AdminSalesOverview() {
             </ResponsiveContainer>
           </div>
         </div>
-      </div>
-
-      <div className="recent-sales-section">
-        <h2>Recent Sales</h2>
-        <table className="sales-table">
-          <thead>
-            <tr>
-              <th>Order ID</th>
-              <th>Customer</th>
-              <th>Date</th>
-              <th>Amount</th>
-              <th>Status</th>
-            </tr>
-          </thead>
-          <tbody>
-            {recentOrders.map(order => (
-              <tr key={order._id}>
-                <td>{order._id.substring(0, 8)}...</td>
-                <td>{order.shipping?.name || "N/A"}</td>
-                <td>{new Date(order.createdAt).toLocaleDateString()}</td>
-                <td>₹{order.totalPrice}</td>
-                <td>
-                  <span className={`status-badge ${(order.status || "pending").toLowerCase()}`}>
-                    {order.status || "Pending"}
-                  </span>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
       </div>
     </div>
   );
