@@ -118,7 +118,7 @@ function AdminOrders() {
                   {order.items.slice(0, 2).map((item, i) => (
                     <div key={i} className="mini-product-row">
                       <img src={item.productId?.image} alt="" />
-                      <span>{item.productId?.itemName}</span>
+                     <span>{item.productId?.itemName} × {item.quantity}</span>
                     </div>
                   ))}
                 </td>
