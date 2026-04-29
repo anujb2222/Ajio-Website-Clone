@@ -185,7 +185,7 @@
 .method-badge.online { background: #e6fffa; color: #234e52; }
 .method-badge.cod { background: #fffaf0; color: #7b341e; }
 
-/* Product Stack */
+
 .mini-product-stack {
   display: flex;
   flex-direction: column;
