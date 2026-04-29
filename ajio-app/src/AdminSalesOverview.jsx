@@ -90,15 +90,7 @@ function AdminSalesOverview() {
           </div>
         </div>
 
-        <div className="stat-card">
-          <div className="stat-icon products">
-            <FaBox />
-          </div>
-          <div className="stat-info">
-            <h3>Products Sold</h3>
-            <p>{productsSold}</p>
-          </div>
-        </div>
+    
 
       </div>
 
