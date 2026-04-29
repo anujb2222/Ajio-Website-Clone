@@ -1,14 +1,23 @@
 import React, { useEffect, useState } from "react";
-import { useParams, useNavigate, Link } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import "./Productdetails.css";
-import { FaStar, FaShoppingCart, FaBolt, FaShieldAlt, FaTruck, FaUndo, FaArrowLeft, FaTimes, FaUserCircle } from "react-icons/fa";
+import {
+  FaStar,
+  FaShoppingCart,
+  FaBolt,
+  FaShieldAlt,
+  FaTruck,
+  FaUndo,
+  FaArrowLeft,
+  FaTimes,
+  FaUserCircle,
+} from "react-icons/fa";
 
 function ProductDetails() {
   const { id } = useParams();
   const navigate = useNavigate();
   const [product, setProduct] = useState(null);
-  const [products, setProducts] = useState([]);
   const [reviews, setReviews] = useState([]);
   const [showReviews, setShowReviews] = useState(false);
 
@@ -61,23 +70,22 @@ function ProductDetails() {
   }, [id]);
 
   useEffect(() => {
-    axios
-      .get(`${API_URL}/products`)
-      .then((res) => setProducts(res.data))
-      .catch((err) => console.log(err));
-  }, []);
-
-  useEffect(() => {
     if (id) fetchReviews();
   }, [id]);
 
-  if (!product)
+ 
+  useEffect(() => {
+    document.body.style.overflow = showReviews ? "hidden" : "auto";
+  }, [showReviews]);
+
+  if (!product) {
     return (
       <div className="error-state">
         <h1>Product not found</h1>
         <button onClick={() => navigate("/")}>Go Home</button>
       </div>
     );
+  }
 
   const averageRating =
     reviews.length > 0
@@ -112,7 +120,7 @@ function ProductDetails() {
             onClick={() => setShowReviews(true)}
           >
             <div className="stars-pill">
-              {averageRating} <FaStar className="star-icon" />
+              {averageRating} <FaStar />
             </div>
             <span className="review-count">
               {reviews.length} Ratings & Reviews
@@ -130,7 +138,7 @@ function ProductDetails() {
 
           <div className="delivery-pincode-section">
             <div className="delivery-header">
-              <FaTruck className="truck-icon" />
+              <FaTruck />
               <span>
                 Deliver to: <b>400001</b>
               </span>
@@ -142,16 +150,13 @@ function ProductDetails() {
 
           <div className="trust-badges">
             <div className="badge-item">
-              <FaShieldAlt />
-              <span>100% Genuine</span>
+              <FaShieldAlt /> <span>100% Genuine</span>
             </div>
             <div className="badge-item">
-              <FaUndo />
-              <span>Easy 15 days returns</span>
+              <FaUndo /> <span>Easy 15 days returns</span>
             </div>
             <div className="badge-item">
-              <FaBolt />
-              <span>Express Shipping</span>
+              <FaBolt /> <span>Express Shipping</span>
             </div>
           </div>
 
@@ -173,41 +178,14 @@ function ProductDetails() {
           <div className="product-description-card">
             <h3>Product Details</h3>
             <p>
-              Premium quality craftsmanship meets modern design. This product
-              offers exceptional durability and a sleek aesthetic that
-              complements any lifestyle.
+              Premium quality craftsmanship meets modern design. Durable,
+              stylish, and perfect for everyday use.
             </p>
           </div>
         </div>
       </div>
 
-      <div className="related-products-section">
-        <div className="section-header">
-          <h2>Customers Also Viewed</h2>
-          <div className="header-line"></div>
-        </div>
-
-        <div className="related-slider-container">
-          <div className="slider-track-premium">
-            {products.concat(products).map((item, index) => (
-              <Link
-                to={`/Productdetails/${item._id}`}
-                key={`${item._id}-${index}`}
-                className="related-card-premium"
-              >
-                <div className="card-img-wrapper">
-                  <img src={item.image} alt={item.itemName} />
-                </div>
-                <div className="card-content-premium">
-                  <p className="card-item-name">{item.itemName}</p>
-                  <p className="card-item-price">₹{item.itemPrice}</p>
-                </div>
-              </Link>
-            ))}
-          </div>
-        </div>
-      </div>
-
+ 
       {showReviews && (
         <div
           className="reviews-modal-overlay"
@@ -219,26 +197,22 @@ function ProductDetails() {
           >
             <div className="modal-header">
               <h3>Ratings & Reviews</h3>
-              <button
-                className="close-modal"
-                onClick={() => setShowReviews(false)}
-              >
-                <FaTimes />
-              </button>
+           <button
+  className="close-button-reviewbox"
+  onClick={() => setShowReviews(false)}
+>
+  <FaTimes />
+</button>
             </div>
 
             <div className="overall-rating-stats">
               <div className="big-rating">{averageRating}</div>
-              <div className="rating-desc">
+              <div>
                 <div className="star-row">
                   {[...Array(5)].map((_, i) => (
                     <FaStar
                       key={i}
-                      className={
-                        i < Math.floor(averageRating)
-                          ? "star filled"
-                          : "star"
-                      }
+                      className={i < averageRating ? "star filled" : "star"}
                     />
                   ))}
                 </div>
@@ -248,21 +222,17 @@ function ProductDetails() {
 
             <div className="reviews-list-premium">
               {reviews.length === 0 ? (
-                <div className="empty-reviews">
-                  <p>No reviews yet</p>
-                </div>
+                <p>No reviews yet</p>
               ) : (
                 reviews.map((r) => (
                   <div key={r._id} className="review-card-premium">
                     <div className="review-user-info">
-                      <FaUserCircle className="user-icon" />
-                      <div className="user-details-meta">
-                        <p className="user-email">
-                          {r.userEmail || "Verified User"}
-                        </p>
-                        <div className="user-rating-pill">
-                          {r.rating} <FaStar className="small-star" />
-                        </div>
+                      <FaUserCircle />
+                      <div>
+                        <p>{r.userEmail || "User"}</p>
+                        <span className="user-rating-pill">
+                          {r.rating} <FaStar />
+                        </span>
                       </div>
                     </div>
                     <p className="review-comment-text">{r.comment}</p>

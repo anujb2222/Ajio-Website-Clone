@@ -1,21 +1,22 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import "./AdminOrders.css";
-import { 
-  FaArrowLeft, FaCheckCircle, FaClock, FaTruck, 
-  FaUser, FaMapMarkerAlt, FaCreditCard, FaBox, 
-  FaShoppingBag, FaCalendarAlt, FaSpinner 
+import {
+  FaArrowLeft,
+  FaUser,
+  FaMapMarkerAlt,
+  FaCreditCard,
+  FaBox,
+  FaCalendarAlt
 } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
-
 
 function AdminOrders() {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [updatingId, setUpdatingId] = useState(null);
   const navigate = useNavigate();
 
-    const API_URL = "https://ajio-website-clone-1.onrender.com";
+  const API_URL = "https://ajio-website-clone-1.onrender.com";
 
   const fetchOrders = async () => {
     try {
@@ -23,7 +24,7 @@ function AdminOrders() {
       const res = await axios.get(`${API_URL}/orders`);
       setOrders(res.data);
     } catch (err) {
-      console.error("Error fetching orders:", err);
+      console.error(err);
     } finally {
       setLoading(false);
     }
@@ -35,36 +36,18 @@ function AdminOrders() {
 
   const updateStatus = async (orderId, status) => {
     try {
-      setUpdatingId(orderId);
-      const res = await axios.put(`${API_URL}/orders/update-order-status/${orderId}`, { status });
+      setOrders((prev) =>
+        prev.map((o) => (o._id === orderId ? { ...o, status } : o))
+      );
 
-      if (res.data.success) {
-        setOrders(prevOrders => 
-          prevOrders.map(order => 
-            order._id === orderId ? { ...order, status } : order
-          )
-        );
-      } else {
-        alert(res.data.message || "Failed to update status");
-      }
+      await axios.put(
+        `${API_URL}/orders/update-order-status/${orderId}`,
+        { status }
+      );
     } catch (err) {
-      console.error("Error updating status:", err);
-      const errorMsg = err.response?.data?.message || err.response?.data?.error || "Failed to update status. Please try again.";
-      alert(errorMsg);
-    } finally {
-      setUpdatingId(null);
-    }
-  };
-
-  const getStatusIcon = (status, isUpdating) => {
-    if (isUpdating) return <FaSpinner className="status-icon spin-animation" />;
-    switch (status) {
-      case 'Pending': return <FaClock className="status-icon" />;
-      case 'Processing': return <FaShoppingBag className="status-icon" />;
-      case 'Shipped': return <FaTruck className="status-icon" />;
-      case 'Delivered': return <FaCheckCircle className="status-icon" />;
-      case 'Cancelled': return <FaBox className="status-icon" />;
-      default: return <FaBox className="status-icon" />;
+      console.error(err);
+      alert("Failed to update status");
+      fetchOrders();
     }
   };
 
@@ -79,109 +62,92 @@ function AdminOrders() {
 
   return (
     <div className="admin-orders-page">
+
       <div className="admin-top-bar">
-        <div className="header-left">
-          <button className="premium-back-btn" onClick={() => navigate("/admin")}>
-            <FaArrowLeft />
-          </button>
-          <div className="header-title">
-            <h2>Order Management</h2>
-         
-          </div>
-        </div>
-        <div className="header-stats">
-          <div className="mini-stat">
-            <span className="label">Total Orders</span>
-            <span className="value">{orders.length}</span>
-          </div>
+        <button className="premium-back-btn" onClick={() => navigate("/admin")}>
+          <FaArrowLeft />
+        </button>
+
+        <h2>Order Management</h2>
+
+        <div className="mini-stat">
+          Total Orders: {orders.length}
         </div>
       </div>
 
-      {orders.length === 0 ? (
-        <div className="admin-empty-state">
-          <div className="empty-icon-wrapper">
-            <FaBox />
-          </div>
-          <h3>No Orders Yet</h3>
-          <p>When customers place orders, they will appear here.</p>
-        </div>
-      ) : (
-        <div className="admin-table-container">
-          <table className="premium-admin-table">
-            <thead>
-              <tr>
-                <th><FaCalendarAlt /> Order Details</th>
-                <th><FaUser /> Customer Info</th>
-                <th><FaMapMarkerAlt /> Shipping Address</th>
-                <th><FaCreditCard /> Payment & Price</th>
-                <th><FaBox /> Ordered Items</th>
-                <th>Status Action</th>
+      <div className="admin-table-container">
+        <table className="premium-admin-table">
+
+          <thead>
+            <tr>
+              <th><FaCalendarAlt /> Order</th>
+              <th><FaUser /> Customer</th>
+              <th><FaMapMarkerAlt /> Address</th>
+              <th><FaCreditCard /> Payment</th>
+              <th><FaBox /> Items</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            {orders.map((order) => (
+              <tr key={order._id}>
+
+                <td>
+                  #{order._id.slice(-8).toUpperCase()}
+                </td>
+
+                <td>
+                  <div>{order.shipping?.name}</div>
+                  <div className="small-text">{order.shipping?.email}</div>
+                </td>
+
+                <td>
+                  {order.shipping?.address}
+                  <br />
+                  {order.shipping?.city}, {order.shipping?.state}
+                </td>
+
+                <td>
+                  ₹{order.totalPrice.toLocaleString()}
+                  <br />
+                  <span className="small-text">{order.paymentMethod}</span>
+                </td>
+
+                <td>
+                  {order.items.slice(0, 2).map((item, i) => (
+                    <div key={i} className="mini-product-row">
+                      <img src={item.productId?.image} alt="" />
+                      <span>{item.productId?.itemName}</span>
+                    </div>
+                  ))}
+                </td>
+
+            
+                <td>
+                  <div className={`status-box status-${order.status}`}>
+                    <select
+                      value={order.status}
+                      onChange={(e) =>
+                        updateStatus(order._id, e.target.value)
+                      }
+                    >
+                      <option value="Pending">Pending</option>
+                      <option value="Processing">Processing</option>
+                      <option value="Shipped">Shipped</option>
+                      <option value="Delivered">Delivered</option>
+                      <option value="Cancelled">Cancelled</option>
+                    </select>
+                  </div>
+                </td>
+
               </tr>
-            </thead>
-            <tbody>
-              {orders.map((order) => (
-                <tr key={order._id}>
-                  <td className="order-id-cell">
-                    <span className="id-badge">#{order._id.slice(-8).toUpperCase()}</span>
-                    <span className="date-text">{new Date(order.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}</span>
-                  </td>
+            ))}
+          </tbody>
 
-                  <td className="customer-cell">
-                    <div className="customer-name">{order.shipping?.name}</div>
-                    <div className="customer-email">{order.shipping?.email}</div>
-                  </td>
+        </table>
+      </div>
 
-                  <td className="shipping-cell">
-                    <p>{order.shipping?.address}</p>
-                    <p>{order.shipping?.city}, {order.shipping?.state} - {order.shipping?.pincode}</p>
-                  </td>
-
-                  <td className="payment-cell">
-                    <div className="price-tag-admin">₹{order.totalPrice.toLocaleString()}</div>
-                    <span className={`method-badge ${order.paymentMethod?.toLowerCase()}`}>
-                      {order.paymentMethod}
-                    </span>
-                  </td>
-
-                  <td className="products-cell">
-                    <div className="mini-product-stack">
-                      {order.items.slice(0, 2).map((item, idx) => (
-                        <div key={idx} className="mini-product-row">
-                          <img src={item.productId?.image} alt="" />
-                          <div className="item-meta">
-                            <span className="name">{item.productId?.itemName || "Item"}</span>
-                            <span className="qty">x{item.quantity}</span>
-                          </div>
-                        </div>
-                      ))}
-                      {order.items.length > 2 && (
-                        <div className="more-items">+{order.items.length - 2} more items</div>
-                      )}
-                    </div>
-                  </td>
-
-                  <td className="status-cell">
-                    <div className={`status-dropdown-wrapper status-${order.status || 'Pending'} ${updatingId === order._id ? 'is-updating' : ''}`}>
-                      {getStatusIcon(order.status || 'Pending', updatingId === order._id)}
-                      <select
-                        value={order.status || 'Pending'}
-                        disabled={updatingId === order._id}
-                        onChange={(e) => updateStatus(order._id, e.target.value)}
-                      >
-                        <option value="Pending">Pending</option>
-                        <option value="Processing">Processing</option>
-                        <option value="Shipped">Shipped</option>
-                        <option value="Delivered">Delivered</option>
-                        <option value="Cancelled">Cancelled</option>
-                      </select>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
     </div>
   );
 }

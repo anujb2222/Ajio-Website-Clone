@@ -16,6 +16,7 @@ function Cart() {
   const [reviewBox, setReviewBox] = useState(null);
   const [comment, setComment] = useState("");
   const [rating, setRating] = useState(5);
+  const [userReviews, setUserReviews] = useState([]);
   const [reviewedProducts, setReviewedProducts] = useState([]);
 
   const API_URL = "https://ajio-website-clone-1.onrender.com";
@@ -44,8 +45,8 @@ function Cart() {
             return pId ? pId.toString() : null;
           })
           .filter(id => id !== null);
-        
-        setReviewedProducts(reviewedIds);
+       setReviewedProducts(reviewedIds);
+       setUserReviews(data);
       } catch (err) {
         console.error("Error fetching user reviews:", err);
       }
@@ -134,7 +135,9 @@ function Cart() {
 
       const productIdStr = productId?.toString();
       if (productIdStr) {
-        setReviewedProducts([...reviewedProducts, productIdStr]);
+     const updatedRes = await fetch(`${API_URL}/reviews/user/${userId}`);
+const updatedData = await updatedRes.json();
+setUserReviews(updatedData);
       }
     } catch (err) {
       alert("Server error while submitting review");
@@ -295,45 +298,7 @@ function Cart() {
                 </span>
               </div>
 
-              
-              <div className="order-progress-wrapper">
-                <div className="progress-track">
-                  <div
-                    className={`progress-fill ${order.status?.toLowerCase()}`}
-                    style={{
-                      width:
-                        order.status === 'Delivered' ? '100%' :
-                        order.status === 'Shipped' ? '80%' :
-                        order.status === 'Processing' ? '60%' :
-                        order.status === 'Pending' ? '30%' : '0%'
-                    }}
-                  ></div>
-                </div>
-
-                <div className="progress-steps">
-
-                  <div className={`step ${['Pending','Processing','Shipped','Delivered'].includes(order.status) ? 'completed' : ''}`}>
-                    <div className="step-dot"><FaBox /></div>
-                    <span className="step-label">Ordered</span>
-                  </div>
-
-                  <div className={`step ${['Processing','Shipped','Delivered'].includes(order.status) ? 'completed' : ''}`}>
-                    <div className="step-dot"><FaTruck /></div>
-                    <span className="step-label">Packed</span>
-                  </div>
-
-                  <div className={`step ${['Shipped','Delivered'].includes(order.status) ? 'completed' : ''}`}>
-                    <div className="step-dot"><FaMapMarkerAlt /></div>
-                    <span className="step-label">Out for Delivery</span>
-                  </div>
-
-                  <div className={`step ${order.status === 'Delivered' ? 'completed' : ''}`}>
-                    <div className="step-dot"><FaCheckCircle /></div>
-                    <span className="step-label">Delivered</span>
-                  </div>
-
-                </div>
-              </div>
+            
             </div>
 
             <span className="order-date">
@@ -368,71 +333,96 @@ function Cart() {
             </div>
 
            
+          
             <div className="footer-reviews-area">
-              {order.items.map((item, idx) => {
-                const productId = (item.productId?._id || item.productId)?.toString();
-                const alreadyReviewed = reviewedProducts.includes(productId);
+  {order.items.map((item, idx) => {
+    const productId = (item.productId?._id || item.productId)?.toString();
 
-                if (alreadyReviewed || !productId || !item.productId) return null;
+    if (!productId || !item.productId) return null;
 
-                return (
-                  <div key={idx} className="inline-review-section">
-                    <div className="review-trigger">
-                      <p>
-                        Write Your review on <strong>{item.productId.itemName}</strong>?
-                      </p>
-                      <button
-                        className="inline-write-btn"
-                        onClick={() => {
-                          if (reviewBox === productId) {
-                            setReviewBox(null);
-                          } else {
-                            setReviewBox(productId);
-                            setComment("");
-                            setRating(5);
-                          }
-                        }}
-                      >
-                        {reviewBox === productId ? "Cancel Review" : "Write Review"}
-                      </button>
-                    </div>
 
-                    {reviewBox === productId && (
-                      <div className="inline-review-form">
-                        <h5>Reviewing {item.productId.itemName}</h5>
+    const review = userReviews.find(r => {
+      const pid = typeof r.productId === "string"
+        ? r.productId
+        : r.productId?._id;
+      return pid?.toString() === productId;
+    });
 
-                        <div className="rating-selector">
-                          <span>Your Rating: </span>
-                          <select
-                            value={rating}
-                            onChange={(e) => setRating(Number(e.target.value))}
-                          >
-                            <option value="5">5 ⭐ - Excellent</option>
-                            <option value="4">4 ⭐ - Very Good</option>
-                            <option value="3">3 ⭐ - Good</option>
-                            <option value="2">2 ⭐ - Fair</option>
-                            <option value="1">1 ⭐ - Poor</option>
-                          </select>
-                        </div>
+    return (
+      <div key={idx} className="inline-review-section">
 
-                        <textarea
-                          placeholder={`Share your experience with this ${item.productId.itemName}...`}
-                          value={comment}
-                          onChange={(e) => setComment(e.target.value)}
-                        />
-
-                        <button
-                          onClick={() => submitReview(productId)}
-                          className="inline-submit-btn"
-                        >
-                          Submit Review
-                        </button>
-                      </div>
-                    )}
-                  </div>
-                );
-              })}
+      
+        {review ? (
+          <div className="submitted-review">
+            <p>
+              <strong>Your Review for {item.productId.itemName}</strong>
+            </p>
+            <p>⭐ {review.rating} / 5</p>
+            <p>{review.comment}</p>
+          </div>
+        ) : (
+          <>
+         
+            <div className="review-trigger">
+              <p>
+                Write your review on{" "}
+                <strong>{item.productId.itemName}</strong>?
+              </p>
+              <button
+                className="inline-write-btn"
+                onClick={() => {
+                  if (reviewBox === productId) {
+                    setReviewBox(null);
+                  } else {
+                    setReviewBox(productId);
+                    setComment("");
+                    setRating(5);
+                  }
+                }}
+              >
+                {reviewBox === productId ? "Cancel Review" : "Write Review"}
+              </button>
             </div>
+
+            {reviewBox === productId && (
+              <div className="inline-review-form">
+                <h5>Reviewing {item.productId.itemName}</h5>
+
+                <div className="rating-selector">
+                  <span>Your Rating: </span>
+                  <select
+                    value={rating}
+                    onChange={(e) => setRating(Number(e.target.value))}
+                  >
+                    <option value="5">5 ⭐ - Excellent</option>
+                    <option value="4">4 ⭐ - Very Good</option>
+                    <option value="3">3 ⭐ - Good</option>
+                    <option value="2">2 ⭐ - Fair</option>
+                    <option value="1">1 ⭐ - Poor</option>
+                  </select>
+                </div>
+
+                <textarea
+                  placeholder={`Share your experience with this ${item.productId.itemName}...`}
+                  value={comment}
+                  onChange={(e) => setComment(e.target.value)}
+                />
+
+                <button
+                  onClick={() => submitReview(productId)}
+                  className="inline-submit-btn"
+                >
+                  Submit Review
+                </button>
+              </div>
+            )}
+          </>
+        )}
+
+      </div>
+    );
+  })}
+</div>
           </div>
 
         </div>
