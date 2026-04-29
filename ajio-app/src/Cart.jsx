@@ -17,7 +17,7 @@ function Cart() {
   const [comment, setComment] = useState("");
   const [rating, setRating] = useState(5);
   const [userReviews, setUserReviews] = useState([]);
-  const [reviewedProducts, setReviewedProducts] = useState([]);
+
 
   const API_URL = "https://ajio-website-clone-1.onrender.com";
 
@@ -37,15 +37,6 @@ function Cart() {
         const res = await fetch(`${API_URL}/reviews/user/${userId}`);
         const data = await res.json();
 
-   
-        const reviewedIds = data
-          .filter(r => r.productId)
-          .map(r => {
-            const pId = typeof r.productId === "string" ? r.productId : r.productId._id;
-            return pId ? pId.toString() : null;
-          })
-          .filter(id => id !== null);
-       setReviewedProducts(reviewedIds);
        setUserReviews(data);
       } catch (err) {
         console.error("Error fetching user reviews:", err);
