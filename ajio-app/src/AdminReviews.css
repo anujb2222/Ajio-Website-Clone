@@ -182,6 +182,11 @@
   margin-bottom: 15px;
 }
 
+@keyframes spin {
+  100% { transform: rotate(360deg); }
+}
+
+
 .admin-empty-state {
   text-align: center;
   padding: 100px 20px;
