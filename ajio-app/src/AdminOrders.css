@@ -97,7 +97,9 @@
   border-radius: 50%;
   animation: spin 1s linear infinite;
 }
-
+@keyframes spin {
+  100% { transform: rotate(360deg); }
+}
 .admin-empty-state {
   text-align: center;
   padding: 60px;
