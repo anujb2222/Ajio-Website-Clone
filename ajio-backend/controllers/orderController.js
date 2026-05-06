@@ -6,26 +6,31 @@ const axios = require("axios");
 
 const { generateInvoiceBuffer } = require("../utils/generateinvoice");
 
-
 const sendBrevoEmail = async (toEmail, subject, htmlContent, pdfBuffer) => {
   try {
+    const emailData = {
+      sender: {
+        name: "AJIO Clone",
+        email: process.env.EMAIL_USER,
+      },
+      to: [{ email: toEmail }],
+      subject,
+      htmlContent,
+    };
+
+ 
+    if (pdfBuffer) {
+      emailData.attachment = [
+        {
+          content: pdfBuffer.toString("base64"),
+          name: "invoice.pdf",
+        },
+      ];
+    }
+
     await axios.post(
       "https://api.brevo.com/v3/smtp/email",
-      {
-        sender: {
-          name: "AJIO Clone",
-          email: process.env.EMAIL_USER,
-        },
-        to: [{ email: toEmail }],
-        subject,
-        htmlContent,
-        attachment: [
-          {
-            content: pdfBuffer.toString("base64"),
-            name: "invoice.pdf",
-          },
-        ],
-      },
+      emailData,
       {
         headers: {
           "api-key": process.env.BREVO_API_KEY,
@@ -37,7 +42,6 @@ const sendBrevoEmail = async (toEmail, subject, htmlContent, pdfBuffer) => {
     console.error("BREVO ERROR:", error.response?.data || error.message);
   }
 };
-
 
 exports.createOrder = async (req, res) => {
   try {
@@ -197,40 +201,68 @@ exports.getUserOrders = async (req, res) => {
 };
 
 
-
 exports.updateOrderStatus = async (req, res) => {
   try {
     const { status } = req.body;
     const { orderId } = req.params;
 
     if (!status) {
-      return res.status(400).json({ success: false, message: "Status is required" });
+      return res.status(400).json({
+        success: false,
+        message: "Status is required",
+      });
     }
 
-    console.log(`Updating order ${orderId} to status: ${status}`);
+    const order = await Order.findById(orderId).populate("items.productId");
 
-    const updatedOrder = await Order.findByIdAndUpdate(
-      orderId,
-      { status },
-      { new: true }
-    );
-
-    if (!updatedOrder) {
-      console.log(`Order ${orderId} not found`);
-      return res.status(404).json({ success: false, message: "Order not found" });
+    if (!order) {
+      return res.status(404).json({
+        success: false,
+        message: "Order not found",
+      });
     }
 
-    console.log(`Order ${orderId} updated successfully to ${updatedOrder.status}`);
-    res.json({ success: true, order: updatedOrder });
+    order.status = status;
+    await order.save();
+
+    
+    let message = "";
+
+    if (status === "Processing") {
+      message = "Your order is being processed 🛠️";
+    } else if (status === "Shipped") {
+      message = "Your order has been shipped 🚚";
+    } else if (status === "Delivered") {
+      message = "Your order has been delivered 🎉";
+    } else if (status === "Cancelled") {
+      message = "Your order has been cancelled ❌";
+    }
+
+    const emailHtml = `
+      <h2>Order Status Updated</h2>
+      <p>Hello ${order.shipping?.name || "Customer"},</p>
+      <p><b>Order ID:</b> ${order._id}</p>
+      <p><b>Status:</b> ${status}</p>
+      <p>${message}</p>
+    `;
+
+    
+    if (order.shipping?.email) {
+      await sendBrevoEmail(
+        order.shipping.email,
+        "Order Status Update - AJIO",
+        emailHtml,
+        null 
+      );
+    }
+
+    res.json({ success: true, order });
+
   } catch (err) {
     console.error("UPDATE STATUS ERROR:", err);
     res.status(500).json({ success: false, error: err.message });
   }
 };
-
-
-
-
 
 
 exports.getSingleOrder = async (req, res) => {
