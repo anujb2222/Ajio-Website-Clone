@@ -257,10 +257,11 @@ exports.updateOrderStatus = async (req, res) => {
     }
 
 const itemList = order.items
-  .map(
-    (item) =>
-      `${item.productId?.name || item.productId?.title || "Product"} × ${item.quantity}`
-  )
+  .map((item) => {
+    const p = item.productId;
+
+    return `${p?.itemName || "Product"} × ${item.quantity}`;
+  })
   .join(", ");
 
 
