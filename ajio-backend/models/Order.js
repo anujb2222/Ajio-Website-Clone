@@ -1,11 +1,10 @@
-const mongoose = require("mongoose");
-
 const orderSchema = new mongoose.Schema({
   userId: { type: String, required: true },
   shipping: {
     name: String,
     address: String,
-    state: String
+    state: String,
+    email: String   
   },
   items: [
     {
@@ -20,6 +19,4 @@ const orderSchema = new mongoose.Schema({
   paymentStatus: { type: String, default: "pending" },
   status: { type: String, default: "Pending" },
   createdAt: { type: Date, default: Date.now }
-}); 
-
-module.exports = mongoose.model("Order", orderSchema);
+});
