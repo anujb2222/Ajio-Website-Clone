@@ -164,7 +164,7 @@ exports.placeCODOrder = async (req, res) => {
     const emailHtml = `
       <h2>COD Order Placed Successfully 🎉</h2>
       <p><b>Total Price:</b> ₹${savedOrder.totalPrice}</p>
-      <p>Pay on delivery 🚚</p>
+      <p>Pay on delivery </p>
       <p>Invoice attached below 📎</p>
     `;
 
@@ -212,7 +212,7 @@ exports.updateOrderStatus = async (req, res) => {
       });
     }
 
-    // ✅ fetch full order
+    
     const order = await Order.findById(orderId).populate("items.productId");
 
     if (!order) {
@@ -222,49 +222,61 @@ exports.updateOrderStatus = async (req, res) => {
       });
     }
 
-    // ✅ update status
+
     order.status = status;
     await order.save();
 
     console.log("✅ Status updated:", status);
 
-    // ✅ CHECK EMAIL EXISTS
+  
     if (!order.shipping?.email) {
-      console.log("❌ No email found in order");
+      console.log("No email found in order");
       return res.json({ success: true, order });
     }
 
     console.log("📧 Sending email to:", order.shipping.email);
 
-    // ✅ status message
+  
     let message = "";
 
     switch (status) {
       case "Processing":
-        message = "Your order is being processed 🛠️";
+        message = "Your order is being processed ";
         break;
       case "Shipped":
-        message = "Your order has been shipped 🚚";
+        message = "Your order has been shipped ";
         break;
       case "Delivered":
         message = "Your order has been delivered 🎉";
         break;
       case "Cancelled":
-        message = "Your order has been cancelled ❌";
+        message = "Your order has been cancelled ";
         break;
       default:
         message = `Order status updated to ${status}`;
     }
 
-    const emailHtml = `
-      <h2>Order Status Updated</h2>
-      <p>Hello ${order.shipping.name || "Customer"},</p>
-      <p><b>Order ID:</b> ${order._id}</p>
-      <p><b>Status:</b> ${status}</p>
-      <p>${message}</p>
-    `;
+const itemList = order.items
+  .map(
+    (item) =>
+      `${item.productId?.itemName || "Product"} × ${item.quantity}`
+  )
+  .join(", ");
 
-    // ✅ SEND EMAIL
+
+    const emailHtml = `
+  <h2>Order Status Updated</h2>
+  <p>Hello ${order.shipping.name || "Customer"},</p>
+
+  <p><b>Order ID:</b> ${order._id}</p>
+  <p><b>Status:</b> ${status}</p>
+
+  <p>${message}</p>
+
+  <p><b>Items:</b> ${itemList}</p>
+`;
+
+   
     await sendBrevoEmail(
       order.shipping.email,
       "Order Status Update - AJIO",
@@ -272,15 +284,19 @@ exports.updateOrderStatus = async (req, res) => {
       null
     );
 
-    console.log("✅ Status email sent");
+    console.log("Status email sent");
 
     res.json({ success: true, order });
 
   } catch (err) {
-    console.error("❌ UPDATE STATUS ERROR:", err);
+    console.error("UPDATE STATUS ERROR:", err);
     res.status(500).json({ success: false, error: err.message });
   }
 };
+
+
+
+
 exports.getSingleOrder = async (req, res) => {
   try {
     const order = await Order.findById(req.params.orderId).populate(
