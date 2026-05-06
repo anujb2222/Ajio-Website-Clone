@@ -200,7 +200,6 @@ exports.getUserOrders = async (req, res) => {
   res.json(orders);
 };
 
-
 exports.updateOrderStatus = async (req, res) => {
   try {
     const { status } = req.body;
@@ -213,6 +212,7 @@ exports.updateOrderStatus = async (req, res) => {
       });
     }
 
+    // ✅ fetch full order
     const order = await Order.findById(orderId).populate("items.productId");
 
     if (!order) {
@@ -222,49 +222,65 @@ exports.updateOrderStatus = async (req, res) => {
       });
     }
 
+    // ✅ update status
     order.status = status;
     await order.save();
 
-    
+    console.log("✅ Status updated:", status);
+
+    // ✅ CHECK EMAIL EXISTS
+    if (!order.shipping?.email) {
+      console.log("❌ No email found in order");
+      return res.json({ success: true, order });
+    }
+
+    console.log("📧 Sending email to:", order.shipping.email);
+
+    // ✅ status message
     let message = "";
 
-    if (status === "Processing") {
-      message = "Your order is being processed 🛠️";
-    } else if (status === "Shipped") {
-      message = "Your order has been shipped 🚚";
-    } else if (status === "Delivered") {
-      message = "Your order has been delivered 🎉";
-    } else if (status === "Cancelled") {
-      message = "Your order has been cancelled ❌";
+    switch (status) {
+      case "Processing":
+        message = "Your order is being processed 🛠️";
+        break;
+      case "Shipped":
+        message = "Your order has been shipped 🚚";
+        break;
+      case "Delivered":
+        message = "Your order has been delivered 🎉";
+        break;
+      case "Cancelled":
+        message = "Your order has been cancelled ❌";
+        break;
+      default:
+        message = `Order status updated to ${status}`;
     }
 
     const emailHtml = `
       <h2>Order Status Updated</h2>
-      <p>Hello ${order.shipping?.name || "Customer"},</p>
+      <p>Hello ${order.shipping.name || "Customer"},</p>
       <p><b>Order ID:</b> ${order._id}</p>
       <p><b>Status:</b> ${status}</p>
       <p>${message}</p>
     `;
 
-    
-    if (order.shipping?.email) {
-      await sendBrevoEmail(
-        order.shipping.email,
-        "Order Status Update - AJIO",
-        emailHtml,
-        null 
-      );
-    }
+    // ✅ SEND EMAIL
+    await sendBrevoEmail(
+      order.shipping.email,
+      "Order Status Update - AJIO",
+      emailHtml,
+      null
+    );
+
+    console.log("✅ Status email sent");
 
     res.json({ success: true, order });
 
   } catch (err) {
-    console.error("UPDATE STATUS ERROR:", err);
+    console.error("❌ UPDATE STATUS ERROR:", err);
     res.status(500).json({ success: false, error: err.message });
   }
 };
-
-
 exports.getSingleOrder = async (req, res) => {
   try {
     const order = await Order.findById(req.params.orderId).populate(
