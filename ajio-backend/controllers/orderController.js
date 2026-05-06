@@ -200,6 +200,7 @@ exports.getUserOrders = async (req, res) => {
   res.json(orders);
 };
 
+
 exports.updateOrderStatus = async (req, res) => {
   try {
     const { status } = req.body;
@@ -212,7 +213,6 @@ exports.updateOrderStatus = async (req, res) => {
       });
     }
 
-    
     const order = await Order.findById(orderId).populate("items.productId");
 
     if (!order) {
@@ -222,21 +222,13 @@ exports.updateOrderStatus = async (req, res) => {
       });
     }
 
-
     order.status = status;
     await order.save();
 
-    console.log("✅ Status updated:", status);
-
-  
     if (!order.shipping?.email) {
-      console.log("No email found in order");
       return res.json({ success: true, order });
     }
 
-    console.log("📧 Sending email to:", order.shipping.email);
-
-  
     let message = "";
 
     switch (status) {
@@ -256,28 +248,22 @@ exports.updateOrderStatus = async (req, res) => {
         message = `Order status updated to ${status}`;
     }
 
-const itemList = order.items
-  .map((item) => {
-    const p = item.productId;
-
-    return `${p?.itemName || "Product"} × ${item.quantity}`;
-  })
-  .join(", ");
-
+    const itemList = order.items
+      .map((item) => {
+        const p = item.productId;
+        return `${p?.itemName || "Product"} × ${item.quantity}`;
+      })
+      .join(", ");
 
     const emailHtml = `
-  <h2>Order Status Updated</h2>
-  <p>Hello ${order.shipping.name || "Customer"},</p>
+      <h2>Order Status Updated</h2>
+      <p>Hello ${order.shipping.name || "Customer"},</p>
+      <p><b>Order ID:</b> ${order._id}</p>
+      <p><b>Status:</b> ${status}</p>
+      <p>${message}</p>
+      <p><b>Items:</b> ${itemList}</p>
+    `;
 
-  <p><b>Order ID:</b> ${order._id}</p>
-  <p><b>Status:</b> ${status}</p>
-
-  <p>${message}</p>
-
-  <p><b>Items:</b> ${itemList}</p>
-`;
-
-   
     await sendBrevoEmail(
       order.shipping.email,
       "Order Status Update - AJIO",
@@ -285,16 +271,12 @@ const itemList = order.items
       null
     );
 
-    console.log("Status email sent");
-
     res.json({ success: true, order });
 
   } catch (err) {
-    console.error("UPDATE STATUS ERROR:", err);
     res.status(500).json({ success: false, error: err.message });
   }
 };
-
 
 
 
