@@ -62,6 +62,7 @@ function ProductDetails() {
       .then((res) => setReviews(res.data))
       .catch((err) => console.log(err));
   };
+
 useEffect(() => {
   setLoading(true);
 
@@ -71,24 +72,30 @@ useEffect(() => {
       setProduct(res.data);
       setLoading(false);
     })
-    .catch(() => {
+    .catch((err) => {
+      console.log(err);
       setProduct(null);
       setLoading(false);
     });
 }, [id]);
 
+  useEffect(() => {
+    if (id) fetchReviews();
+  }, [id]);
+
  
   useEffect(() => {
     document.body.style.overflow = showReviews ? "hidden" : "auto";
   }, [showReviews]);
-if (loading) {
+
+  if (loading) {
   return (
     <div className="loading-container">
       <div className="spinner"></div>
       <p>Loading product...</p>
-    </div>
-  );
-}
+      </div>
+    );
+  }
 
   const averageRating =
     reviews.length > 0
@@ -98,7 +105,6 @@ if (loading) {
         ).toFixed(1)
       : 0;
 
-      
   return (
     <div className="product-details-page">
       <button className="floating-back-btn" onClick={() => navigate("/")}>
