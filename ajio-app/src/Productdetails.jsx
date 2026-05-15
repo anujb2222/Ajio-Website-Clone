@@ -19,6 +19,7 @@ function ProductDetails() {
   const navigate = useNavigate();
   const [product, setProduct] = useState(null);
   const [reviews, setReviews] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [showReviews, setShowReviews] = useState(false);
 
   const API_URL = "https://ajio-website-clone-1.onrender.com";
@@ -61,31 +62,33 @@ function ProductDetails() {
       .then((res) => setReviews(res.data))
       .catch((err) => console.log(err));
   };
+useEffect(() => {
+  setLoading(true);
 
-  useEffect(() => {
-    axios
-      .get(`${API_URL}/products/${id}`)
-      .then((res) => setProduct(res.data))
-      .catch((err) => console.log(err));
-  }, [id]);
-
-  useEffect(() => {
-    if (id) fetchReviews();
-  }, [id]);
+  axios
+    .get(`${API_URL}/products/${id}`)
+    .then((res) => {
+      setProduct(res.data);
+      setLoading(false);
+    })
+    .catch(() => {
+      setProduct(null);
+      setLoading(false);
+    });
+}, [id]);
 
  
   useEffect(() => {
     document.body.style.overflow = showReviews ? "hidden" : "auto";
   }, [showReviews]);
-
-  if (!product) {
-    return (
-      <div className="error-state">
-        <h1>Product not found</h1>
-        <button onClick={() => navigate("/")}>Go Home</button>
-      </div>
-    );
-  }
+if (loading) {
+  return (
+    <div className="loading-container">
+      <div className="spinner"></div>
+      <p>Loading product...</p>
+    </div>
+  );
+}
 
   const averageRating =
     reviews.length > 0
@@ -95,6 +98,7 @@ function ProductDetails() {
         ).toFixed(1)
       : 0;
 
+      
   return (
     <div className="product-details-page">
       <button className="floating-back-btn" onClick={() => navigate("/")}>
